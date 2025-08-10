@@ -19,7 +19,6 @@ interface Spot {
 }
 
 export default function SideMenu({ isOpen, onClose }: SideMenuProps) {
-  const [spots, setSpots] = useState<Spot[]>([])
   const [groupedSpots, setGroupedSpots] = useState<Record<string, Spot[]>>({})
 
   // Fetch spots from Supabase when menu opens
@@ -32,7 +31,6 @@ export default function SideMenu({ isOpen, onClose }: SideMenuProps) {
           .order('name')
         
         if (data) {
-          setSpots(data)
           
           // Group by area
           const grouped = data.reduce((acc: Record<string, Spot[]>, spot) => {

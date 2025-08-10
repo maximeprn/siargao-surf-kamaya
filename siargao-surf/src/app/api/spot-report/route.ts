@@ -147,7 +147,7 @@ export async function POST(req: Request){
     
     // Debug logging for API costs investigation
     // Fonction pour nettoyer et valider le JSON
-    function ensureValidJSON(text: string): any {
+    function ensureValidJSON(text: string): { title: string; summary: string; verdict: 'GO' | 'CONDITIONAL' | 'NO-GO' } {
       // Enlever les blocs markdown si présents
       text = text.replace(/```json\n?/g, '').replace(/```\n?/g, '')
       
@@ -177,7 +177,7 @@ export async function POST(req: Request){
         }
         
         return result
-      } catch (e) {
+      } catch {
         // Fallback: essayer de construire manuellement
         const lines = text.split('\n').filter(line => line.trim())
         return {

@@ -7,7 +7,7 @@ export default function ThemeToggle() {
   const [mounted, setMounted] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
   const [showAnimation, setShowAnimation] = useState(false)
-  const animationTimeoutRef = useRef<NodeJS.Timeout>()
+  const animationTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
   const themeContext = useThemeOptional()
   
   // Prevent hydration mismatch and show initial animation
@@ -35,7 +35,7 @@ export default function ThemeToggle() {
     )
   }
 
-  const { theme, toggleTheme, isDark } = themeContext
+  const { toggleTheme, isDark } = themeContext
   
   // Show opposite icon on hover or during animation
   const showOpposite = isHovering || showAnimation

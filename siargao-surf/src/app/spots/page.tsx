@@ -17,7 +17,7 @@ export default async function SpotsPage() {
       </div>
     )
   }
-  const { data: spots, error } = await supabase
+  const { data: spots } = await supabase
     .from('spots')
     .select('*')
     .order('name')
