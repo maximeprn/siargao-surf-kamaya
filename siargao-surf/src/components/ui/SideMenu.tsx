@@ -142,7 +142,7 @@ export default function SideMenu({ isOpen, onClose }: SideMenuProps) {
                       >
                         <div className="flex items-center justify-between">
                           <div>
-                            <div className="text-theme-primary font-medium text-lg">{spot.name}</div>
+                            <div className="text-theme-primary font-normal text-lg">{spot.name}</div>
                             <div className="text-theme-muted text-sm mt-1">
                               {spot.wave_type || 'Reef break'}
                             </div>

@@ -12,7 +12,7 @@ export interface SpotMeta extends SpotConfig {
   swellPeriod?: [number, number];
   bestWind?: [number, number];
   crowdFactor?: number;
-  access?: 'walk' | 'boat' | 'walk (reef lagoon)' | 'boat_or_long_paddle';
+  access?: 'walk' | 'boat' | 'walk (reef lagoon)' | 'boat or long paddle';
   accessDetails?: string;
   boatCost?: string;
   seasonality?: Record<string, number[]>;
@@ -55,7 +55,7 @@ export const siargaoSpotsComplete: Record<string, SpotMeta> = {
     skill: "expert",
     minSkill: "advanced",
     maxSkill: "advanced",
-    bottomType: "shallow_reef",
+    bottomType: "shallow reef",
     swellPeriod: [10, 16],
     bestWind: [220, 260],             // SW→W offshore
     crowdFactor: 0.9,
@@ -69,14 +69,14 @@ export const siargaoSpotsComplete: Record<string, SpotMeta> = {
       viewingPlatform: true,
       worldRanking: true
     },
-    hazards: ["shallow_reef", "strong_current", "crowd", "sharp_coral"],
+    hazards: ["shallow reef", "strong current", "crowd", "sharp coral"],
     localTips: {
       bestTime: "First light for fewer people",
       avoidLowTide: "Extremely shallow — do not surf low tide",
       localRespect: "Heavy local presence — be cool"
     },
     alternativeNames: ["Crowd 9"],
-    nearbyAmenities: ["restaurants", "bars", "surf_shops", "accommodation"],
+    nearbyAmenities: ["restaurants", "bars", "surf shops", "accommodation"],
   },
 
   'Quicksilver': {
@@ -120,7 +120,7 @@ export const siargaoSpotsComplete: Record<string, SpotMeta> = {
     skill: "expert",
     minSkill: "intermediate",
     maxSkill: "advanced",
-    bottomType: "reef_with_boulders",
+    bottomType: "reef with boulders",
     swellPeriod: [10, 16],
     bestWind: [290, 320],             // WNW→NW
     crowdFactor: 0.5,
@@ -130,7 +130,7 @@ export const siargaoSpotsComplete: Record<string, SpotMeta> = {
     boatCost: "≈500–1000 PHP per boat (share)",
     seasonality: { peak: [9,10,11], good: [12,1,2], small: [5,6,7,8] },
     features: { leftBarrel: true, consistentWinter: true, remoteFeeling: true },
-    hazards: ["shallow_reef", "large_rock_low_tide", "boat_access_only"],
+    hazards: ["shallow reef", "large rock low tide", "boat access only"],
     localTips: {
       winterSecret: "Sheltered when GL is onshore (Dec–Mar)",
       lowTideBarrels: "Best barrels on lower tides"
@@ -179,11 +179,11 @@ export const siargaoSpotsComplete: Record<string, SpotMeta> = {
     skill: "intermediate",
     minSkill: "beginner",
     maxSkill: "advanced",
-    bottomType: "relatively_deep_reef_for_GL",
+    bottomType: "relatively deep reef for GL",
     swellPeriod: [6, 12],
     bestWind: [230, 280],             // SW→W
     crowdFactor: 0.4,
-    access: "boat_or_long_paddle",
+    access: "boat or long paddle",
     coords: { lat: 9.78483924, lon: 126.17306053 },
     accessDetails: "Walkable from General Luna cemetery area",
     seasonality: { summer_fun: [5,6,7,8], shoulder: [9,10,11,12] },
@@ -216,7 +216,7 @@ export const siargaoSpotsComplete: Record<string, SpotMeta> = {
     accessDetails: "Left of Cloud 9 boardwalk",
     seasonality: { best: [9,10,11,12], small: [5,6,7,8] },
     features: { surfSchoolSpot: true, strongCurrent: true, innerBreak: "Little Pony" },
-    hazards: ["strong_lateral_current", "crowd", "rocky_bottom"],
+    hazards: ["strong lateral current", "crowd", "rocky bottom"],
     localTips: {
       instruction: "≈500 PHP/hour with instructor",
       boardRental: "≈500 PHP/hour",
@@ -237,7 +237,7 @@ export const siargaoSpotsComplete: Record<string, SpotMeta> = {
     skill: "expert",
     minSkill: "advanced",
     maxSkill: "advanced",
-    bottomType: "shallow_reef",
+    bottomType: "shallow reef",
     swellPeriod: [10, 16],
     bestWind: [220, 260],
     crowdFactor: 0.6,
@@ -246,7 +246,7 @@ export const siargaoSpotsComplete: Record<string, SpotMeta> = {
     accessDetails: "Next to Harana Resort",
     seasonality: { peak: [9,10,11], good: [12,1,2], small: [5,6,7,8] },
     features: { barrelSection: true, powerfulLeft: true, heavierThanCloud9: true },
-    hazards: ["shallow_reef", "powerful_waves", "sharp_rocks_entry"],
+    hazards: ["shallow reef", "powerful waves", "sharp rocks entry"],
     localTips: {
       entryExit: "Mind the rocks on paddle out",
       waveSelection: "Best from ~4ft+",
@@ -267,7 +267,7 @@ export const siargaoSpotsComplete: Record<string, SpotMeta> = {
     skill: "beginner",
     minSkill: "beginner",
     maxSkill: "intermediate",
-    bottomType: "deeper_reef",
+    bottomType: "deeper reef",
     swellPeriod: [6, 12],
     bestWind: [220, 260],
     crowdFactor: 0.7,
@@ -309,7 +309,7 @@ export const siargaoSpotsComplete: Record<string, SpotMeta> = {
       location: "Quieter surf-town vibe",
       expertise: "Genuinely heavy — not for intermediates"
     },
-    hazards: ["powerful_waves", "reef", "remote_location"],
+    hazards: ["powerful waves", "reef", "remote location"],
   },
 
   'Salvacion': {
@@ -353,12 +353,12 @@ export const siargaoSpotsComplete: Record<string, SpotMeta> = {
     swellPeriod: [10, 16],
     bestWind: [200, 260],
     crowdFactor: 0.2,
-    access: "boat_or_long_paddle",
+    access: "boat or long paddle",
     coords: { lat: 9.8789, lon: 126.13296605 },
     accessDetails: "Standard by boat from GL Cabitoonan/Tourism Road or from Barangay Salvacion",
     seasonality: { peak: [9,10,11], good: [12,1,2,3] },
     features: { longRightWalls: true, holdsVeryLarge: true },
-    hazards: ["reef", "currents", "exposure", "boat_traffic"],
+    hazards: ["reef", "currents", "exposure", "boat traffic"],
     localTips: {
       safety: "Outer-reef distances & currents; go with a buddy/guide and carry comms.",
       paddle: "Paddle from Mahaybo only on light-wind mornings with manageable current."
@@ -378,7 +378,7 @@ export const siargaoSpotsComplete: Record<string, SpotMeta> = {
     skill: "intermediate",
     minSkill: "beginner",
     maxSkill: "intermediate",
-    bottomType: "reef_sand_mix",
+    bottomType: "reef sand mix",
     swellPeriod: [7, 13],
     bestWind: [200, 260],
     crowdFactor: 0.3,
@@ -387,13 +387,13 @@ export const siargaoSpotsComplete: Record<string, SpotMeta> = {
     accessDetails: "Mahaybo Beach access (Ocean 9 area)",
     seasonality: { peak: [9,10,11], good: [12,1,2], small: [5,6,7,8] },
     features: { areaBreaks: true, lessCrowded: true },
-    hazards: ["reef", "urchins", "rip_current"],
+    hazards: ["reef", "urchins", "rip current"],
     localTips: {
       conditions: "Switchy bank/section quality; needs pulse and favorable wind.",
       linkage: "Launch point for paddles/boats to Philippine Deep."
     },
     alternativeNames: ["Ocean Nine", "Mahaybo Beach", "Santa Fe"],
-    nearbyAmenities: ["accommodation", "bar_restaurant", "surf_shop"],
+    nearbyAmenities: ["accommodation", "bar restaurant", "surf shop"],
   }
 }
 
