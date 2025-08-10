@@ -11,7 +11,7 @@
 
 /* Theme variables */
 .dark {
-  --bg-primary: rgb(11, 26, 37);
+  --bg-primary: rgb(27, 51, 64);
   --bg-secondary: rgba(27, 51, 64, 0.6);
   --text-primary: #EAF2F6;
   --text-secondary: #C6D3DB;
@@ -20,6 +20,21 @@
   --border: rgba(255, 255, 255, 0.14);
   --glass-bg: rgba(27, 51, 64, 0.6);
   --glass-border: rgba(255, 255, 255, 0.14);
+  --swell-color: rgba(255, 255, 255, 0.6);
+  --wind-color: #F8CB9E;
+  --compass-axes: rgba(255, 255, 255, 0.25);
+  --compass-labels: #C6D3DB;
+  --compass-ticks: rgba(255, 255, 255, 0.5);
+  --compass-circle: rgba(255, 255, 255, 0.25);
+  --tide-curve: #F8CB9E;
+  --tide-axes: rgba(255, 255, 255, 0.35);
+  --tide-labels: rgba(255, 255, 255, 0.6);
+  --feature-bg: rgba(255, 255, 255, 0.1);
+  --feature-ring: rgba(255, 255, 255, 0.2);
+  --feature-text: var(--text-primary);
+  --hazard-bg: rgba(239, 68, 68, 0.15);
+  --hazard-ring: rgba(239, 68, 68, 0.093);
+  --hazard-text: #FCA5A5;
 }
 
 .light {
@@ -32,6 +47,22 @@
   --border: rgba(28, 51, 64, 0.2);
   --glass-bg: rgba(253, 252, 245, 0.8);
   --glass-border: rgba(28, 51, 64, 0.2);
+  --swell-color: #1C3340;
+  --wind-color: #F8CB9E;
+  --compass-axes: #1C3340;
+  --compass-labels: #1C3340;
+  --compass-ticks: #1C3340;
+  --compass-circle: #1C3340;
+  --tide-curve: #F8CB9E;
+  --tide-axes: #1C3340;
+  --tide-labels: hsl(210, 50%, 1%);
+  --feature-bg:  hsla(202, 39%, 18%, 0.225);
+  --feature-ring: rgba(0, 0, 0, 0.2);
+  --feature-text: black;
+  --hazard-bg: rgba(239, 68, 68, 0.227);
+  --hazard-ring: rgba(239, 68, 68, 0.1);
+  --hazard-text: black
+  ;
 }
 
 :root{
@@ -46,7 +77,7 @@
   --metric-min:44px;   --metric-max:76px;
   --eyebrow:16px;      --caption:14px;
   --subtle:18px;       --meta:12px;
-  --logo-svg:38px;
+  --logo-svg:25px;
   --svg-label:11px;
 }
 
@@ -91,7 +122,8 @@ body{
 .kv-v{ font-weight:600; white-space:nowrap; flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; }
 
 .report-text{ font-size: clamp(calc(var(--report-min) * var(--type-scale)), calc(1.4vw * var(--type-scale)), calc(var(--report-max) * var(--type-scale))); line-height: 2.05; max-width: 54ch; color: var(--ink); }
-.svg-label{ font-size:calc(var(--svg-label)*var(--type-scale)); fill:#C6D3DB; }
+.svg-label{ font-size:calc(var(--svg-label)*var(--type-scale)); fill:var(--compass-labels); }
+.tooltip-text{ font-size:calc(var(--svg-label)*var(--type-scale)); fill:white; }
 .surf-quality-label{ font-size: calc(12px * var(--type-scale)); }
 
 @media (max-width:1023px){

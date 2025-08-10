@@ -1,14 +1,20 @@
+'use client'
+
 import Link from 'next/link'
 import SpotSelector from './SpotSelector'
 import ThemeToggle from './ThemeToggle'
+import { useThemeOptional } from '@/contexts/ThemeContext'
 
 function Logo() {
+  const themeContext = useThemeOptional()
+  const isDark = themeContext?.isDark ?? true // Default to dark if no context
+  
   return (
     <div className="select-none">
       <img 
-        src="/branding/kamaya-surf-logo.svg?v=4" 
+        src={isDark ? "/branding/by-kamaya.svg?v=4" : "/branding/by-kamaya-light.svg"} 
         alt="Siargao Surf by Kamaya" 
-        className="w-auto"
+        className="w-auto transition-all duration-300"
         style={{ height: 'var(--logo-svg)' }}
       />
     </div>
@@ -22,7 +28,7 @@ export default function Header() {
         <Logo />
         <div className="flex items-center gap-4">
           <nav className="hidden md:flex items-center gap-6 text-theme-muted text-sm">
-            <Link href="/" className="hover:text-theme-primary transition-colors">Surf</Link>
+            <Link href="/" className="hover:text-theme-primary hover:font-medium transition-all duration-200">Surf</Link>
             <SpotSelector />
           </nav>
           <ThemeToggle />

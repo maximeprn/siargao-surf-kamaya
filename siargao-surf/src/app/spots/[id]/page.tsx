@@ -33,11 +33,35 @@ export default async function SpotPage({ params }: { params: Promise<{ id: strin
   if (!supabase) {
     notFound()
   }
-  const { data: spot, error } = await supabase
-    .from('spots')
-    .select('*')
-    .eq('id', id)
-    .single()
+
+  // Convert slug to spot name (e.g., "cloud-9" to "Cloud 9")
+  const spotNameFromSlug = id.split('-').map(word => 
+    word.charAt(0).toUpperCase() + word.slice(1)
+  ).join(' ')
+
+  // Try to find spot by ID first (numeric), then by name or slug-converted name
+  let spot
+  let error
+  
+  // Check if id is numeric
+  if (!isNaN(Number(id))) {
+    const result = await supabase
+      .from('spots')
+      .select('*')
+      .eq('id', id)
+      .single()
+    spot = result.data
+    error = result.error
+  } else {
+    // Try with the slug-converted name
+    const result = await supabase
+      .from('spots')
+      .select('*')
+      .eq('name', spotNameFromSlug)
+      .single()
+    spot = result.data
+    error = result.error
+  }
 
   if (error || !spot) {
     notFound()
@@ -81,11 +105,11 @@ export default async function SpotPage({ params }: { params: Promise<{ id: strin
   // helper removed (not used)
 
   return (
-    <div className="min-h-screen bg-teal text-ink-on-teal">
+    <div className="min-h-screen bg-theme-primary text-theme-primary">
       <Header />
       <main className="max-w-7xl mx-auto px-6 lg:px-10 py-10 lg:py-14">
         <div className="mb-6">
-          <Link href="/spots" className="inline-flex items-center gap-2 text-white/80 hover:text-white text-sm">
+          <Link href="/spots" className="inline-flex items-center gap-2 text-theme-muted hover:text-theme-primary text-sm">
             <ArrowLeft className="h-4 w-4" />
             All spots
           </Link>
@@ -112,7 +136,7 @@ export default async function SpotPage({ params }: { params: Promise<{ id: strin
 
         {/* Optional: original description block */}
         {spot.description && (
-          <div className="rounded-lg overflow-hidden my-8 border border-white/10 bg-white/5 p-6">
+          <div className="rounded-lg overflow-hidden my-8 border border-white/10 dark:border-white/10 light:border-black/10 bg-white/5 dark:bg-white/5 light:bg-black/5 p-6">
             <p className="text-ink-on-teal/90 text-base leading-relaxed">{spot.description}</p>
           </div>
         )}
@@ -125,7 +149,7 @@ export default async function SpotPage({ params }: { params: Promise<{ id: strin
         )}
 
         <div className="grid md:grid-cols-2 gap-6">
-          <div className="rounded-lg p-6 bg-white/5 border border-white/10">
+          <div className="rounded-lg p-6 bg-white/5 dark:bg-white/5 light:bg-black/5 border border-white/10 dark:border-white/10 light:border-black/10">
             <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <Waves className="h-5 w-5" />
               Wave Conditions
@@ -137,7 +161,7 @@ export default async function SpotPage({ params }: { params: Promise<{ id: strin
             </div>
           </div>
 
-          <div className="rounded-lg p-6 bg-white/5 border border-white/10">
+          <div className="rounded-lg p-6 bg-white/5 dark:bg-white/5 light:bg-black/5 border border-white/10 dark:border-white/10 light:border-black/10">
             <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <MapPin className="h-5 w-5" />
               Location
@@ -150,7 +174,7 @@ export default async function SpotPage({ params }: { params: Promise<{ id: strin
         </div>
 
         {spot.access_info && (
-          <div className="rounded-lg p-6 mt-8 bg-white/5 border border-white/10">
+          <div className="rounded-lg p-6 mt-8 bg-white/5 dark:bg-white/5 light:bg-black/5 border border-white/10 dark:border-white/10 light:border-black/10">
             <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
               <Car className="h-5 w-5" />
               Access Information

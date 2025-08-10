@@ -76,18 +76,18 @@ export default function SwellCompassWithLegend({
       {/* Legend - horizontale en dessous */}
       <div className="flex gap-6 text-sm">
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-[#F8CB9E]/75 rounded-sm border border-[#F8CB9E]/80"></div>
+          <div className="w-4 h-4 rounded-sm border" style={{ backgroundColor: 'var(--swell-color)', borderColor: 'var(--swell-color)', opacity: 0.75 }}></div>
           <div>
-            <div className="text-white/90">Swell</div>
-            <div className="text-white/60 text-xs">{swellHeight?.toFixed(1) || '0.0'}m from {Math.round(swellDirection)}°</div>
+            <div className="text-theme-primary">Swell</div>
+            <div className="text-theme-muted text-xs">{swellHeight?.toFixed(1) || '0.0'}m from {Math.round(swellDirection)}°</div>
           </div>
         </div>
         
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-white/60 rounded-sm border border-white/80"></div>
+          <div className="w-4 h-4 rounded-sm border" style={{ backgroundColor: 'var(--wind-color)', borderColor: 'var(--wind-color)', opacity: 0.6 }}></div>
           <div>
-            <div className="text-white/90">Wind</div>
-            <div className="text-white/60 text-xs">{Math.round(windSpeed)}km/h from {Math.round(windDirection)}°</div>
+            <div className="text-theme-primary">Wind</div>
+            <div className="text-theme-muted text-xs">{Math.round(windSpeed)}km/h from {Math.round(windDirection)}°</div>
           </div>
         </div>
       </div>

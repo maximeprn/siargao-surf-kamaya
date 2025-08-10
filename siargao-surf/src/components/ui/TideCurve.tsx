@@ -124,6 +124,27 @@ export default function TideCurve({ tideData }: TideCurveProps){
   const nowDate = new Date(nowPhilippines)
   const nowMin = nowDate.getHours() * 60 + nowDate.getMinutes()
   const xNow = X0 + XW * (nowMin/1440)
+  
+  // Find the exact point on the curve at current time
+  const findCurrentPointOnCurve = () => {
+    if (points.length === 0) return null
+    
+    // Find the closest point by X position (time)
+    let closestPoint = points[0]
+    let minDistance = Math.abs(xNow - points[0].x)
+    
+    for (const point of points) {
+      const distance = Math.abs(xNow - point.x)
+      if (distance < minDistance) {
+        minDistance = distance
+        closestPoint = point
+      }
+    }
+    
+    return closestPoint
+  }
+  
+  const currentPointOnCurve = findCurrentPointOnCurve()
 
   // Function to find closest point on curve
   const findClosestPoint = (mouseX: number) => {
@@ -170,16 +191,16 @@ export default function TideCurve({ tideData }: TideCurveProps){
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
-      <g stroke="rgba(255,255,255,0.35)" strokeWidth="1">
+      <g stroke="var(--tide-axes)" strokeWidth="0.3">
         <line x1={X0} y1={Y_BOT} x2={X0+XW} y2={Y_BOT} />
         <line x1={X0} y1={Y_TOP} x2={X0} y2={Y_BOT} />
       </g>
       {[0,6,12,18,24].map((t,i)=>{
         const x = X0 + XW * (t/24)
         return (
-          <g key={i} stroke="rgba(255,255,255,0.25)">
+          <g key={i} stroke="var(--tide-labels)" strokeWidth="0.3">
             <line x1={x} y1={Y_BOT-4} x2={x} y2={Y_BOT+4} />
-            <text className="svg-label" x={x} y={Y_BOT+20} textAnchor="middle">{t}h</text>
+            <text className="svg-label" x={x} y={Y_BOT+20} textAnchor="middle" fill="var(--tide-labels)">{t}h</text>
           </g>
         )
       })}
@@ -194,17 +215,17 @@ export default function TideCurve({ tideData }: TideCurveProps){
         return labels.map((t,i)=>{
           const y = yFromHeight(t)
           return (
-            <g key={i} stroke="rgba(255,255,255,0.25)">
+            <g key={i} stroke="var(--tide-labels)" strokeWidth="0.3">
               <line x1={X0-4} y1={y} x2={X0+4} y2={y} />
-              <text className="svg-label" x={X0-8} y={y+4} textAnchor="end">{t.toFixed(1)}m</text>
+              <text className="svg-label" x={X0-8} y={y+4} textAnchor="end" fill="var(--tide-labels)">{t.toFixed(1)}m</text>
             </g>
           )
         })
       })()}
       <defs>
         <linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#F8CB9E" stopOpacity="0.9" />
-          <stop offset="100%" stopColor="#F8CB9E" stopOpacity="0.4" />
+          <stop offset="0%" stopColor="var(--tide-curve)" stopOpacity="0.9" />
+          <stop offset="100%" stopColor="var(--tide-curve)" stopOpacity="0.4" />
         </linearGradient>
       </defs>
       <path d={d} fill="none" stroke="url(#g)" strokeWidth="3" />
@@ -212,7 +233,7 @@ export default function TideCurve({ tideData }: TideCurveProps){
       {/* High and low tide labels */}
       {extremePoints.map((point, i) => {
         const isHigh = point.type === 'high'
-        const labelColor = isHigh ? "#F8CB9E" : "#8CC8FF"
+        const labelColor = "#AEBDAF"
         // Always position labels above the curve with 25px padding
         const labelY = point.y - 25
         
@@ -224,7 +245,8 @@ export default function TideCurve({ tideData }: TideCurveProps){
               cy={point.y} 
               r="4" 
               fill={labelColor} 
-              stroke="rgba(255,255,255,0.8)" 
+              stroke="var(--text-primary)" 
+              strokeOpacity="0.8"
               strokeWidth="1"
             />
             {/* Label with height and time */}
@@ -237,34 +259,35 @@ export default function TideCurve({ tideData }: TideCurveProps){
               fontSize="11"
             >
               <tspan x={point.x} dy="0">{point.height.toFixed(1)}m</tspan>
-              <tspan x={point.x} dy="12" fontSize="9" fill="rgba(255,255,255,0.7)">{point.time}</tspan>
+              <tspan x={point.x} dy="12" fontSize="9" fill="var(--tide-labels)">{point.time}</tspan>
             </text>
           </g>
         )
       })}
       
       {/* Current tide level indicator */}
-      {tideData?.current && (
+      {currentPointOnCurve && (
         <g>
           <circle 
-            cx={xNow} 
-            cy={yFromHeight(tideData.current)} 
+            cx={currentPointOnCurve.x} 
+            cy={currentPointOnCurve.y} 
             r="6" 
-            fill="#F8CB9E" 
-            stroke="rgba(255,255,255,0.8)" 
+            fill="var(--tide-curve)" 
+            stroke="var(--tide-labels)" 
+            strokeOpacity="0.8"
             strokeWidth="2"
           />
           {/* Current height label - larger font */}
           <text 
-            x={xNow} 
-            y={yFromHeight(tideData.current) - 18} 
+            x={currentPointOnCurve.x} 
+            y={currentPointOnCurve.y - 18} 
             textAnchor="middle" 
             className="svg-label" 
-            fill="#F8CB9E"
+            fill="var(--tide-curve)"
             fontSize="13"
             fontWeight="600"
           >
-            {tideData.current.toFixed(1)}m
+            {currentPointOnCurve.height.toFixed(1)}m
           </text>
         </g>
       )}
@@ -278,7 +301,8 @@ export default function TideCurve({ tideData }: TideCurveProps){
             y1={Y_TOP} 
             x2={hoverPoint.x} 
             y2={Y_BOT} 
-            stroke="rgba(255,255,255,0.5)" 
+            stroke="var(--tide-labels)"
+            strokeOpacity="0.5" 
             strokeWidth="1"
             strokeDasharray="3 3"
           />
@@ -288,8 +312,9 @@ export default function TideCurve({ tideData }: TideCurveProps){
             cx={hoverPoint.x} 
             cy={hoverPoint.y} 
             r="5" 
-            fill="#F8CB9E" 
-            stroke="rgba(255,255,255,0.9)" 
+            fill="var(--tide-curve)" 
+            stroke="var(--tide-labels)" 
+            strokeOpacity="0.9"
             strokeWidth="2"
           />
           
@@ -302,15 +327,15 @@ export default function TideCurve({ tideData }: TideCurveProps){
               height="30" 
               rx="4" 
               fill="rgba(0,0,0,0.8)" 
-              stroke="rgba(255,255,255,0.3)" 
+              stroke="var(--text-primary)" 
+              strokeOpacity="0.3"
               strokeWidth="1"
             />
             <text 
               x={hoverPoint.x} 
-              y={hoverPoint.y - 30} 
+              y={hoverPoint.y - 33} 
               textAnchor="middle" 
-              className="svg-label" 
-              fill="white"
+              className="tooltip-text" 
               fontSize="11"
               fontWeight="600"
             >
@@ -318,10 +343,9 @@ export default function TideCurve({ tideData }: TideCurveProps){
             </text>
             <text 
               x={hoverPoint.x} 
-              y={hoverPoint.y - 18} 
+              y={hoverPoint.y - 21} 
               textAnchor="middle" 
-              className="svg-label" 
-              fill="rgba(255,255,255,0.8)"
+              className="tooltip-text" 
               fontSize="9"
             >
               {hoverPoint.time}
@@ -330,7 +354,7 @@ export default function TideCurve({ tideData }: TideCurveProps){
         </g>
       )}
 
-      <line x1={xNow} y1={Y_TOP} x2={xNow} y2={Y_BOT} stroke="rgba(255,255,255,.28)" strokeDasharray="2 4" />
+      <line x1={xNow} y1={Y_TOP} x2={xNow} y2={Y_BOT} stroke="var(--tide-labels)" strokeOpacity="0.47" strokeDasharray="2 4" />
     </svg>
   )
 }

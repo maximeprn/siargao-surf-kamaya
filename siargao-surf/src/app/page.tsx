@@ -79,13 +79,13 @@ export default async function Home() {
   ) : 'FAIR'
 
   return (
-    <div className="min-h-screen bg-teal text-ink-on-teal">
+    <div className="min-h-screen bg-theme-primary text-theme-primary">
       <Header />
       
       <main className="max-w-7xl mx-auto px-6 lg:px-10 py-16 lg:py-20 space-y-20">
         {/* Hero Image avec effets aquatiques et spot details */}
         <SurfPhotoCardAqua 
-          src="/images/Cloud Nine.jpg"
+          src="/images/CloudNine.png"
           causticsOpacity={0.28}
         >
           <SpotDetailsOverlay spotName="Cloud 9" />

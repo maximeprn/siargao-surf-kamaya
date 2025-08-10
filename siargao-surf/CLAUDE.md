@@ -29,8 +29,10 @@ Application web de surf forecasting pour Siargao (Philippines) avec données mé
 - **SwellCompass**: 3D tilt animation on hover with swell/wind directions
 - **SpotSelector**: Navbar dropdown with glassmorphism effects
 - **TideCurve**: Interactive SVG chart with hover tooltips
+- **ThemeToggle**: Dark/light mode switcher with animated icons
 
 ### 🔧 Technical Features
+- **Dark/Light theme system**: Toggle with localStorage persistence, dark default
 - **Caching system** for AI reports with conditions-based regeneration
 - **Tide stage calculation** (low/mid/high) based on daily range
 - **Spot routing** with dynamic pages `/spots/[id]`
@@ -49,6 +51,8 @@ Application web de surf forecasting pour Siargao (Philippines) avec données mé
 - `src/components/ui/SwellCompassWithLegend.tsx` - 3D compass with animations
 - `src/components/ui/SurfPhotoCardAqua.tsx` - Hero image with effects
 - `src/components/ui/SpotDetailsOverlay.tsx` - Spot info overlay
+- `src/components/ui/ThemeToggle.tsx` - Dark/light theme switcher
+- `src/contexts/ThemeContext.tsx` - Theme provider and state management
 
 ### Data & Config
 - `src/lib/spot-configs.ts` - Complete Siargao spots database
@@ -61,18 +65,32 @@ Application web de surf forecasting pour Siargao (Philippines) avec données mé
 
 ## Design System
 
+### Theme System
+- **Dark Mode (Default)**:
+  - Background: `rgb(11, 26, 37)`
+  - Text: `#EAF2F6`
+  - Glass: `rgba(27, 51, 64, 0.6)`
+  - Accent: `#F8CB9E`
+- **Light Mode**:
+  - Background: `#FDFCF5` (blanc cassé)
+  - Text: `#1C3340` (bleu foncé)
+  - Glass: `rgba(253, 252, 245, 0.8)`
+  - Accent: `#AEBDAF` (vert sage)
+- **CSS Variables**: `--bg-primary`, `--text-primary`, `--glass-bg`, etc.
+- **Utility Classes**: `.text-theme-primary`, `.bg-glass`, `.border-glass`
+
 ### Colors & Effects
-- **Primary**: `rgba(27, 51, 64, 0.6)` - Navbar/dropdown background
 - **Glassmorphisme**: `backdrop-filter: blur(10px)` + semi-transparent backgrounds
-- **Borders**: `rgba(255, 255, 255, 0.14)` for glass effect borders
 - **Surf Quality**: Progressive colors from gray → orange → green → red
+- **Theme-aware borders**: Adapt to light/dark automatically
 
 ### Typography
-- **Headers**: Font weight 600, white/90 opacity
-- **Body**: Text-sm, white/80 opacity  
-- **Labels**: Text-xs, white/60 opacity, uppercase tracking
+- **Headers**: Font weight 600, theme-aware opacity
+- **Body**: Text-sm, uses `--text-primary`
+- **Labels**: Text-xs, uses `--text-muted`, uppercase tracking
 
 ### Animations
+- **Theme Toggle**: Smooth icon rotation and scaling (300ms)
 - **Compass 3D**: Perspective tilt on hover with smooth transitions
 - **Dropdown**: 1000ms delay before close, invisible bridge area
 - **Hover effects**: 200ms transitions on all interactive elements
@@ -80,7 +98,7 @@ Application web de surf forecasting pour Siargao (Philippines) avec données mé
 ## Development Workflow
 
 ### Commands
-- `npm run dev` - Development server
+- `npm run dev` - Development server (http://localhost:3002)
 - `npm run build` - Production build
 - `npm run lint` - ESLint checking
 - `npm run typecheck` - TypeScript validation
@@ -89,6 +107,13 @@ Application web de surf forecasting pour Siargao (Philippines) avec données mé
 - Always commit with descriptive messages
 - Include "🤖 Generated with Claude Code" footer
 - Use conventional commit format when possible
+
+### Development Strategy
+- **Work locally first**: Test all modifications with `npm run dev` before committing
+- **Commit when stable**: Only commit and push when features are working correctly
+- **Deploy when ready**: Use Vercel manual deployment for tested commits only
+- **Local testing**: Access http://localhost:3002 to test themes, interactions, and UI changes
+- **Avoid broken deployments**: Never deploy untested code to production
 
 ### API Keys Required
 - `OPENAI_API_KEY` - For AI surf reports

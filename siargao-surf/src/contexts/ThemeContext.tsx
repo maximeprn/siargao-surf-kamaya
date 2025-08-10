@@ -64,3 +64,9 @@ export function useTheme() {
   }
   return context
 }
+
+// Hook qui retourne null si le provider n'est pas disponible
+export function useThemeOptional() {
+  const context = useContext(ThemeContext)
+  return context || null
+}

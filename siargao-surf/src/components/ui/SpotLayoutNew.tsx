@@ -182,7 +182,7 @@ export default function SpotLayoutNew({
                         <div className="flex flex-wrap gap-2">
                           {Object.entries(spotMeta.features).map(([key, value]) => (
                             value === true && (
-                              <span key={key} className="bg-white/10 dark:bg-white/10 light:bg-black/10 px-3 py-1.5 rounded-md text-xs text-theme-primary ring-1 ring-white/20 dark:ring-white/20 light:ring-black/20">
+                              <span key={key} className="px-3 py-1.5 rounded-md text-xs ring-1 ring-white/20" style={{ backgroundColor: 'var(--feature-bg)', color: 'var(--feature-text)' }}>
                                 {key.replace(/([A-Z])/g, ' $1').toLowerCase().trim()}
                               </span>
                             )
@@ -197,7 +197,7 @@ export default function SpotLayoutNew({
                         <div className="text-red-400 text-xs uppercase tracking-wider mb-3">HAZARDS</div>
                         <div className="flex flex-wrap gap-2">
                           {spotMeta.hazards.map((hazard, i) => (
-                            <span key={i} className="bg-red-500/15 px-3 py-1.5 rounded-md text-xs text-red-300 ring-1 ring-red-500/30">
+                            <span key={i} className="px-3 py-1.5 rounded-md text-xs ring-1 ring-red-500/30" style={{ backgroundColor: 'var(--hazard-bg)', color: 'var(--hazard-text)' }}>
                               {hazard.replace(/_/g, ' ')}
                             </span>
                           ))}
