@@ -167,7 +167,7 @@ export const siargaoSpotsComplete: Record<string, SpotMeta> = {
   },
 
   'Cemetery': {
-    label: "Cemetery/Pesangan — Versatile outer reef peaks",
+    label: "Cemetery/Pesangan — Versatile left/right peaks",
     optimalHeight: [0.6, 2.5],
     swellWindow: [45, 150],           // NE→SE
     orientation: 95,
@@ -195,7 +195,7 @@ export const siargaoSpotsComplete: Record<string, SpotMeta> = {
   },
 
   'Jacking Horse': {
-    label: "Jacking Horse — Beginner-friendly inside of Quicksilver",
+    label: "Jacking Horse — Beginner-friendly right",
     optimalHeight: [0.5, 1.5],
     swellWindow: [60, 110],
     orientation: 80,
@@ -313,7 +313,7 @@ export const siargaoSpotsComplete: Record<string, SpotMeta> = {
   },
 
   'Salvacion': {
-    label: "Salvacion — Winter alternative (boat)",
+    label: "Salvacion — Winter left/right peaks (boat)",
     optimalHeight: [1.0, 2.5],
     swellWindow: [30, 90],
     orientation: 70,
@@ -366,7 +366,7 @@ export const siargaoSpotsComplete: Record<string, SpotMeta> = {
   },
 
   'Ocean 9': {
-    label: "Ocean 9 (Mahaybo Beach, Santa Fe) — Beach/reef area",
+    label: "Ocean 9 (Mahaybo Beach, Santa Fe) — Beach/reef left/right",
     optimalHeight: [0.6, 1.8],
     swellWindow: [45, 120],
     orientation: 95,
