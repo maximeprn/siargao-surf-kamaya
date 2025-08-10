@@ -6,6 +6,7 @@ interface AIReport {
   title: string
   summary: string
   verdict: 'GO' | 'CONDITIONAL' | 'NO-GO'
+  timestamp?: string
 }
 
 interface AISpotReportProps {
@@ -13,6 +14,31 @@ interface AISpotReportProps {
   spotName?: string
   fallbackText: string
   locale?: 'en' | 'fr'
+}
+
+function formatRelativeDate(timestamp: string): string {
+  const date = new Date(timestamp)
+  const now = new Date()
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000)
+  const targetDate = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+  
+  const time = date.toLocaleTimeString('en-US', { 
+    hour: 'numeric', 
+    minute: '2-digit',
+    hour12: true 
+  })
+  
+  if (targetDate.getTime() === today.getTime()) {
+    return `${time} today`
+  } else if (targetDate.getTime() === yesterday.getTime()) {
+    return `${time} yesterday`
+  } else {
+    return `${time} ${date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric' 
+    })}`
+  }
 }
 
 export default function AISpotReport({ spotId, spotName, fallbackText, locale = 'en' }: AISpotReportProps) {
@@ -77,7 +103,7 @@ export default function AISpotReport({ spotId, spotName, fallbackText, locale = 
   return (
     <div>
       {report.title && (
-        <h3 className="text-lg font-semibold mb-3 text-white">
+        <h3 className="text-lg font-semibold mb-3 text-theme-primary">
           {report.title}
         </h3>
       )}
@@ -85,6 +111,12 @@ export default function AISpotReport({ spotId, spotName, fallbackText, locale = 
       <p className="report-text text-justify">
         {report.summary}
       </p>
+      
+      {report.timestamp && (
+        <p className="text-xs text-theme-muted mt-3 italic text-right">
+          Last updated: {formatRelativeDate(report.timestamp)}
+        </p>
+      )}
     </div>
   )
 }

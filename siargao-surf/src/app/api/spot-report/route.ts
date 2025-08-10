@@ -82,7 +82,8 @@ export async function POST(req: Request){
         report: {
           title: cachedReport.title,
           summary: cachedReport.summary,
-          verdict: cachedReport.verdict
+          verdict: cachedReport.verdict,
+          timestamp: cachedReport.updated_at
         },
         cached: true,
         updated_at: cachedReport.updated_at
@@ -173,10 +174,14 @@ export async function POST(req: Request){
     // Sauvegarder le nouveau rapport dans le cache
     await saveCachedReport(spot.name, spot.id, locale, json, conditionsHash)
 
+    const now = new Date().toISOString()
     return new NextResponse(JSON.stringify({ 
-      report: json,
+      report: {
+        ...json,
+        timestamp: now
+      },
       cached: false,
-      generated_at: new Date().toISOString()
+      generated_at: now
     }), {
       status: 200,
       headers: { 
@@ -197,7 +202,8 @@ export async function POST(req: Request){
               report: {
                 title: cachedReport.title,
                 summary: cachedReport.summary,
-                verdict: cachedReport.verdict
+                verdict: cachedReport.verdict,
+                timestamp: cachedReport.updated_at
               },
               cached: true,
               fallback: true,
