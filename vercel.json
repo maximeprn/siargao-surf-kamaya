@@ -1,10 +1,7 @@
 {
-  "buildCommand": "cd siargao-surf && npm run build",
-  "outputDirectory": "siargao-surf/.next",
-  "installCommand": "cd siargao-surf && npm install",
   "regions": ["sin1"],
   "functions": {
-    "siargao-surf/src/app/api/**/*.ts": {
+    "src/app/api/**/*.ts": {
       "maxDuration": 30
     }
   },
@@ -26,8 +23,5 @@
         }
       ]
     }
-  ],
-  "env": {
-    "NEXT_PUBLIC_SITE_URL": "https://surf.kamaya-siargao.com"
-  }
+  ]
 }
