@@ -107,7 +107,7 @@ export const siargaoSpotsComplete: Record<string, SpotMeta> = {
     },
   },
 
-  'Stimpy': {
+  'Stimpys': {
     label: "Stimpy's — Quality left barrel (boat)",
     optimalHeight: [0.6, 3.0],
     swellWindow: [30, 100],           // NNE→E
@@ -401,7 +401,7 @@ export const siargaoSpotsComplete: Record<string, SpotMeta> = {
 export const spotConfigs: Record<string, SpotConfig> = {
   'Cloud 9': siargaoSpotsComplete['Cloud 9'],
   'Quicksilver': siargaoSpotsComplete['Quicksilver'], 
-  'Stimpy': siargaoSpotsComplete['Stimpy'],
+  'Stimpys': siargaoSpotsComplete['Stimpys'],
   'Rock Island': siargaoSpotsComplete['Rock Island'],
   'Cemetery': siargaoSpotsComplete['Cemetery'],
   'Jacking Horse': siargaoSpotsComplete['Jacking Horse'],
@@ -419,7 +419,7 @@ const sizeDefaults: Record<string, SpotMeta['sizeResponse']> = {
   'Tuason':          { base: 1.10, dirBoost: 0.15, periodRef: 10, periodSlope: 0.035, tideBoost: 0.10, max: 1.6 },
   'Quicksilver':     { base: 0.95, dirBoost: 0.10, periodRef: 9, periodSlope: 0.02, tideBoost: 0.08, max: 1.3 },
   'Jacking Horse':   { base: 0.75, dirBoost: 0.05, periodRef: 8, periodSlope: 0.01, tideBoost: 0.05, max: 1.1 },
-  'Stimpy':          { base: 0.90, dirBoost: 0.10, periodRef: 10, periodSlope: 0.04, tideBoost: 0.06, max: 1.6 },
+  'Stimpys':         { base: 0.90, dirBoost: 0.10, periodRef: 10, periodSlope: 0.04, tideBoost: 0.06, max: 1.6 },
   'Rock Island':     { base: 0.95, dirBoost: 0.10, periodRef: 10, periodSlope: 0.03, tideBoost: 0.06, max: 1.5 },
   'Cemetery':        { base: 0.85, dirBoost: 0.08, periodRef: 8, periodSlope: 0.015, tideBoost: 0.05, max: 1.2 },
   'Daku Reef':       { base: 0.80, dirBoost: 0.06, periodRef: 8, periodSlope: 0.015, tideBoost: 0.08, max: 1.2 },

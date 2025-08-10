@@ -12,6 +12,7 @@ import {
   type ReportConditions 
 } from '@/lib/ai-cache'
 import OpenAI from 'openai'
+import { wrapOpenAI } from 'langsmith/wrappers'
 
 export const revalidate = 0
 
@@ -122,17 +123,52 @@ export async function POST(req: Request){
       locale
     })
 
-    const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+    const client = wrapOpenAI(new OpenAI({ apiKey: process.env.OPENAI_API_KEY }))
+    console.log('Making OpenAI API call with model: gpt-5-mini (plain text)')
+    console.log('Prompt length:', prompt.length, 'characters')
+    
     const resp = await client.chat.completions.create({
       model: 'gpt-5-mini',
+      max_completion_tokens: 200,
       messages: [
-        { role:'system', content:'Return only valid JSON. No markdown.' },
+        { role:'system', content:'Write a simple surf report in plain text format as specified.' },
         { role:'user', content: prompt }
       ]
     })
+    
+    console.log('OpenAI response metadata:', {
+      model: resp.model,
+      usage: resp.usage,
+      finish_reason: resp.choices[0]?.finish_reason
+    })
 
-    const text = resp.choices[0]?.message?.content?.trim() || '{}'
-    const json = JSON.parse(text)
+    const text = resp.choices[0]?.message?.content?.trim() || ''
+    
+    // Debug logging for API costs investigation
+    console.log('=== AI RESPONSE DEBUG ===')
+    console.log('Response length:', text.length, 'characters')
+    console.log('Input tokens estimate:', Math.ceil(prompt.length / 4))
+    console.log('Full AI response:')
+    console.log(text)
+    console.log('=== END DEBUG ===')
+    
+    // Try to parse as JSON first, fallback to plain text parsing
+    let json
+    try {
+      json = JSON.parse(text)
+    } catch {
+      // Fallback to plain text parsing
+      const lines = text.split('\n').filter(line => line.trim())
+      const title = lines[0] || 'Surf Report'
+      const summaryLines = lines.slice(1, -1)
+      const verdictLine = lines[lines.length - 1] || 'Verdict: NO-GO'
+      
+      const summary = summaryLines.join(' ').trim()
+      const verdict = verdictLine.includes('GO —') ? 'GO' : 
+                     verdictLine.includes('CONDITIONAL') ? 'CONDITIONAL' : 'NO-GO'
+                     
+      json = { title, summary, verdict }
+    }
 
     // Sauvegarder le nouveau rapport dans le cache
     await saveCachedReport(spot.name, spot.id, locale, json, conditionsHash)

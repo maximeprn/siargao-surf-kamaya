@@ -138,7 +138,7 @@ export default function SideMenu({ isOpen, onClose }: SideMenuProps) {
                     {areaSpots.map((spot) => (
                       <Link 
                         key={spot.id}
-                        href={`/spots/${spot.id}`}
+                        href={`/spots/${spot.name.toLowerCase().replace(/\s+/g, '-')}`}
                         className="block p-4 rounded-lg hover:bg-white/10 transition-colors duration-200"
                         onClick={onClose}
                       >

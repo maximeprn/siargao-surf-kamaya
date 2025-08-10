@@ -43,13 +43,13 @@ export function buildSpotReportPrompt(p: PromptInputs){
   Do NOT invent or forecast. Use ONLY provided fields.
   When describing any direction (swell, wind, orientation, bestWind, swellWindow), 
   convert degrees to 16-point compass cardinals (N, NNE, NE, ENE, E, ESE, SE, SSE, S, SSW, SW, WSW, W, WNW, NW, NNW).
-  Never print degrees in the output. If input is missing, write "n/a".
+  Never print degrees in the output. If input is missing, don't mention it. 
   `, `
   You are a surf reporter for Siargao. Output STRICT JSON only.
   Do NOT invent or forecast. Use ONLY provided fields.
   When describing any direction (swell, wind, orientation, bestWind, swellWindow), 
   convert degrees to 16-point compass cardinals (N, NNE, NE, ENE, E, ESE, SE, SSE, S, SSW, SW, WSW, W, WNW, NW, NNW).
-  Never print degrees in the output. If input is missing, write "n/a".
+  Never print degrees in the output. If input is missing, don't mention it. 
   `)}`,
     `Data:
   {
@@ -80,7 +80,7 @@ export function buildSpotReportPrompt(p: PromptInputs){
     Write for casual surfers; 2 short sentences, 35–55 words total. Keep it simple: Users already see the numbers on the dashboard—don't repeat every number. Cite only size & period when size ≥ 0.5 m; otherwise describe ("tiny/small").
     Style:
     - Punchy, field-report tone, not explanatory. Short sentences.
-    - Use cardinals for ALL directions. For windows/ranges, convert both bounds to cardinals (e.g., 45→120° -> NE→SE). If missing, say "n/a".
+    - Use cardinals for ALL directions. For windows/ranges, convert both bounds to cardinals (e.g., 45→120° -> NE→SE). If missing, don't mention it. 
     - Do NOT describe geometry step-by-step ("placing it within…"). Instead: "window OK" or "outside window".
     - Wind effect labels: offshore / cross / onshore. No Geometry.  
     - Tide: Use the provided tide_stage (low/mid/high) directly in your report.
@@ -90,7 +90,7 @@ export function buildSpotReportPrompt(p: PromptInputs){
     Write for casual surfers; 2 short sentences, 35–55 words total. Keep it simple: Users already see the numbers on the dashboard—don't repeat every number. Cite only size & period when size ≥ 0.5 m; otherwise describe ("tiny/small").
     Style:
     - Punchy, field-report tone, not explanatory. Short sentences.
-    - Use cardinals for ALL directions. For windows/ranges, convert both bounds to cardinals (e.g., 45→120° -> NE→SE). If missing, say "n/a".
+    - Use cardinals for ALL directions. For windows/ranges, convert both bounds to cardinals (e.g., 45→120° -> NE→SE). If missing, don't mention it. 
     - Do NOT describe geometry step-by-step ("placing it within…"). Instead: "window OK" or "outside window".
     - Wind effect labels: offshore / cross / onshore. No Geometry.  
     - Tide: Use the provided tide_stage (low/mid/high) directly in your report.
@@ -103,7 +103,7 @@ export function buildSpotReportPrompt(p: PromptInputs){
     - Offshore if wind_dir ≈ orientation_deg + 180 ±45
     - Cross if ≈ orientation_deg ±90 ±30
     - Onshore if ≈ orientation_deg ±45
-    If missing data, write "wind effect: n/a". Use these labels only in text (offshore/cross/onshore).`,
+    If missing data, don't mention it.  Use these labels only in text (offshore/cross/onshore).`,
     
       `Verdict Scoring (use first that applies):
     - "GO" if: height within optimalHeight AND swell inside window AND wind offshore or light (<=12 km/h) AND tide within range.
@@ -123,12 +123,14 @@ export function buildSpotReportPrompt(p: PromptInputs){
     - 3–7 words, ≤ 55 chars, no filler.
     If the drafted title violates these rules, rewrite it once to comply.`,
     
-      `Output JSON schema EXACTLY:
-    {
-      "title": string,        // 3–7 words describing conditions (no spot mention, no figures only words) ex: "Onshore wind and small waves"
-      "summary": string,      // 60–90 words, punchy field report. Don't repeat title exact words. ex: "Small, weak waves with a light onshore breeze from the SE. Faces stay soft and break quickly; expect very short rides. Better for a log or a quick splash than a real session. Verdict: NO-GO — too little push today."
-      "verdict": "GO" | "CONDITIONAL" | "NO-GO"
-    }
-    Do not include any other keys. Do not wrap output in markdown.`
+      `Output format:
+    Write a simple surf report in plain text. Start with a short title (3-7 words describing conditions), then write 2-3 sentences about the conditions (60-90 words total), and end with a verdict (GO/CONDITIONAL/NO-GO) and brief reason.
+    
+    Example:
+    Small offshore waves
+    
+    Tiny 0.5m surf from the E with light offshore winds from the W. Faces are clean but underpowered, breaking weak on the reef. Mid tide keeps it soft but rideable for beginners.
+    
+    Verdict: NO-GO — too small for a proper session.`
   ].join('\\n')
 }

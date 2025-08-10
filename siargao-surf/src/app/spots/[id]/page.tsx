@@ -38,29 +38,12 @@ export default async function SpotPage({ params }: { params: Promise<{ id: strin
     word.charAt(0).toUpperCase() + word.slice(1)
   ).join(' ')
 
-  // Try to find spot by ID first (numeric), then by name or slug-converted name
-  let spot
-  let error
-  
-  // Check if id is numeric
-  if (!isNaN(Number(id))) {
-    const result = await supabase
-      .from('spots')
-      .select('*')
-      .eq('id', id)
-      .single()
-    spot = result.data
-    error = result.error
-  } else {
-    // Try with the slug-converted name
-    const result = await supabase
-      .from('spots')
-      .select('*')
-      .eq('name', spotNameFromSlug)
-      .single()
-    spot = result.data
-    error = result.error
-  }
+  // Try with the slug-converted name (e.g., "cloud-9" to "Cloud 9")
+  const { data: spot, error } = await supabase
+    .from('spots')
+    .select('*')
+    .eq('name', spotNameFromSlug)
+    .single()
 
   if (error || !spot) {
     notFound()
