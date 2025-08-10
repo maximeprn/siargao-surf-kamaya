@@ -77,7 +77,8 @@
   --metric-min:44px;   --metric-max:76px;
   --eyebrow:16px;      --caption:14px;
   --subtle:18px;       --meta:12px;
-  --logo-svg:25px;
+  --logo-svg:20px;
+  --logo-center-svg:35px;
   --svg-label:11px;
 }
 

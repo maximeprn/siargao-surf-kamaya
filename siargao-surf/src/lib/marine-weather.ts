@@ -69,7 +69,12 @@ export async function getMarineWeatherData(lat: number, lon: number): Promise<Ma
     const marineData = await marineResponse.json()
     const weatherData = await weatherResponse.json()
     
-    console.log('Weather API Response:', weatherData.current)
+    console.log('Weather API Response at', new Date().toISOString(), ':', {
+      time: weatherData.current.time,
+      windspeed: weatherData.current.windspeed_10m,
+      temperature: weatherData.current.temperature_2m,
+      tide: marineData.current.sea_level_height_msl
+    })
     
     return {
       current: marineData.current,

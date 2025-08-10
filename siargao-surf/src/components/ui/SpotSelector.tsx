@@ -44,14 +44,7 @@ export default function SpotSelector() {
     >
       {/* Trigger */}
       <span 
-        className="hover:text-theme-primary hover:font-medium cursor-pointer px-3 py-2 rounded-lg transition-all duration-200"
-        style={{
-          background: isOpen ? 'var(--glass-bg)' : 'transparent',
-          backdropFilter: isOpen ? 'blur(10px)' : 'none',
-          WebkitBackdropFilter: isOpen ? 'blur(10px)' : 'none',
-          border: isOpen ? '1px solid var(--glass-border)' : '1px solid transparent',
-          borderRadius: '8px'
-        }}
+        className="text-white hover:font-semibold cursor-pointer transition-all duration-200"
       >
         Spots
       </span>

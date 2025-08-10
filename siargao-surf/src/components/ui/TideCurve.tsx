@@ -186,8 +186,8 @@ export default function TideCurve({ tideData }: TideCurveProps){
   return (
     <svg 
       viewBox={`0 0 ${VIEW_W} 220`} 
-      className="w-full h-auto mt-6" 
-      preserveAspectRatio="xMinYMid meet"
+      className="w-full h-auto" 
+      preserveAspectRatio="xMinYMax meet"
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >

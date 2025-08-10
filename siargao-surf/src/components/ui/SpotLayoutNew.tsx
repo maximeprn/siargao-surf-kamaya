@@ -47,9 +47,9 @@ export default function SpotLayoutNew({
       <div className="eyebrow">Now · Quick spot summary</div>
       <div className="rule mt-4" />
       
-      <div className="grid grid-cols-1 lg:grid-cols-[0.6fr_0.4fr] gap-12 lg:gap-24 mt-10 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-[0.6fr_0.4fr] gap-12 lg:gap-24 mt-10 items-stretch">
         {/* LEFT COLUMN */}
-        <div className="space-y-8">
+        <div className="flex flex-col">
           {/* Top row: Title à gauche, Compass à droite */}
           <div className="grid grid-cols-2 gap-8 items-end">
             {/* Spot Title + Wave Height + Quality */}
@@ -84,11 +84,11 @@ export default function SpotLayoutNew({
             </div>
           </div>
 
-          {/* Tide Chart - réduit de 20% */}
-          <div>
+          {/* Tide Chart - centré sur mobile, aligné en bas sur desktop */}
+          <div className="flex-grow flex flex-col justify-end mt-8 text-center lg:text-left">
             <div className="eyebrow">Tide chart</div>
             <div className="rule mt-4" />
-            <div className="mt-4 scale-80 origin-left">
+            <div className="mt-4 scale-80 origin-center lg:origin-left">
               <TideCurve 
                 tideData={{
                   current: tideHeight,

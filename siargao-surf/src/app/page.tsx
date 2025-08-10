@@ -165,17 +165,19 @@ export default async function Home() {
                 </div>
               </div>
             </div>
-            <div className="mt-20 lg:mt-16 grid grid-cols-1 lg:grid-cols-12 gap-12 sm:gap-16 lg:gap-20 items-start">
-              <div className="lg:col-span-7 text-center lg:text-left">
+            <div className="mt-20 lg:mt-16 grid grid-cols-1 lg:grid-cols-12 gap-12 sm:gap-16 lg:gap-20 items-stretch">
+              <div className="lg:col-span-7 text-center lg:text-left flex flex-col">
                 <div className="eyebrow">Tide chart</div>
                 <div className="rule mt-4" />
-                <div className="mt-2 max-w-[440px] mx-auto lg:mx-0">
-                  <TideCurve 
-                    tideData={{
-                      current: tideHeight,
-                      hourly: weather?.hourly || { time: [], sea_level_height_msl: [] }
-                    }}
-                  />
+                <div className="flex-grow flex items-end mt-2">
+                  <div className="w-full max-w-[440px] mx-auto lg:mx-0">
+                    <TideCurve 
+                      tideData={{
+                        current: tideHeight,
+                        hourly: weather?.hourly || { time: [], sea_level_height_msl: [] }
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
               <div className="lg:col-span-5">
