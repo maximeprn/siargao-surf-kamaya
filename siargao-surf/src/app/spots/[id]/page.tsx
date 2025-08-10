@@ -1,11 +1,10 @@
 import { supabase } from '@/lib/supabase'
 import { getMarineWeatherData, getWaveQuality } from '@/lib/marine-weather'
-import MarineWeatherWidget from '@/components/MarineWeatherWidget'
-import Link from 'next/link'
-import { ArrowLeft, MapPin, Waves, AlertTriangle, Car } from 'lucide-react'
 import { notFound } from 'next/navigation'
 import Header from '@/components/ui/Header'
 import Footer from '@/components/ui/Footer'
+import SurfPhotoCardAqua from '@/components/ui/SurfPhotoCardAqua'
+import SpotDetailsOverlay from '@/components/ui/SpotDetailsOverlay'
 import SpotLayoutNew from '@/components/ui/SpotLayoutNew'
 import { spotConfigs, defaultSpotConfig, siargaoSpotsComplete } from '@/lib/spot-configs'
 import type { SpotMeta } from '@/lib/spot-configs'
@@ -107,16 +106,16 @@ export default async function SpotPage({ params }: { params: Promise<{ id: strin
   return (
     <div className="min-h-screen bg-theme-primary text-theme-primary">
       <Header />
-      <main className="max-w-7xl mx-auto px-6 lg:px-10 py-10 lg:py-14">
-        <div className="mb-6">
-          <Link href="/spots" className="inline-flex items-center gap-2 text-theme-muted hover:text-theme-primary text-sm">
-            <ArrowLeft className="h-4 w-4" />
-            All spots
-          </Link>
-        </div>
+      <main className="max-w-7xl mx-auto px-6 lg:px-10 py-16 lg:py-20 space-y-20">
+        {/* Hero Image avec effets aquatiques et spot details */}
+        <SurfPhotoCardAqua 
+          src="/images/CloudNine.png"
+          causticsOpacity={0.28}
+        >
+          <SpotDetailsOverlay spotName={spot.name} />
+        </SurfPhotoCardAqua>
 
-        {/* Nouveau layout pour tous les spots */}
-        <SpotLayoutNew
+        <SpotLayoutNew 
           spotId={spot.id}
           spotName={spot.name}
           location="Siargao Island, Philippines"
@@ -133,69 +132,6 @@ export default async function SpotPage({ params }: { params: Promise<{ id: strin
             'Loading live report…'
           )}
         />
-
-        {/* Optional: original description block */}
-        {spot.description && (
-          <div className="rounded-lg overflow-hidden my-8 border border-white/10 dark:border-white/10 light:border-black/10 bg-white/5 dark:bg-white/5 light:bg-black/5 p-6">
-            <p className="text-ink-on-teal/90 text-base leading-relaxed">{spot.description}</p>
-          </div>
-        )}
-
-        {/* Detailed Marine Weather */}
-        {weather && (
-          <div className="mb-8">
-            <MarineWeatherWidget weather={weather} spotName={spot.name} />
-          </div>
-        )}
-
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="rounded-lg p-6 bg-white/5 dark:bg-white/5 light:bg-black/5 border border-white/10 dark:border-white/10 light:border-black/10">
-            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <Waves className="h-5 w-5" />
-              Wave Conditions
-            </h2>
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between"><span className="text-ink-muted">Best Swell:</span><span className="font-medium">{spot.best_swell_direction || 'Any'}</span></div>
-              <div className="flex justify-between"><span className="text-ink-muted">Best Wind:</span><span className="font-medium">{spot.best_wind_direction || 'Any'}</span></div>
-              <div className="flex justify-between"><span className="text-ink-muted">Best Tide:</span><span className="font-medium capitalize">{spot.best_tide || 'All'}</span></div>
-            </div>
-          </div>
-
-          <div className="rounded-lg p-6 bg-white/5 dark:bg-white/5 light:bg-black/5 border border-white/10 dark:border-white/10 light:border-black/10">
-            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <MapPin className="h-5 w-5" />
-              Location
-            </h2>
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between"><span className="text-ink-muted">Latitude:</span><span className="font-medium">{spot.latitude}°</span></div>
-              <div className="flex justify-between"><span className="text-ink-muted">Longitude:</span><span className="font-medium">{spot.longitude}°</span></div>
-            </div>
-          </div>
-        </div>
-
-        {spot.access_info && (
-          <div className="rounded-lg p-6 mt-8 bg-white/5 dark:bg-white/5 light:bg-black/5 border border-white/10 dark:border-white/10 light:border-black/10">
-            <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
-              <Car className="h-5 w-5" />
-              Access Information
-            </h2>
-            <p>{spot.access_info}</p>
-          </div>
-        )}
-
-        {spot.hazards && spot.hazards.length > 0 && (
-          <div className="rounded-lg p-6 mt-8 bg-yellow-950/20 border border-yellow-500/30">
-            <h2 className="text-lg font-semibold mb-3 flex items-center gap-2 text-yellow-200">
-              <AlertTriangle className="h-5 w-5" />
-              Safety Information
-            </h2>
-            <ul className="space-y-1 text-yellow-200/90 text-sm">
-              {spot.hazards.map((hazard: string, index: number) => (
-                <li key={index}>• {hazard}</li>
-              ))}
-            </ul>
-          </div>
-        )}
       </main>
       <Footer />
     </div>

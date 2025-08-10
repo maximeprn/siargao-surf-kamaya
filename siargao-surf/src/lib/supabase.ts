@@ -17,6 +17,7 @@ export type Spot = {
   longitude: number
   difficulty_level: 'beginner' | 'intermediate' | 'advanced' | 'expert'
   wave_type: 'reef' | 'beach' | 'point' | 'rivermouth'
+  Area: string | null
   best_swell_direction: string | null
   best_wind_direction: string | null
   best_tide: 'low' | 'mid' | 'high' | 'all'

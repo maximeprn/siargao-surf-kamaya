@@ -49,7 +49,7 @@ export default function SpotLayoutNew({
       
       <div className="grid grid-cols-1 lg:grid-cols-[0.6fr_0.4fr] gap-12 lg:gap-24 mt-10 items-stretch">
         {/* LEFT COLUMN */}
-        <div className="flex flex-col">
+        <div className="flex flex-col h-full">
           {/* Top row: Title à gauche, Compass à droite */}
           <div className="grid grid-cols-2 gap-8 items-end">
             {/* Spot Title + Wave Height + Quality */}
@@ -84,11 +84,11 @@ export default function SpotLayoutNew({
             </div>
           </div>
 
-          {/* Tide Chart - pleine largeur sur mobile, aligné en bas sur desktop */}
-          <div className="flex-grow flex flex-col justify-end mt-8 text-center lg:text-left">
+          {/* Tide Chart - centré verticalement sur mobile, ancré en bas sur desktop */}
+          <div className="mt-8 lg:mt-auto text-left">
             <div className="eyebrow">Tide chart</div>
             <div className="rule mt-4" />
-            <div className="mt-4 w-full lg:scale-80 lg:origin-left">
+            <div className="mt-4 w-[80vw] max-w-[500px] lg:w-full lg:max-w-none lg:scale-80 lg:origin-bottom-left">
               <TideCurve 
                 tideData={{
                   current: tideHeight,
@@ -166,7 +166,7 @@ export default function SpotLayoutNew({
           <div>
             <div className="eyebrow">Spot details</div>
             <div className="rule mt-4" />
-            <div className="mt-5 space-y-4">
+            <div className="mt-4 space-y-4 pb-4">
               {(() => {
                 const spotMeta = siargaoSpotsComplete[spotName] as SpotMeta | undefined
                 if (!spotMeta) return (
