@@ -125,15 +125,15 @@ export async function POST(req: Request){
     })
 
     const client = wrapOpenAI(new OpenAI({ apiKey: process.env.OPENAI_API_KEY }))
-    console.log('Making OpenAI API call with model: gpt-5-mini (plain text)')
+    console.log('Making OpenAI API call with model: gpt-4.1 (plain text)')
     console.log('Prompt length:', prompt.length, 'characters')
     
     const resp = await client.chat.completions.create({
-      model: 'gpt-5-mini',
+      model: 'gpt-4.1',
       max_completion_tokens: 200,
       messages: [
-        { role:'system', content:'Write a simple surf report in plain text format as specified.' },
-        { role:'user', content: prompt }
+        { role:'system', content:'You must respond with valid JSON containing exactly these fields: {"title": "...", "summary": "...", "verdict": "..."}. The verdict must be GO, CONDITIONAL, or NO-GO. Do not include any text outside the JSON object.' },
+        { role:'user', content: prompt + '\n\nRespond with JSON only.' }
       ]
     })
     
@@ -146,6 +146,48 @@ export async function POST(req: Request){
     const text = resp.choices[0]?.message?.content?.trim() || ''
     
     // Debug logging for API costs investigation
+    // Fonction pour nettoyer et valider le JSON
+    function ensureValidJSON(text: string): any {
+      // Enlever les blocs markdown si présents
+      text = text.replace(/```json\n?/g, '').replace(/```\n?/g, '')
+      
+      // Chercher un objet JSON dans le texte
+      const jsonMatch = text.match(/\{[\s\S]*\}/)
+      if (jsonMatch) {
+        text = jsonMatch[0]
+      }
+      
+      try {
+        const parsed = JSON.parse(text)
+        
+        // Valider et nettoyer les champs requis
+        const result = {
+          title: parsed.title || parsed.Title || 'Surf Report',
+          summary: parsed.summary || parsed.Summary || parsed.report || '',
+          verdict: (parsed.verdict || parsed.Verdict || 'NO-GO').toUpperCase()
+        }
+        
+        // S'assurer que le verdict est valide
+        if (!['GO', 'CONDITIONAL', 'NO-GO'].includes(result.verdict)) {
+          if (result.verdict.includes('GO') && !result.verdict.includes('NO')) {
+            result.verdict = result.verdict.includes('CONDITIONAL') ? 'CONDITIONAL' : 'GO'
+          } else {
+            result.verdict = 'NO-GO'
+          }
+        }
+        
+        return result
+      } catch (e) {
+        // Fallback: essayer de construire manuellement
+        const lines = text.split('\n').filter(line => line.trim())
+        return {
+          title: lines[0] || 'Surf Report',
+          summary: lines.slice(1, -1).join(' ').trim() || 'No detailed report available.',
+          verdict: 'NO-GO'
+        }
+      }
+    }
+
     console.log('=== AI RESPONSE DEBUG ===')
     console.log('Response length:', text.length, 'characters')
     console.log('Input tokens estimate:', Math.ceil(prompt.length / 4))
@@ -153,23 +195,8 @@ export async function POST(req: Request){
     console.log(text)
     console.log('=== END DEBUG ===')
     
-    // Try to parse as JSON first, fallback to plain text parsing
-    let json
-    try {
-      json = JSON.parse(text)
-    } catch {
-      // Fallback to plain text parsing
-      const lines = text.split('\n').filter(line => line.trim())
-      const title = lines[0] || 'Surf Report'
-      const summaryLines = lines.slice(1, -1)
-      const verdictLine = lines[lines.length - 1] || 'Verdict: NO-GO'
-      
-      const summary = summaryLines.join(' ').trim()
-      const verdict = verdictLine.includes('GO —') ? 'GO' : 
-                     verdictLine.includes('CONDITIONAL') ? 'CONDITIONAL' : 'NO-GO'
-                     
-      json = { title, summary, verdict }
-    }
+    // Utiliser notre fonction de nettoyage JSON
+    const json = ensureValidJSON(text)
 
     // Sauvegarder le nouveau rapport dans le cache
     await saveCachedReport(spot.name, spot.id, locale, json, conditionsHash)

@@ -139,12 +139,12 @@ export default function SideMenu({ isOpen, onClose }: SideMenuProps) {
                       <Link 
                         key={spot.id}
                         href={`/spots/${spot.name.toLowerCase().replace(/\s+/g, '-')}`}
-                        className="block p-4 rounded-lg hover:bg-white/10 transition-colors duration-200"
+                        className="block p-4 rounded-lg transition-colors duration-200 sidemenu-spot-hover"
                         onClick={onClose}
                       >
                         <div className="flex items-center justify-between">
                           <div>
-                            <div className="text-theme-primary font-medium">{spot.name}</div>
+                            <div className="text-theme-primary font-medium text-lg">{spot.name}</div>
                             <div className="text-theme-muted text-sm mt-1">
                               {spot.wave_type || 'Reef break'}
                             </div>

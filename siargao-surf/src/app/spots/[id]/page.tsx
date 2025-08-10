@@ -75,14 +75,29 @@ export default async function SpotPage({ params }: { params: Promise<{ id: strin
     tideStage: undefined
   }, spotConfigs[spot.name] || defaultSpotConfig) : null
 
-  const gaugeLabel = quality ? (
-    quality.score >= 96 ? 'EXCELLENT' :
-    quality.score >= 90 ? 'EPIC' :
-    quality.score >= 75 ? 'VERY GOOD' :
-    quality.score >= 60 ? 'GOOD' :
-    quality.score >= 45 ? 'FAIR' :
-    quality.score >= 25 ? 'POOR-FAIR' : 'POOR'
-  ) : 'FAIR'
+  // Apply size-based score limits
+  let gaugeLabel = 'POOR'
+  if (quality && effective !== null) {
+    if (effective < 0.3) {
+      // Size < 0.3m: maximum POOR
+      gaugeLabel = 'POOR'
+    } else if (effective < 0.5) {
+      // Size < 0.5m: maximum POOR-FAIR
+      gaugeLabel = quality.score >= 25 ? 'POOR-FAIR' : 'POOR'
+    } else if (effective < 0.8) {
+      // Size < 0.8m: maximum FAIR
+      gaugeLabel = quality.score >= 45 ? 'FAIR' :
+                   quality.score >= 25 ? 'POOR-FAIR' : 'POOR'
+    } else {
+      // Size >= 0.8m: full range
+      gaugeLabel = quality.score >= 96 ? 'EXCELLENT' :
+                   quality.score >= 90 ? 'EPIC' :
+                   quality.score >= 75 ? 'VERY GOOD' :
+                   quality.score >= 60 ? 'GOOD' :
+                   quality.score >= 45 ? 'FAIR' :
+                   quality.score >= 25 ? 'POOR-FAIR' : 'POOR'
+    }
+  }
 
   // helper removed (not used)
 

@@ -11,14 +11,19 @@ function ByKamaya() {
   const isDark = themeContext?.isDark ?? true // Default to dark if no context
   
   return (
-    <div className="select-none">
+    <a 
+      href="https://www.kamaya-siargao.com/exclusive-offer" 
+      target="_blank" 
+      rel="noopener noreferrer"
+      className="select-none cursor-pointer hover:opacity-80 transition-opacity duration-200"
+    >
       <img 
         src={isDark ? "/branding/by-kamaya.svg?v=4" : "/branding/by-kamaya-light.svg"} 
         alt="by Kamaya" 
         className="w-auto transition-all duration-300"
         style={{ height: 'var(--logo-svg)' }}
       />
-    </div>
+    </a>
   )
 }
 
@@ -44,7 +49,7 @@ export default function Header() {
   return (
     <>
       <div className="sticky top-0 z-30 header">
-        <div className="max-w-7xl mx-auto px-6 lg:px-10 h-14 flex items-center justify-between relative">
+        <div className="w-full px-6 lg:px-10 h-14 flex items-center justify-between relative">
           <div className="hidden lg:block">
             <ByKamaya />
           </div>
@@ -62,9 +67,9 @@ export default function Header() {
             <nav className="hidden md:flex items-center gap-6">
               <button
                 onClick={() => setIsSideMenuOpen(true)}
-                className="text-theme-primary hover:font-semibold cursor-pointer transition-all duration-200 text-base px-3 py-2 rounded-lg hover:bg-white/10"
+                className="text-theme-primary hover:font-semibold cursor-pointer transition-all duration-200 text-base px-3 py-2"
               >
-                Spots
+                Surf Spots
               </button>
             </nav>
             

@@ -7,14 +7,19 @@ function ByKamayaFooter() {
   const isDark = themeContext?.isDark ?? true
   
   return (
-    <div className="select-none">
+    <a 
+      href="https://www.kamaya-siargao.com/exclusive-offer" 
+      target="_blank" 
+      rel="noopener noreferrer"
+      className="select-none cursor-pointer hover:opacity-80 transition-opacity duration-200"
+    >
       <img 
         src={isDark ? "/branding/by-kamaya.svg?v=4" : "/branding/by-kamaya-light.svg"} 
         alt="by Kamaya" 
         className="w-auto transition-all duration-300"
         style={{ height: '20px' }}
       />
-    </div>
+    </a>
   )
 }
 

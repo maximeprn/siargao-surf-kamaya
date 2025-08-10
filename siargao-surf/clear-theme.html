@@ -1,0 +1,15 @@
+<\!DOCTYPE html>
+<html>
+<head>
+    <title>Clear Theme Preference</title>
+</head>
+<body>
+    <h1>Clearing saved theme preference...</h1>
+    <script>
+        localStorage.removeItem('siargao-surf-theme');
+        document.write('<p>Theme preference cleared\! The site will now use your system theme.</p>');
+        document.write('<p><a href="http://localhost:3002">Return to site</a></p>');
+    </script>
+</body>
+</html>
+EOF < /dev/null

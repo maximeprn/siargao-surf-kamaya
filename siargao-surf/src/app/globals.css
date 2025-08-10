@@ -126,6 +126,15 @@ body{
 .svg-label{ font-size:calc(var(--svg-label)*var(--type-scale)); fill:var(--compass-labels); }
 .tooltip-text{ font-size:calc(var(--svg-label)*var(--type-scale)); fill:white; }
 .surf-quality-label{ font-size: calc(12px * var(--type-scale)); }
+.font-analogue{ font-family:Analogue,ui-serif,Georgia,'Times New Roman',serif; }
+
+/* SideMenu hover effect */
+.dark .sidemenu-spot-hover:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+.light .sidemenu-spot-hover:hover {
+  background-color: rgba(28, 51, 64, 0.1);
+}
 
 @media (max-width:1023px){
   .kv-grid{ grid-template-columns:1fr; gap:12px 0; }

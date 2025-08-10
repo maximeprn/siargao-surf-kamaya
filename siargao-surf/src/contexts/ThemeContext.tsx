@@ -18,12 +18,30 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    // Check localStorage only after component mounts
+    // Check localStorage first
     const savedTheme = localStorage.getItem('siargao-surf-theme') as Theme
     if (savedTheme && (savedTheme === 'dark' || savedTheme === 'light')) {
       setTheme(savedTheme)
+    } else {
+      // If no saved preference, check system preference
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      setTheme(prefersDark ? 'dark' : 'light')
     }
+    
+    // Listen for system theme changes
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    const handleChange = (e: MediaQueryListEvent) => {
+      // Only update if user hasn't manually set a preference
+      const savedPref = localStorage.getItem('siargao-surf-theme')
+      if (!savedPref) {
+        setTheme(e.matches ? 'dark' : 'light')
+      }
+    }
+    
+    mediaQuery.addEventListener('change', handleChange)
     setMounted(true)
+    
+    return () => mediaQuery.removeEventListener('change', handleChange)
   }, [])
 
   useEffect(() => {
