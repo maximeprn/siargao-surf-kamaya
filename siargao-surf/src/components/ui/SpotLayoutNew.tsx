@@ -4,6 +4,7 @@ import TideCurve from '@/components/ui/TideCurve'
 import AISpotReport from '@/components/ui/AISpotReport'
 import { siargaoSpotsComplete } from '@/lib/spot-configs'
 import type { SpotMeta } from '@/lib/spot-configs'
+import type { MarineWeatherData } from '@/lib/marine-weather'
 
 interface SpotLayoutNewProps {
   spotId?: string
@@ -11,9 +12,9 @@ interface SpotLayoutNewProps {
   location: string
   effectiveHeight: number | null
   gaugeLabel: string
-  weather: any
+  weather: MarineWeatherData | null
   tideHeight: number
-  quality: any
+  quality: Record<string, unknown> | null
   calculateWaveEnergy: (height: number, period: number) => number
   degreesToCardinal: (degrees: number) => string
   fallbackText: string

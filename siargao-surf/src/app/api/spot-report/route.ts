@@ -16,8 +16,16 @@ import OpenAI from 'openai'
 export const revalidate = 0
 
 export async function POST(req: Request){
+  let spotId: string | undefined
+  let spotName: string | undefined  
+  let locale: 'en' | 'fr' = 'en'
+  
   try{
-    const { spotId, spotName, locale='en' } = await req.json()
+    const requestData = await req.json()
+    spotId = requestData.spotId
+    spotName = requestData.spotName
+    locale = (requestData.locale === 'fr') ? 'fr' : 'en'
+    
     if(!spotId && !spotName) return NextResponse.json({ error:'missing spotId or spotName' }, { status:400 })
 
     if(!supabase) return NextResponse.json({ error:'DB not configured' }, { status:503 })
@@ -140,7 +148,8 @@ export async function POST(req: Request){
         'Cache-Control':'s-maxage=1800, stale-while-revalidate=3600' 
       }
     })
-  }catch(e:any){
+  }catch(e: unknown){
+    const error = e as Error
     // En cas d'erreur, essayer de retourner le dernier rapport en cache
     if(spotName || spotId) {
       try {
@@ -163,11 +172,11 @@ export async function POST(req: Request){
             })
           }
         }
-      } catch(fallbackError) {
+      } catch {
         // Ignore les erreurs de fallback
       }
     }
     
-    return NextResponse.json({ error: e?.message || 'ai_error' }, { status:500 })
+    return NextResponse.json({ error: error?.message || 'ai_error' }, { status:500 })
   }
 }
