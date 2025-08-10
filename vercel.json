@@ -1,11 +1,11 @@
 {
-  "project": "siargao-surf-kamaya",
   "framework": "nextjs",
-  "buildCommand": "npm run build",
-  "outputDirectory": ".next",
+  "buildCommand": "cd siargao-surf && npm install && npm run build",
+  "installCommand": "cd siargao-surf && npm install",
+  "outputDirectory": "siargao-surf/.next",
   "regions": ["sin1"],
   "functions": {
-    "src/app/api/**/*.ts": {
+    "siargao-surf/src/app/api/**/*.ts": {
       "maxDuration": 30
     }
   },
