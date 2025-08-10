@@ -84,11 +84,11 @@ export default function SpotLayoutNew({
             </div>
           </div>
 
-          {/* Tide Chart - centré sur mobile, aligné en bas sur desktop */}
+          {/* Tide Chart - pleine largeur sur mobile, aligné en bas sur desktop */}
           <div className="flex-grow flex flex-col justify-end mt-8 text-center lg:text-left">
             <div className="eyebrow">Tide chart</div>
             <div className="rule mt-4" />
-            <div className="mt-4 scale-80 origin-center lg:origin-left">
+            <div className="mt-4 w-full lg:scale-80 lg:origin-left">
               <TideCurve 
                 tideData={{
                   current: tideHeight,
