@@ -44,12 +44,12 @@ export default function SpotSelector() {
     >
       {/* Trigger */}
       <span 
-        className="hover:text-white cursor-pointer px-3 py-2 rounded-lg transition-all duration-200"
+        className="hover:text-theme-primary cursor-pointer px-3 py-2 rounded-lg transition-all duration-200"
         style={{
-          background: isOpen ? 'rgba(27, 51, 64, 0.6)' : 'transparent',
+          background: isOpen ? 'var(--glass-bg)' : 'transparent',
           backdropFilter: isOpen ? 'blur(10px)' : 'none',
           WebkitBackdropFilter: isOpen ? 'blur(10px)' : 'none',
-          border: isOpen ? '1px solid rgba(255, 255, 255, 0.14)' : '1px solid transparent',
+          border: isOpen ? '1px solid var(--glass-border)' : '1px solid transparent',
           borderRadius: '8px'
         }}
       >
@@ -70,33 +70,33 @@ export default function SpotSelector() {
         <div 
           className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 w-80 z-50"
           style={{ 
-            background: 'rgba(27, 51, 64, 0.6)',
+            background: 'var(--glass-bg)',
             backdropFilter: 'blur(10px)',
             WebkitBackdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255, 255, 255, 0.14)',
+            border: '1px solid var(--glass-border)',
             borderRadius: '12px',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05)'
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px var(--glass-border)'
           }}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         >
           <div className="p-4">
-            <h3 className="text-white/90 font-medium text-sm mb-3">Siargao Surf Spots</h3>
+            <h3 className="text-theme-primary font-medium text-sm mb-3">Siargao Surf Spots</h3>
             
             {/* Walk-accessible spots */}
             <div className="mb-4">
-              <h4 className="text-white/60 text-xs uppercase tracking-wide mb-2">Walk Access</h4>
+              <h4 className="text-theme-muted text-xs uppercase tracking-wide mb-2">Walk Access</h4>
               <div className="space-y-1">
                 {groupedSpots.walk.map((spot) => (
                   <Link 
                     key={spot.name}
                     href={`/spots/${encodeURIComponent(spot.name.toLowerCase().replace(/\s+/g, '-'))}`}
-                    className="block px-3 py-2 rounded-lg hover:bg-white/10 transition-colors duration-200"
+                    className="block px-3 py-2 rounded-lg hover:bg-white/10 dark:hover:bg-white/10 light:hover:bg-black/5 transition-colors duration-200"
                   >
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="text-white/90 text-sm font-medium">{spot.name}</div>
-                        <div className="text-white/60 text-xs">{spot.label.split('—')[1]?.trim() || spot.label}</div>
+                        <div className="text-theme-primary text-sm font-medium">{spot.name}</div>
+                        <div className="text-theme-muted text-xs">{spot.label.split('—')[1]?.trim() || spot.label}</div>
                       </div>
                       <div className="flex items-center gap-1">
                         <span className={`px-2 py-1 rounded text-xs ${
@@ -115,18 +115,18 @@ export default function SpotSelector() {
 
             {/* Boat-accessible spots */}
             <div className="mb-4">
-              <h4 className="text-white/60 text-xs uppercase tracking-wide mb-2">Boat Access</h4>
+              <h4 className="text-theme-muted text-xs uppercase tracking-wide mb-2">Boat Access</h4>
               <div className="space-y-1">
                 {groupedSpots.boat.map((spot) => (
                   <Link 
                     key={spot.name}
                     href={`/spots/${encodeURIComponent(spot.name.toLowerCase().replace(/\s+/g, '-'))}`}
-                    className="block px-3 py-2 rounded-lg hover:bg-white/10 transition-colors duration-200"
+                    className="block px-3 py-2 rounded-lg hover:bg-white/10 dark:hover:bg-white/10 light:hover:bg-black/5 transition-colors duration-200"
                   >
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="text-white/90 text-sm font-medium">{spot.name}</div>
-                        <div className="text-white/60 text-xs">{spot.label.split('—')[1]?.trim() || spot.label}</div>
+                        <div className="text-theme-primary text-sm font-medium">{spot.name}</div>
+                        <div className="text-theme-muted text-xs">{spot.label.split('—')[1]?.trim() || spot.label}</div>
                       </div>
                       <div className="flex items-center gap-1">
                         <span className={`px-2 py-1 rounded text-xs ${
@@ -146,13 +146,13 @@ export default function SpotSelector() {
             {/* Other access spots */}
             {groupedSpots.other.length > 0 && (
               <div>
-                <h4 className="text-white/60 text-xs uppercase tracking-wide mb-2">Other Access</h4>
+                <h4 className="text-theme-muted text-xs uppercase tracking-wide mb-2">Other Access</h4>
                 <div className="space-y-1">
                   {groupedSpots.other.map((spot) => (
                     <Link 
                       key={spot.name}
                       href={`/spots/${encodeURIComponent(spot.name.toLowerCase().replace(/\s+/g, '-'))}`}
-                      className="block px-3 py-2 rounded-lg hover:bg-white/10 transition-colors duration-200"
+                      className="block px-3 py-2 rounded-lg hover:bg-white/10 dark:hover:bg-white/10 light:hover:bg-black/5 transition-colors duration-200"
                     >
                       <div className="flex items-center justify-between">
                         <div>

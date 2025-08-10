@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import SpotSelector from './SpotSelector'
+import ThemeToggle from './ThemeToggle'
 
 function Logo() {
   return (
@@ -19,10 +20,13 @@ export default function Header() {
     <div className="sticky top-0 z-30 header">
       <div className="max-w-7xl mx-auto px-6 lg:px-10 h-14 flex items-center justify-between">
         <Logo />
-        <nav className="hidden md:flex items-center gap-6 text-white/80 text-sm">
-          <Link href="/" className="hover:text-white">Surf</Link>
-          <SpotSelector />
-        </nav>
+        <div className="flex items-center gap-4">
+          <nav className="hidden md:flex items-center gap-6 text-theme-muted text-sm">
+            <Link href="/" className="hover:text-theme-primary transition-colors">Surf</Link>
+            <SpotSelector />
+          </nav>
+          <ThemeToggle />
+        </div>
       </div>
     </div>
   )

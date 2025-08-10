@@ -22,9 +22,9 @@ interface SpotLayoutNewProps {
 
 function KeyValue({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between py-2 border-b border-white/10 last:border-b-0">
-      <span className="text-white/70 text-sm">{label}</span>
-      <span className="text-white font-medium text-sm">{value}</span>
+    <div className="flex justify-between py-2 border-b border-glass last:border-b-0">
+      <span className="text-theme-muted text-sm">{label}</span>
+      <span className="text-theme-primary font-medium text-sm">{value}</span>
     </div>
   )
 }
@@ -121,40 +121,40 @@ export default function SpotLayoutNew({
             <div className="mt-5 grid grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div>
-                  <div className="text-xs text-white/60 uppercase tracking-wider">WIND</div>
-                  <div className="text-lg font-medium text-white">
+                  <div className="text-xs text-theme-muted uppercase tracking-wider">WIND</div>
+                  <div className="text-lg font-medium text-theme-primary">
                     {weather ? `${Math.round(weather.weather.current.windspeed)} km/h` : '—'}
                   </div>
                 </div>
                 <div>
-                  <div className="text-xs text-white/60 uppercase tracking-wider">SWELL</div>
-                  <div className="text-lg font-medium text-white">
+                  <div className="text-xs text-theme-muted uppercase tracking-wider">SWELL</div>
+                  <div className="text-lg font-medium text-theme-primary">
                     {weather ? `${weather.current.swell_wave_height?.toFixed(1)} m` : '—'}
                   </div>
                 </div>
                 <div>
-                  <div className="text-xs text-white/60 uppercase tracking-wider">PERIOD</div>
-                  <div className="text-lg font-medium text-white">
+                  <div className="text-xs text-theme-muted uppercase tracking-wider">PERIOD</div>
+                  <div className="text-lg font-medium text-theme-primary">
                     {weather ? `${weather.current.wave_period?.toFixed(1)} s` : '—'}
                   </div>
                 </div>
               </div>
               <div className="space-y-4">
                 <div>
-                  <div className="text-xs text-white/60 uppercase tracking-wider">WIND DIR</div>
-                  <div className="text-lg font-medium text-white">
+                  <div className="text-xs text-theme-muted uppercase tracking-wider">WIND DIR</div>
+                  <div className="text-lg font-medium text-theme-primary">
                     {weather ? `${Math.round(weather.weather.current.winddirection)}° (${degreesToCardinal(weather.weather.current.winddirection)})` : '—'}
                   </div>
                 </div>
                 <div>
-                  <div className="text-xs text-white/60 uppercase tracking-wider">SWELL DIR</div>
-                  <div className="text-lg font-medium text-white">
+                  <div className="text-xs text-theme-muted uppercase tracking-wider">SWELL DIR</div>
+                  <div className="text-lg font-medium text-theme-primary">
                     {weather ? `${Math.round(weather.current.swell_wave_direction)}° (${degreesToCardinal(weather.current.swell_wave_direction)})` : '—'}
                   </div>
                 </div>
                 <div>
-                  <div className="text-xs text-white/60 uppercase tracking-wider">ENERGY</div>
-                  <div className="text-lg font-medium text-white">
+                  <div className="text-xs text-theme-muted uppercase tracking-wider">ENERGY</div>
+                  <div className="text-lg font-medium text-theme-primary">
                     {weather ? `${calculateWaveEnergy(weather.current.swell_wave_height, weather.current.wave_period)} kJ` : '—'}
                   </div>
                 </div>
@@ -170,7 +170,7 @@ export default function SpotLayoutNew({
               {(() => {
                 const spotMeta = siargaoSpotsComplete[spotName] as SpotMeta | undefined
                 if (!spotMeta) return (
-                  <div className="text-white/70 text-sm">No detailed information available for this spot.</div>
+                  <div className="text-theme-muted text-sm">No detailed information available for this spot.</div>
                 )
 
                 return (
@@ -178,11 +178,11 @@ export default function SpotLayoutNew({
                     {/* Features */}
                     {spotMeta.features && Object.keys(spotMeta.features).length > 0 && (
                       <div>
-                        <div className="text-white/60 text-xs uppercase tracking-wider mb-3">FEATURES</div>
+                        <div className="text-theme-muted text-xs uppercase tracking-wider mb-3">FEATURES</div>
                         <div className="flex flex-wrap gap-2">
                           {Object.entries(spotMeta.features).map(([key, value]) => (
                             value === true && (
-                              <span key={key} className="bg-white/10 px-3 py-1.5 rounded-md text-xs text-white/90 ring-1 ring-white/20">
+                              <span key={key} className="bg-white/10 dark:bg-white/10 light:bg-black/10 px-3 py-1.5 rounded-md text-xs text-theme-primary ring-1 ring-white/20 dark:ring-white/20 light:ring-black/20">
                                 {key.replace(/([A-Z])/g, ' $1').toLowerCase().trim()}
                               </span>
                             )
