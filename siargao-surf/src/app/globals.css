@@ -1,0 +1,66 @@
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+/* Analogue serif and design tokens from mockup */
+@font-face{
+  font-family:'Analogue';
+  src:url('/fonts/analogue-webfont.woff2') format('woff2'),
+      url('/fonts/Analogue.otf') format('opentype');
+  font-weight:400 700; font-style:normal; font-display:swap;
+}
+
+:root{
+  --teal:rgb(27, 51, 64);
+  --ink:#EAF2F6;
+  --ink-muted:#C6D3DB;
+  --accent:#F8CB9E;
+  --report-min: 16px;
+  --report-max: 18px;
+  --type-scale:0.75;
+  --display-min:64px;  --display-max:96px;
+  --metric-min:44px;   --metric-max:76px;
+  --eyebrow:16px;      --caption:14px;
+  --subtle:18px;       --meta:12px;
+  --logo-svg:38px;
+  --svg-label:11px;
+}
+
+body{ font-family:Montserrat,ui-sans-serif,system-ui,-apple-system; }
+.bg-teal{ background:var(--teal); }
+.text-ink-on-teal{ color:var(--ink); }
+.header{ background:rgba(27, 51, 64, 0.6); backdrop-filter:blur(10px); border-bottom:1px solid rgba(255,255,255,.14); color:#fff; }
+
+.display{
+  font-family:Analogue,ui-serif,Georgia,'Times New Roman',serif;
+  font-size:clamp(calc(var(--display-min)*var(--type-scale)), calc(11vw*var(--type-scale)), calc(var(--display-max)*var(--type-scale)));
+  line-height:1.04; letter-spacing:.4px; color:var(--ink);
+}
+.big-metric{
+  font-family:Analogue,ui-serif;
+  font-size:clamp(calc(var(--metric-min)*var(--type-scale)), calc(16vw*var(--type-scale)), calc(var(--metric-max)*var(--type-scale)));
+  line-height:.98; color:var(--ink);
+}
+.metric-caption{ font-size:calc(var(--caption)*var(--type-scale)); color:var(--ink-muted); text-transform:uppercase; letter-spacing:.14em; }
+.eyebrow{        font-size:calc(var(--eyebrow)*var(--type-scale)); color:var(--ink-muted); text-transform:uppercase; letter-spacing:.18em; }
+.subtle{         font-size:calc(var(--subtle)*var(--type-scale));  color:var(--ink-muted); }
+.meta{           font-size:calc(var(--meta)*var(--type-scale));    color:var(--ink-muted); }
+
+.rule{height:1px;background:rgba(255,255,255,.16);} 
+.rule-vert{display:inline-block;width:1px;height:10px;background:#fff;opacity:.9}
+
+
+.kv-grid{ display:grid; grid-template-columns:1fr 1fr; gap:18px 44px; }
+.kv{ display:flex; align-items:baseline; gap:12px; flex-wrap:nowrap; }
+.kv-k{ min-width:96px; font-size:calc(12px*var(--type-scale)); color:var(--ink-muted); text-transform:uppercase; letter-spacing:.14em; white-space:nowrap; }
+.kv-v{ font-weight:600; white-space:nowrap; flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; }
+
+.report-text{ font-size: clamp(calc(var(--report-min) * var(--type-scale)), calc(1.4vw * var(--type-scale)), calc(var(--report-max) * var(--type-scale))); line-height: 2.05; max-width: 54ch; color: var(--ink); }
+.svg-label{ font-size:calc(var(--svg-label)*var(--type-scale)); fill:#C6D3DB; }
+.surf-quality-label{ font-size: calc(12px * var(--type-scale)); }
+
+@media (max-width:1023px){
+  .kv-grid{ grid-template-columns:1fr; gap:12px 0; }
+  .kv{ flex-wrap:nowrap; }
+  .kv-k, .kv-v{ white-space:nowrap; }
+  .report-text{ max-width:62ch; }
+}

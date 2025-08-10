@@ -1,0 +1,7 @@
+-- Popular surf spots in Siargao
+INSERT INTO spots (name, description, latitude, longitude, difficulty_level, wave_type, best_swell_direction, best_wind_direction, best_tide, access_info) VALUES
+('Cloud 9', 'The most famous spot in Siargao, a powerful right-hand reef break over shallow coral. Perfect for experienced surfers only.', 9.8598, 126.1592, 'expert', 'reef', 'E', 'W', 'mid', 'Accessible via walking path from General Luna. Parking available.'),
+('Stimpy', 'Consistent right-hander with perfect barrels. Less crowded than Cloud 9 but equally technical and challenging.', 9.8612, 126.1578, 'advanced', 'reef', 'E', 'W', 'mid', 'Short paddle from the beach. Watch out for sea urchins on the reef.'),
+('Rock Island', 'More accessible spot for intermediate surfers, offering multiple peaks and takeoff zones.', 9.8634, 126.1567, 'intermediate', 'reef', 'E', 'W', 'all', 'Accessible by boat or long paddle from the shore.'),
+('Quicksilver', 'Fast and fun break, perfect for early morning surf sessions before the crowds arrive.', 9.8589, 126.1601, 'intermediate', 'reef', 'E', 'W', 'high', 'Easy access from General Luna beach.'),
+('Cemetery', 'Powerful spot reserved for experts only, featuring hollow and fast-breaking waves.', 9.8645, 126.1534, 'expert', 'reef', 'E', 'W', 'low', 'Difficult access, recommended to go with a local guide.');
