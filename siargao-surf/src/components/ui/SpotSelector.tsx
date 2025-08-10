@@ -19,7 +19,7 @@ export default function SpotSelector() {
   const groupedSpots = {
     walk: spots.filter(spot => spot.access === 'walk'),
     boat: spots.filter(spot => spot.access === 'boat'),
-    other: spots.filter(spot => !['walk', 'boat'].includes(spot.access))
+    other: spots.filter(spot => spot.access && !['walk', 'boat'].includes(spot.access))
   }
 
   const handleMouseEnter = () => {
@@ -33,7 +33,7 @@ export default function SpotSelector() {
   const handleMouseLeave = () => {
     timeoutRef.current = setTimeout(() => {
       setIsOpen(false)
-    }, 300) // Délai de 300ms avant fermeture
+    }, 1000) // Délai très long de 1 seconde
   }
 
   return (
@@ -55,6 +55,15 @@ export default function SpotSelector() {
       >
         Spots
       </span>
+      
+      {/* Large invisible bridge area */}
+      {isOpen && (
+        <div 
+          className="absolute top-full left-1/2 transform -translate-x-1/2 w-96 h-4 z-40"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        />
+      )}
       
       {/* Dropdown */}
       {isOpen && (
