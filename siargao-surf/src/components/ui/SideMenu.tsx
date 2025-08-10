@@ -26,7 +26,7 @@ export default function SideMenu({ isOpen, onClose }: SideMenuProps) {
   useEffect(() => {
     if (isOpen && supabase) {
       const fetchSpots = async () => {
-        const { data, error } = await supabase
+        const { data } = await supabase!
           .from('spots')
           .select('id, name, Area, min_skill, wave_type')
           .order('name')
