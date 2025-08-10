@@ -86,12 +86,25 @@ export async function POST(req: Request){
       })
     }
 
+    // Calculer la range de marée du jour
+    let tideRange = null
+    if (weather?.hourly?.sea_level_height_msl) {
+      const tideLevels = weather.hourly.sea_level_height_msl.slice(0, 24) // Prochaines 24h
+      if (tideLevels.length > 0) {
+        tideRange = {
+          min: Math.min(...tideLevels),
+          max: Math.max(...tideLevels)
+        }
+      }
+    }
+
     // Générer un nouveau rapport avec l'IA
     const prompt = buildSpotReportPrompt({
       spotName: spot.name,
       meta,
       effectiveHeight: effective,
       tideHeight,
+      tideRange,
       wavePeriod: weather?.current.wave_period ?? null,
       swellHeight: weather?.current.swell_wave_height ?? null,
       swellDir: weather?.current.swell_wave_direction ?? null,

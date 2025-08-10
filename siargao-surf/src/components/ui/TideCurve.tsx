@@ -1,3 +1,7 @@
+'use client'
+
+import { useState } from 'react'
+
 interface TideCurveProps {
   tideData?: {
     current: number
@@ -9,6 +13,8 @@ interface TideCurveProps {
 }
 
 export default function TideCurve({ tideData }: TideCurveProps){
+  const [hoverPoint, setHoverPoint] = useState<{x: number, y: number, height: number, time: string} | null>(null)
+  
   const VIEW_W = 462
   const X0 = 40
   const RIGHT = 10
@@ -118,8 +124,52 @@ export default function TideCurve({ tideData }: TideCurveProps){
   const nowDate = new Date(nowPhilippines)
   const nowMin = nowDate.getHours() * 60 + nowDate.getMinutes()
   const xNow = X0 + XW * (nowMin/1440)
+
+  // Function to find closest point on curve
+  const findClosestPoint = (mouseX: number) => {
+    if (points.length === 0) return null
+    
+    let closestPoint = points[0]
+    let minDistance = Math.abs(mouseX - points[0].x)
+    
+    for (const point of points) {
+      const distance = Math.abs(mouseX - point.x)
+      if (distance < minDistance) {
+        minDistance = distance
+        closestPoint = point
+      }
+    }
+    
+    return closestPoint
+  }
+
+  const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
+    const svg = e.currentTarget
+    const rect = svg.getBoundingClientRect()
+    const mouseX = ((e.clientX - rect.left) / rect.width) * VIEW_W
+    
+    if (mouseX >= X0 && mouseX <= X0 + XW) {
+      const closest = findClosestPoint(mouseX)
+      if (closest) {
+        setHoverPoint(closest)
+      }
+    } else {
+      setHoverPoint(null)
+    }
+  }
+
+  const handleMouseLeave = () => {
+    setHoverPoint(null)
+  }
+
   return (
-    <svg viewBox={`0 0 ${VIEW_W} 220`} className="w-full h-auto mt-6" preserveAspectRatio="xMinYMid meet">
+    <svg 
+      viewBox={`0 0 ${VIEW_W} 220`} 
+      className="w-full h-auto mt-6" 
+      preserveAspectRatio="xMinYMid meet"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
       <g stroke="rgba(255,255,255,0.35)" strokeWidth="1">
         <line x1={X0} y1={Y_BOT} x2={X0+XW} y2={Y_BOT} />
         <line x1={X0} y1={Y_TOP} x2={X0} y2={Y_BOT} />
@@ -218,6 +268,68 @@ export default function TideCurve({ tideData }: TideCurveProps){
           </text>
         </g>
       )}
+
+      {/* Hover point indicator */}
+      {hoverPoint && (
+        <g>
+          {/* Vertical line at hover point */}
+          <line 
+            x1={hoverPoint.x} 
+            y1={Y_TOP} 
+            x2={hoverPoint.x} 
+            y2={Y_BOT} 
+            stroke="rgba(255,255,255,0.5)" 
+            strokeWidth="1"
+            strokeDasharray="3 3"
+          />
+          
+          {/* Hover point circle */}
+          <circle 
+            cx={hoverPoint.x} 
+            cy={hoverPoint.y} 
+            r="5" 
+            fill="#F8CB9E" 
+            stroke="rgba(255,255,255,0.9)" 
+            strokeWidth="2"
+          />
+          
+          {/* Tooltip */}
+          <g>
+            <rect 
+              x={hoverPoint.x - 35} 
+              y={hoverPoint.y - 45} 
+              width="70" 
+              height="30" 
+              rx="4" 
+              fill="rgba(0,0,0,0.8)" 
+              stroke="rgba(255,255,255,0.3)" 
+              strokeWidth="1"
+            />
+            <text 
+              x={hoverPoint.x} 
+              y={hoverPoint.y - 30} 
+              textAnchor="middle" 
+              className="svg-label" 
+              fill="white"
+              fontSize="11"
+              fontWeight="600"
+            >
+              {hoverPoint.height.toFixed(1)}m
+            </text>
+            <text 
+              x={hoverPoint.x} 
+              y={hoverPoint.y - 18} 
+              textAnchor="middle" 
+              className="svg-label" 
+              fill="rgba(255,255,255,0.8)"
+              fontSize="9"
+            >
+              {hoverPoint.time}
+            </text>
+          </g>
+        </g>
+      )}
+
       <line x1={xNow} y1={Y_TOP} x2={xNow} y2={Y_BOT} stroke="rgba(255,255,255,.28)" strokeDasharray="2 4" />
     </svg>
   )

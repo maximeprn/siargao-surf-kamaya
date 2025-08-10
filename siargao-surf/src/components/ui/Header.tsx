@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import SpotSelector from './SpotSelector'
 
 function Logo() {
   return (
@@ -16,14 +17,12 @@ function Logo() {
 export default function Header() {
   return (
     <div className="sticky top-0 z-30 header">
-      <div className="w-full px-12 h-14 flex items-center">
-        <div className="flex items-center gap-8">
-          <Logo />
-          <nav className="hidden md:flex items-center gap-6 text-white/80 text-sm">
-            <Link href="/" className="hover:text-white">Surf</Link>
-            <Link href="/spots" className="hover:text-white">Spots</Link>
-          </nav>
-        </div>
+      <div className="max-w-7xl mx-auto px-6 lg:px-10 h-14 flex items-center justify-between">
+        <Logo />
+        <nav className="hidden md:flex items-center gap-6 text-white/80 text-sm">
+          <Link href="/" className="hover:text-white">Surf</Link>
+          <SpotSelector />
+        </nav>
       </div>
     </div>
   )

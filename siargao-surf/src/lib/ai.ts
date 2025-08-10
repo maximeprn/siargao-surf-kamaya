@@ -5,6 +5,7 @@ type PromptInputs = {
   meta: SpotMeta
   effectiveHeight: number | null
   tideHeight: number | null
+  tideRange?: { min: number; max: number } | null // Pour calculer le stage
   wavePeriod: number | null
   swellHeight: number | null
   swellDir: number | null
@@ -16,13 +17,34 @@ type PromptInputs = {
 
 const degToCard = (deg:number)=>['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'][Math.round(deg/22.5)%16]
 
+// Déterminer le stage de marée basé sur la hauteur actuelle et la range du jour
+function getTideStage(currentHeight: number | null, range?: { min: number; max: number } | null): string {
+  if (!currentHeight || !range) return 'n/a'
+  
+  const { min, max } = range
+  const tideRange = max - min
+  const relativeHeight = (currentHeight - min) / tideRange
+  
+  // Déterminer le stage basé sur la position relative
+  if (relativeHeight < 0.25) return 'low'
+  if (relativeHeight < 0.75) return 'mid'
+  return 'high'
+}
+
 export function buildSpotReportPrompt(p: PromptInputs){
   const lang = p.locale || 'en'
   const dir = (d:number|null)=> d==null ? '—' : `${Math.round(d)}° (${degToCard(d)})`
   const txt = (en:string, fr:string)=> lang==='fr' ? fr : en
+  const tideStage = getTideStage(p.tideHeight, p.tideRange)
 
   return [
     `System: ${txt(`
+  You are a surf reporter for Siargao. Output STRICT JSON only.
+  Do NOT invent or forecast. Use ONLY provided fields.
+  When describing any direction (swell, wind, orientation, bestWind, swellWindow), 
+  convert degrees to 16-point compass cardinals (N, NNE, NE, ENE, E, ESE, SE, SSE, S, SSW, SW, WSW, W, WNW, NW, NNW).
+  Never print degrees in the output. If input is missing, write "n/a".
+  `, `
   You are a surf reporter for Siargao. Output STRICT JSON only.
   Do NOT invent or forecast. Use ONLY provided fields.
   When describing any direction (swell, wind, orientation, bestWind, swellWindow), 
@@ -45,7 +67,8 @@ export function buildSpotReportPrompt(p: PromptInputs){
       "swell_dir_deg": ${p.swellDir ?? null},
       "wind_kmh": ${p.windKmh ?? null},
       "wind_dir_deg": ${p.windDir ?? null},
-      "tide_m": ${p.tideHeight ?? null}
+      "tide_m": ${p.tideHeight ?? null},
+      "tide_stage": "${tideStage}"
     },
     "quality": ${p.quality ? JSON.stringify({
       rating: p.quality.rating,
@@ -54,13 +77,23 @@ export function buildSpotReportPrompt(p: PromptInputs){
   }
   `,
   `Task: ${txt(`
-    Write for casual surfers; 2 short sentences, 35–55 words total. Keep it simple: Users already see the numbers on the dashboard—don’t repeat every number. Cite only size & period when size ≥ 0.5 m; otherwise describe (“tiny/small”).
+    Write for casual surfers; 2 short sentences, 35–55 words total. Keep it simple: Users already see the numbers on the dashboard—don't repeat every number. Cite only size & period when size ≥ 0.5 m; otherwise describe ("tiny/small").
     Style:
     - Punchy, field-report tone, not explanatory. Short sentences.
     - Use cardinals for ALL directions. For windows/ranges, convert both bounds to cardinals (e.g., 45→120° -> NE→SE). If missing, say "n/a".
     - Do NOT describe geometry step-by-step ("placing it within…"). Instead: "window OK" or "outside window".
     - Wind effect labels: offshore / cross / onshore. No Geometry.  
-    - Tide: "low / mid / high" if you can infer from provided range.
+    - Tide: Use the provided tide_stage (low/mid/high) directly in your report.
+    - End with a verdict word and reason.
+    Never include emojis, code blocks, or degrees.
+    `, `
+    Write for casual surfers; 2 short sentences, 35–55 words total. Keep it simple: Users already see the numbers on the dashboard—don't repeat every number. Cite only size & period when size ≥ 0.5 m; otherwise describe ("tiny/small").
+    Style:
+    - Punchy, field-report tone, not explanatory. Short sentences.
+    - Use cardinals for ALL directions. For windows/ranges, convert both bounds to cardinals (e.g., 45→120° -> NE→SE). If missing, say "n/a".
+    - Do NOT describe geometry step-by-step ("placing it within…"). Instead: "window OK" or "outside window".
+    - Wind effect labels: offshore / cross / onshore. No Geometry.  
+    - Tide: Use the provided tide_stage (low/mid/high) directly in your report.
     - End with a verdict word and reason.
     Never include emojis, code blocks, or degrees.
     `)}`,

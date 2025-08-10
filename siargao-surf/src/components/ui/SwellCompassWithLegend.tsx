@@ -1,4 +1,7 @@
+'use client'
+
 import SwellCompass from './SwellCompass'
+import { useState, useRef } from 'react'
 
 interface SwellCompassWithLegendProps {
   size?: number
@@ -15,18 +18,64 @@ export default function SwellCompassWithLegend({
   swellHeight = 0,
   windSpeed = 0
 }: SwellCompassWithLegendProps) {
+  const [transform, setTransform] = useState('perspective(400px) rotateX(0deg) rotateY(0deg)')
+  const [isHovered, setIsHovered] = useState(false)
+  const compassRef = useRef<HTMLDivElement>(null)
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!compassRef.current) return
+    
+    const rect = compassRef.current.getBoundingClientRect()
+    const centerX = rect.left + rect.width / 2
+    const centerY = rect.top + rect.height / 2
+    
+    // Calculer la distance et l'angle par rapport au centre
+    const deltaX = e.clientX - centerX
+    const deltaY = e.clientY - centerY
+    
+    // Limiter l'inclinaison (max 12 degrés pour plus de subtilité)
+    const maxTilt = 12
+    const tiltX = Math.max(-maxTilt, Math.min(maxTilt, (deltaY / rect.height) * maxTilt * 2))
+    const tiltY = Math.max(-maxTilt, Math.min(maxTilt, (-deltaX / rect.width) * maxTilt * 2))
+    
+    setTransform(`perspective(400px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`)
+  }
+
+  const handleMouseEnter = () => {
+    setIsHovered(true)
+  }
+
+  const handleMouseLeave = () => {
+    setIsHovered(false)
+    setTransform('perspective(400px) rotateX(0deg) rotateY(0deg)')
+  }
+
   return (
-    <div className="flex items-center gap-6">
-      <SwellCompass 
-        size={size}
-        swellDirection={swellDirection}
-        windDirection={windDirection}
-        showWind={true}
-      />
+    <div className="flex flex-col items-center gap-4">
+      <div 
+        ref={compassRef}
+        className={`transition-transform ease-out ${
+          isHovered ? 'duration-100' : 'duration-700'
+        }`}
+        style={{ 
+          transform,
+          transformStyle: 'preserve-3d'
+        }}
+        onMouseMove={handleMouseMove}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <SwellCompass 
+          size={size}
+          swellDirection={swellDirection}
+          windDirection={windDirection}
+          showWind={true}
+        />
+      </div>
       
-      {/* Legend */}
-      <div className="flex flex-col gap-3 text-sm">
-        <div className="flex items-center gap-3">
+      {/* Legend - horizontale en dessous */}
+      <div className="flex gap-6 text-sm">
+        <div className="flex items-center gap-2">
           <div className="w-4 h-4 bg-[#F8CB9E]/75 rounded-sm border border-[#F8CB9E]/80"></div>
           <div>
             <div className="text-white/90">Swell</div>
@@ -34,7 +83,7 @@ export default function SwellCompassWithLegend({
           </div>
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <div className="w-4 h-4 bg-white/60 rounded-sm border border-white/80"></div>
           <div>
             <div className="text-white/90">Wind</div>
