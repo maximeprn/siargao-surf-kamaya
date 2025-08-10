@@ -1,14 +1,20 @@
 {
-  "framework": "nextjs",
-  "buildCommand": "cd siargao-surf && npm install && npm run build",
-  "installCommand": "cd siargao-surf && npm install",
+  "buildCommand": "npm run build",
   "outputDirectory": "siargao-surf/.next",
+  "installCommand": "npm install && cd siargao-surf && npm install",
+  "framework": "nextjs",
   "regions": ["sin1"],
   "functions": {
     "siargao-surf/src/app/api/**/*.ts": {
       "maxDuration": 30
     }
   },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/siargao-surf/$1"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
