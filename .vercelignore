@@ -1,0 +1,9 @@
+# Vercel ignore file
+# This ensures Vercel only processes the siargao-surf directory
+
+# Ignore everything at root except siargao-surf
+/*
+!/siargao-surf
+!/vercel.json
+!/README.md
+!/LICENSE
