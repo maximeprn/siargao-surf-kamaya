@@ -266,7 +266,7 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
             </div>
             <div className="rule" />
             {/* Mobile column labels */}
-            <div className="sm:hidden grid grid-cols-[40px_1fr_1fr_1fr] gap-1.5 px-0 py-1 text-[9px] uppercase tracking-wider text-theme-muted font-medium">
+            <div className="sm:hidden grid grid-cols-[40px_1fr_1fr_1fr] gap-1 px-0 py-1 text-[9px] uppercase tracking-wider text-theme-muted font-medium">
               <div></div>
               <div className="text-center">Surf</div>
               <div className="text-center">Swell</div>
@@ -276,7 +276,7 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
               <div key={r.t}>
                 {/* Mobile simplified row (3 columns only: Surf, Swell, Wind) */}
                 <div className="sm:hidden py-1 border-t border-white/10">
-                  <div className="grid grid-cols-[40px_1fr_1fr_1fr] items-center gap-1.5 min-h-[48px]">
+                  <div className="grid grid-cols-[40px_1fr_1fr_1fr] items-center gap-1 min-h-[48px]">
                     {/* time column */}
                     <div className="flex items-center justify-center h-full">
                       <div className="text-[10px] text-theme-muted whitespace-nowrap transform -rotate-90 origin-center">{r.t}</div>
@@ -381,7 +381,7 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
                     <div className="text-theme-muted text-[11px] uppercase tracking-wider">Energy</div>
                   </div>
                   {/* Column labels (mobile) */}
-                  <div className="sm:hidden grid grid-cols-[40px_1fr_1fr_1fr] gap-1.5 px-0 py-1 text-[9px] uppercase tracking-wider text-theme-muted font-medium">
+                  <div className="sm:hidden grid grid-cols-[40px_1fr_1fr_1fr] gap-1 px-0 py-1 text-[9px] uppercase tracking-wider text-theme-muted font-medium">
                     <div></div>
                     <div className="text-center">Surf</div>
                     <div className="text-center">Swell</div>
@@ -424,7 +424,7 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
 
                       {/* Mobile simplified row (3 columns only: Surf, Swell, Wind) */}
                       <div className="sm:hidden py-1 border-t border-white/10">
-                        <div className="grid grid-cols-[40px_1fr_1fr_1fr] items-center gap-1.5 min-h-[48px]">
+                        <div className="grid grid-cols-[40px_1fr_1fr_1fr] items-center gap-1 min-h-[48px]">
                           {/* time column */}
                           <div className="flex items-center justify-center h-full">
                             <div className="text-[10px] text-theme-muted whitespace-nowrap transform -rotate-90 origin-center">{r.t}</div>
