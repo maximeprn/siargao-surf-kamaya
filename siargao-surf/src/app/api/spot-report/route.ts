@@ -13,6 +13,11 @@ import {
 } from '@/lib/ai-cache'
 import OpenAI from 'openai'
 import { wrapOpenAI } from 'langsmith/wrappers'
+import { checkEnvironmentVariables, getEnvironmentInfo } from '@/lib/env-check'
+
+// Use Node.js runtime (not edge) because we need crypto module for cache hashing
+// Increase timeout for Vercel Functions
+export const maxDuration = 30 // 30 seconds timeout
 
 export const revalidate = 0
 
@@ -22,6 +27,22 @@ export async function POST(req: Request){
   let locale: 'en' | 'fr' = 'en'
   
   try{
+    // Check environment variables on first run
+    if (process.env.VERCEL) {
+      const envInfo = getEnvironmentInfo()
+      console.log('[SPOT-REPORT] Environment info:', envInfo)
+      
+      if (!checkEnvironmentVariables()) {
+        throw new Error('Missing required environment variables - check Vercel dashboard')
+      }
+    }
+    
+    // Check for OpenAI API key first
+    if(!process.env.OPENAI_API_KEY) {
+      console.error('[SPOT-REPORT ERROR] OPENAI_API_KEY is not configured')
+      throw new Error('AI service not configured - missing API key')
+    }
+    
     const requestData = await req.json()
     spotId = requestData.spotId
     spotName = requestData.spotName
@@ -36,8 +57,19 @@ export async function POST(req: Request){
       : await supabase.from('spots').select('*').eq('name', spotName).single()
     if(!spot) return NextResponse.json({ error:'spot not found' }, { status:404 })
 
-    // Récupérer les données météo actuelles
-    const weather = await getMarineWeatherData(spot.latitude, spot.longitude)
+    // Récupérer les données météo actuelles avec timeout
+    console.log(`[SPOT-REPORT] Fetching weather data for ${spot.name} at ${spot.latitude}, ${spot.longitude}`)
+    const weatherStartTime = Date.now()
+    
+    const weather = await Promise.race([
+      getMarineWeatherData(spot.latitude, spot.longitude),
+      new Promise<null>((_, reject) => 
+        setTimeout(() => reject(new Error('Weather API timeout after 10s')), 10000)
+      )
+    ])
+    
+    const weatherDuration = Date.now() - weatherStartTime
+    console.log(`[SPOT-REPORT] Weather data fetched in ${weatherDuration}ms`)
     const meta = siargaoSpotsComplete[spot.name]
     const tideHeight = weather?.current.sea_level_height_msl ?? null
     const effective = weather && meta ? effectiveWaveHeight({
@@ -124,9 +156,20 @@ export async function POST(req: Request){
       locale
     })
 
-    const client = wrapOpenAI(new OpenAI({ apiKey: process.env.OPENAI_API_KEY }))
-    console.log('Making OpenAI API call with model: gpt-4.1 (plain text)')
-    console.log('Prompt length:', prompt.length, 'characters')
+    const client = wrapOpenAI(new OpenAI({ 
+      apiKey: process.env.OPENAI_API_KEY,
+      timeout: 20000, // 20 second timeout for OpenAI API
+    }))
+    
+    console.log('[SPOT-REPORT] Starting OpenAI API call:', {
+      model: 'gpt-4.1',
+      promptLength: prompt.length,
+      spot: spot.name,
+      locale,
+      timestamp: new Date().toISOString()
+    })
+    
+    const startTime = Date.now()
     
     const resp = await client.chat.completions.create({
       model: 'gpt-4.1',
@@ -136,6 +179,9 @@ export async function POST(req: Request){
         { role:'user', content: prompt + '\n\nRespond with JSON only.' }
       ]
     })
+    
+    const apiDuration = Date.now() - startTime
+    console.log(`[SPOT-REPORT] OpenAI API call completed in ${apiDuration}ms`)
     
     console.log('OpenAI response metadata:', {
       model: resp.model,
@@ -218,6 +264,17 @@ export async function POST(req: Request){
     })
   }catch(e: unknown){
     const error = e as Error
+    
+    // Log detailed error information for debugging
+    console.error('[SPOT-REPORT ERROR] Main error:', {
+      message: error?.message,
+      stack: error?.stack,
+      spotName,
+      spotId,
+      locale,
+      timestamp: new Date().toISOString()
+    })
+    
     // En cas d'erreur, essayer de retourner le dernier rapport en cache
     if(spotName || spotId) {
       try {
@@ -225,6 +282,7 @@ export async function POST(req: Request){
         if(name) {
           const cachedReport = await getCachedReport(name, locale || 'en')
           if(cachedReport) {
+            console.log('[SPOT-REPORT] Returning fallback cached report for:', name)
             return new NextResponse(JSON.stringify({ 
               report: {
                 title: cachedReport.title,
@@ -234,6 +292,7 @@ export async function POST(req: Request){
               },
               cached: true,
               fallback: true,
+              error_reason: error?.message?.substring(0, 100), // Include truncated error reason
               updated_at: cachedReport.updated_at
             }), {
               status: 200,
@@ -241,11 +300,14 @@ export async function POST(req: Request){
             })
           }
         }
-      } catch {
-        // Ignore les erreurs de fallback
+      } catch (fallbackError) {
+        console.error('[SPOT-REPORT ERROR] Fallback error:', fallbackError)
       }
     }
     
-    return NextResponse.json({ error: error?.message || 'ai_error' }, { status:500 })
+    return NextResponse.json({ 
+      error: error?.message || 'ai_error',
+      details: process.env.NODE_ENV === 'development' ? error?.stack : undefined
+    }, { status:500 })
   }
 }

@@ -342,10 +342,10 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
               {/* Separator line below header */}
               <div className="rule mt-2" />
 
-              {/* Detail rows (animated height) */}
+              {/* Detail rows */}
               <div className={`mt-2`}>
-                  {/* Column labels */}
-                  <div className={`${colsDays} py-1`}>
+                  {/* Column labels (desktop) */}
+                  <div className={`${colsDays} py-1 hidden sm:grid`}>
                     <div className="text-theme-muted text-[11px] uppercase tracking-wider">Time</div>
                     <div className="text-theme-muted text-[11px] uppercase tracking-wider">Surf</div>
                     <div className="text-theme-muted text-[11px] uppercase tracking-wider">Swell</div>
@@ -353,10 +353,17 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
                     <div className="text-theme-muted text-[11px] uppercase tracking-wider">Quality</div>
                     <div className="text-theme-muted text-[11px] uppercase tracking-wider">Energy</div>
                   </div>
+                  {/* Column labels (mobile) */}
+                  <div className="sm:hidden flex items-center justify-between px-0 py-1 text-[10px] uppercase tracking-wider text-theme-muted">
+                    <div>Surf</div>
+                    <div>Swell</div>
+                    <div>Wind</div>
+                  </div>
                   <div className="rule" />
                   {rows.map((r, idx) => (
                     <div key={r.t}>
-                      <div className={`${colsDays} py-2 items-center`}>
+                      {/* Desktop row */}
+                      <div className={`${colsDays} py-2 items-center hidden sm:grid`}>
                         <div className="text-theme-muted text-xs">{r.t}</div>
                         <div className="flex items-center justify-center"><div className="text-theme-primary text-sm font-medium">{Number.isFinite((r as unknown as {surf:number}).surf) ? (r as unknown as {surf:number}).surf.toFixed(1) : '—'} m</div></div>
                         <div className="flex items-center justify-center space-x-4">
@@ -386,7 +393,31 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
                           })()}
                         </div>
                       </div>
-                      {idx < rows.length - 1 && <div className="rule" />}
+
+                      {/* Mobile row */}
+                      <div className="sm:hidden py-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex flex-col items-start">
+                            <div className="text-theme-muted text-[10px] uppercase tracking-wider">{r.t}</div>
+                            <div className="text-theme-primary text-base font-semibold">{Number.isFinite((r as unknown as {surf:number}).surf) ? (r as unknown as {surf:number}).surf.toFixed(1) : '—'} m</div>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-2 text-sm">
+                              <span className="text-theme-primary font-medium">{formatHeight(r.h)}</span>
+                              <span className="text-theme-primary font-medium">{r.p?.toFixed(0)} s</span>
+                              <DirArrow deg={r.d} />
+                            </div>
+                            <div className="flex items-center gap-2 text-sm text-theme-primary">
+                              <span>{formatWind(Math.round(r.ws))}</span>
+                              <DirArrow deg={r.wd} />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="mt-1 text-[10px]"><QualityCell h={r.h} p={r.p} /></div>
+                      </div>
+
+                      <div className="rule sm:hidden" />
+                      {idx < rows.length - 1 && <div className="rule hidden sm:block" />}
                     </div>
                   ))}
               </div>
