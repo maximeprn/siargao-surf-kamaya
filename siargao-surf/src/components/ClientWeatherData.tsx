@@ -32,7 +32,7 @@ export default function ClientWeatherData({
 }: ClientWeatherDataProps) {
   const [weather, setWeather] = useState<MarineWeatherData | null>(null)
   const [loading, setLoading] = useState(true)
-  const [getWaveQuality, setGetWaveQuality] = useState<any>(null)
+  const [getWaveQuality, setGetWaveQuality] = useState<typeof import('@/lib/marine-weather').getWaveQuality | null>(null)
 
   useEffect(() => {
     if (!coords) {
@@ -44,7 +44,7 @@ export default function ClientWeatherData({
       try {
         // Dynamic import to avoid including server code in client bundle
         const { getMarineWeatherData, getWaveQuality } = await import('@/lib/marine-weather')
-        const weatherData = await getMarineWeatherData(coords.lat, coords.lon)
+        const weatherData = await getMarineWeatherData(coords!.lat, coords!.lon)
         setWeather(weatherData)
         setGetWaveQuality(() => getWaveQuality)
       } catch (error) {
