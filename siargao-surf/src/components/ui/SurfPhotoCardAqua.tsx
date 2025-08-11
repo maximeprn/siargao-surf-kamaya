@@ -38,7 +38,7 @@ export default function SurfPhotoCardAqua({
       `}</style>
 
       <div
-        className="group relative overflow-hidden rounded-2xl aspect-[21/9] ring-1 ring-white/10 bg-[#091c23] mb-20"
+        className="group relative overflow-hidden rounded-2xl aspect-[4/2.2] sm:aspect-[21/9] ring-1 ring-white/10 bg-[#091c23] mb-12"
         aria-label={label || "Surf photo"}
       >
         {/* Placeholder de chargement */}
@@ -68,6 +68,9 @@ export default function SurfPhotoCardAqua({
             quality={75}
           />
         </div>
+
+        {/* Calque noir léger pour assombrir */}
+        <div className="absolute inset-0 bg-black/10 pointer-events-none" />
 
         {/* Teintes aquatiques (radiales, très soft) */}
         <div

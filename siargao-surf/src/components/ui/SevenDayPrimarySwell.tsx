@@ -6,14 +6,23 @@ import { useTheme } from '@/contexts/ThemeContext'
 import type { MarineWeatherData } from '@/lib/marine-weather'
 // no directional labels needed here; we render arrows only
 
-function dayLabel(dateStr: string, index: number): string {
+function dayLabel(dateStr: string, index: number, mobile: boolean = false): string {
   const d = new Date(dateStr)
   const today = new Date()
   const dayDiff = Math.floor(
     (+new Date(d.toDateString()) - +new Date(today.toDateString())) / 86400000
   )
-  if (index === 0 && dayDiff === 0) return 'Today'
+  if (index === 0 && dayDiff === 0) return mobile ? 'TOD' : 'Today'
   if (index === 0 && dayDiff === 1) return 'Tomorrow'
+  
+  if (mobile) {
+    return d.toLocaleDateString(undefined, {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'numeric',
+    }).replace(/(\w{3})\s/, '$1 ') // Garde format court comme "MON 12/1"
+  }
+  
   return d.toLocaleDateString(undefined, {
     weekday: 'long',
     day: 'numeric',
@@ -208,7 +217,7 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
 
   if (days.length === 0) return null
 
-  const colsDays = 'grid grid-cols-[120px_1fr_1fr_1fr_1fr_1fr] items-center gap-4 text-center'
+  const colsDays = 'grid grid-cols-[125px_1fr_1fr_1fr_1fr_1fr] items-center gap-4 text-center'
   const colsToday = 'grid grid-cols-[60px_1fr_1fr_1fr_1fr_1fr] items-center gap-4 text-center'
 
   const formatHeight = (meters:number)=> heightUnit === 'm' 
@@ -279,7 +288,7 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
   return (
     <div>
       <div className="relative flex items-center justify-between">
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
           <div className="eyebrow">Primary swell</div>
           <div className="text-theme-muted text-xs flex items-center gap-2">
             <button onClick={()=>setMode('today')} className={`${mode==='today'?'text-theme-primary font-medium':'hover:text-theme-primary'} transition-colors`}>Today</button>
@@ -450,7 +459,8 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
               {/* Day header row (static for 7 days) */}
               <div className={`${colsDays} w-full text-left px-0 py-2`}>
                 <div className="text-theme-primary text-xs uppercase tracking-wider truncate font-medium">
-                  {dayLabel(day, dayIdx)}
+                  <span className="sm:hidden">{dayLabel(day, dayIdx, true)}</span>
+                  <span className="hidden sm:inline">{dayLabel(day, dayIdx, false)}</span>
                 </div>
                 <div />
                 <div />

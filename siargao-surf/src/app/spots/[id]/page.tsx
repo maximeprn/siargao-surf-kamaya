@@ -5,7 +5,7 @@ import Footer from '@/components/ui/Footer'
 import SurfPhotoCardAqua from '@/components/ui/SurfPhotoCardAqua'
 import SpotDetailsOverlay from '@/components/ui/SpotDetailsOverlay'
 import ClientSpotData from '@/components/ClientSpotData'
-import { CDN_IMAGES } from '@/lib/cdn-images'
+import { getSpotImage } from '@/lib/cdn-images'
 
 export default async function SpotPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -37,7 +37,7 @@ export default async function SpotPage({ params }: { params: Promise<{ id: strin
       <main className="max-w-7xl mx-auto px-6 lg:px-10 py-16 lg:py-20 space-y-20">
         {/* Hero Image - loads immediately with preload */}
         <SurfPhotoCardAqua 
-          src={CDN_IMAGES.cloudNine}
+          src={getSpotImage(spot.name)}
           causticsOpacity={0.28}
         >
           <SpotDetailsOverlay spotName={spot.name} />
