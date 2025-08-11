@@ -81,21 +81,38 @@ export function shouldRegenerateReport(
   cachedReport: CachedReport | null,
   currentConditionsHash: string
 ): boolean {
-  if (!cachedReport) return true
+  if (!cachedReport) {
+    console.log('[AI-CACHE] No cached report - regeneration needed')
+    return true
+  }
   
   const now = new Date()
   const expiresAt = new Date(cachedReport.expires_at)
   const updatedAt = new Date(cachedReport.updated_at)
   
+  console.log('[AI-CACHE] Checking regeneration conditions:', {
+    now: now.toISOString(),
+    expires_at: expiresAt.toISOString(),
+    updated_at: updatedAt.toISOString(),
+    current_hash: currentConditionsHash,
+    cached_hash: cachedReport.conditions_hash,
+    is_expired: now > expiresAt
+  })
+  
   // Régénérer si expiré (passé 4am ou 11pm)
-  if (now > expiresAt) return true
+  if (now > expiresAt) {
+    console.log('[AI-CACHE] Report expired - regeneration needed')
+    return true
+  }
   
   // Régénérer si les conditions ont significativement changé ET que ça fait plus de 2h
   const twoHoursAgo = new Date(now.getTime() - (2 * 60 * 60 * 1000))
   if (cachedReport.conditions_hash !== currentConditionsHash && updatedAt < twoHoursAgo) {
+    console.log('[AI-CACHE] Conditions changed and 2h+ elapsed - regeneration needed')
     return true
   }
   
+  console.log('[AI-CACHE] Using cached report - no regeneration needed')
   return false
 }
 
@@ -104,7 +121,12 @@ export async function getCachedReport(
   spotName: string, 
   locale: string = 'en'
 ): Promise<CachedReport | null> {
-  if (!supabase) return null
+  if (!supabase) {
+    console.log('[AI-CACHE] Supabase client not available')
+    return null
+  }
+  
+  console.log(`[AI-CACHE] Searching for cached report: spot="${spotName}", locale="${locale}"`)
   
   const { data, error } = await supabase
     .from('ai_reports')
@@ -115,7 +137,24 @@ export async function getCachedReport(
     .limit(1)
     .single()
   
-  if (error || !data) return null
+  if (error) {
+    console.log(`[AI-CACHE] Database error:`, error.message)
+    return null
+  }
+  
+  if (!data) {
+    console.log(`[AI-CACHE] No cached report found for spot="${spotName}", locale="${locale}"`)
+    return null
+  }
+  
+  console.log(`[AI-CACHE] Found cached report:`, {
+    spot: data.spot_name,
+    locale: data.locale,
+    updated_at: data.updated_at,
+    expires_at: data.expires_at,
+    conditions_hash: data.conditions_hash
+  })
+  
   return data as CachedReport
 }
 
