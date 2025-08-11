@@ -158,8 +158,40 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
   const [windUnit, setWindUnit] = useState<'kmh' | 'ms' | 'kn'>('kmh')
   const [heightUnit, setHeightUnit] = useState<'m' | 'ft'>('m')
   const [unitsOpen, setUnitsOpen] = useState(false)
+  const [heightRotation, setHeightRotation] = useState(0)
+  const [windRotation, setWindRotation] = useState(0)
+  const [heightClockwise, setHeightClockwise] = useState(true)
+  const [isHeightSpinning, setIsHeightSpinning] = useState(false)
+  const [isWindSpinning, setIsWindSpinning] = useState(false)
   const unitsBtnRef = useRef<HTMLButtonElement|null>(null)
   const unitsPanelRef = useRef<HTMLDivElement|null>(null)
+  
+  // Handle height unit toggle with alternating spin animation
+  const handleHeightToggle = () => {
+    setIsHeightSpinning(true)
+    setHeightUnit(heightUnit === 'm' ? 'ft' : 'm')
+    
+    // Calculate new rotation: +360deg if clockwise, -360deg if counter-clockwise
+    const newRotation = heightRotation + (heightClockwise ? 360 : -360)
+    setHeightRotation(newRotation)
+    
+    // Alternate direction for next click
+    setHeightClockwise(!heightClockwise)
+    
+    setTimeout(() => setIsHeightSpinning(false), 500)
+  }
+  
+  // Handle wind unit cycle with consistent direction spin animation
+  const handleWindToggle = () => {
+    setIsWindSpinning(true)
+    setWindUnit(windUnit === 'kmh' ? 'ms' : windUnit === 'ms' ? 'kn' : 'kmh')
+    
+    // Always rotate in the same direction (+360deg)
+    const newRotation = windRotation + 360
+    setWindRotation(newRotation)
+    
+    setTimeout(() => setIsWindSpinning(false), 500)
+  }
   useEffect(()=>{
     const onClick = (e: MouseEvent)=>{
       const t = e.target as Node
@@ -193,11 +225,16 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
   const todayWanted = new Set(['00:00','03:00','06:00','09:00','12:00','15:00','18:00','21:00'])
   type Row = { t: string; h: number; p: number; d: number; ws: number; wd: number; surf: number }
   const todayRows: Row[] = []
-  const todayDateStr = new Date().toDateString()
+  
+  // Get today's date in Philippine timezone (same as API) to ensure consistency
+  const todayPhilippines = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' }) // YYYY-MM-DD format
+  
   for (let i = 0; i < time.length; i++) {
     const dt = new Date(time[i])
+    const dtDateISO = dt.toISOString().slice(0, 10) // YYYY-MM-DD format
     const hhmm = dt.toTimeString().slice(0, 5)
-    if (dt.toDateString() !== todayDateStr) continue
+    
+    if (dtDateISO !== todayPhilippines) continue
     if (!todayWanted.has(hhmm)) continue
     const label = hhmm === '00:00' ? '12am'
       : hhmm === '03:00' ? '3am'
@@ -212,6 +249,30 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
   // Sort today rows by time label order
   const orderToday: Record<string, number> = { '12am': 0, '3am': 1, '6am': 2, '9am': 3, 'Noon': 4, '3pm': 5, '6pm': 6, '9pm': 7 }
   todayRows.sort((a,b)=> orderToday[a.t]-orderToday[b.t])
+  
+  // Fallback: if no today data and we have time data, try to get any data from today regardless of specific hours
+  if (todayRows.length === 0 && time.length > 0) {
+    for (let i = 0; i < time.length; i++) {
+      const dt = new Date(time[i])
+      const dtDateISO = dt.toISOString().slice(0, 10)
+      
+      if (dtDateISO === todayPhilippines) {
+        const hhmm = dt.toTimeString().slice(0, 5)
+        const label = hhmm.slice(0, 2) + ':' + hhmm.slice(3)
+        const wind = windByIso[time[i]] || { ws: 0, wd: 0 }
+        todayRows.push({ 
+          t: label, 
+          h: swell_wave_height[i] || 0, 
+          p: swell_wave_period[i] || 0, 
+          d: swell_wave_direction[i] || 0, 
+          ws: wind.ws || 0, 
+          wd: wind.wd || 0, 
+          surf: wave_height[i] || 0 
+        })
+        if (todayRows.length >= 8) break // Limit to 8 entries max
+      }
+    }
+  }
 
   // For rating colors we now use absolute energy thresholds (no normalization)
 
@@ -226,23 +287,29 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
             <button onClick={()=>setMode('7')} className={`${mode==='7'?'text-theme-primary font-medium':'hover:text-theme-primary'} transition-colors`}>7 days</button>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <button onClick={()=>setHeightUnit(heightUnit==='m'?'ft':'m')} className={`p-1.5 rounded transition-colors ${isDark ? 'hover:bg-white/10' : 'hover:bg-black/10'}`} title={`Switch to ${heightUnit==='m'?'feet':'meters'}`}>
+        <div className="flex items-center gap-2" style={{ perspective: '1000px' }}>
+          <button onClick={handleHeightToggle} className={`p-1.5 rounded transition-colors ${isDark ? 'hover:bg-white/10' : 'hover:bg-black/10'}`} title={`Switch to ${heightUnit==='m'?'feet':'meters'}`}>
             <Image
               src={isDark ? '/branding/ruler-icon-dark.svg' : '/branding/ruler-icon-light.svg'}
               alt="Height units"
               width={20}
               height={20}
-              className="w-4 h-4 md:w-5 md:h-5"
+              className="w-4 h-4 md:w-5 md:h-5 transition-transform duration-500 ease-in-out"
+              style={{
+                transform: `rotate(${heightRotation}deg)`
+              }}
             />
           </button>
-          <button onClick={()=>setWindUnit(windUnit==='kmh'?'ms':windUnit==='ms'?'kn':'kmh')} className={`p-1.5 rounded transition-colors ${isDark ? 'hover:bg-white/10' : 'hover:bg-black/10'}`} title={`Wind: ${windUnit}`}>
+          <button onClick={handleWindToggle} className={`p-1.5 rounded transition-colors ${isDark ? 'hover:bg-white/10' : 'hover:bg-black/10'}`} title={`Wind: ${windUnit}`}>
             <Image
               src={isDark ? '/branding/wind-logo-dark.svg' : '/branding/wind-logo-light.svg'}
               alt="Wind units"
               width={20}
               height={20}
-              className="w-4 h-4 md:w-5 md:h-5"
+              className="w-4 h-4 md:w-5 md:h-5 transition-transform duration-500 ease-in-out"
+              style={{
+                transform: `rotateY(${windRotation}deg)`
+              }}
             />
           </button>
           {/* Popup commented out
@@ -291,7 +358,13 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
               <div className="text-center">Swell</div>
               <div className="text-center">Wind</div>
             </div>
-            {todayRows.map((r, idx)=> (
+            {todayRows.length === 0 ? (
+              <div className="col-span-full text-center py-8 text-theme-muted">
+                <p>No today data available. Checking {todayPhilippines}...</p>
+                <p className="text-xs mt-2">Time array length: {time.length}</p>
+                <p className="text-xs">Sample times: {time.slice(0, 3).join(', ')}</p>
+              </div>
+            ) : todayRows.map((r, idx)=> (
               <div key={r.t}>
                 {/* Mobile simplified row (3 columns only: Surf, Swell, Wind) */}
                 <div className="sm:hidden py-1 border-t border-white/10">

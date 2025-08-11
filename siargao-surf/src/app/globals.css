@@ -152,3 +152,8 @@ body{
 .text-theme-muted { color: var(--text-muted); }
 .theme-accent { color: var(--accent); }
 .bg-theme-accent { background-color: var(--accent); }
+
+/* Custom animations */
+.rotate-360 {
+  transform: rotate(360deg);
+}
