@@ -6,8 +6,20 @@ import { supabase } from '@/lib/supabase'
  * Health check endpoint for debugging production issues
  * Access at /api/health to check system status
  */
+interface HealthStatus {
+  status: 'checking' | 'healthy' | 'unhealthy'
+  timestamp: string
+  environment: ReturnType<typeof getEnvironmentInfo>
+  services: {
+    openai: unknown
+    supabase: unknown
+    weatherApi: unknown
+  }
+  errors: string[]
+}
+
 export async function GET() {
-  const health: any = {
+  const health: HealthStatus = {
     status: 'checking',
     timestamp: new Date().toISOString(),
     environment: getEnvironmentInfo(),
@@ -48,9 +60,10 @@ export async function GET() {
       health.services.supabase = { connected: false, error: 'Client not initialized' }
       health.errors.push('Supabase client not initialized')
     }
-  } catch (error: any) {
-    health.services.supabase = { connected: false, error: error.message }
-    health.errors.push(`Supabase connection error: ${error.message}`)
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    health.services.supabase = { connected: false, error: errorMessage }
+    health.errors.push(`Supabase connection error: ${errorMessage}`)
   }
 
   // Test weather API
@@ -78,12 +91,13 @@ export async function GET() {
       }
       health.errors.push(`Weather API returned status ${weatherTest.status}`)
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     health.services.weatherApi = { 
       connected: false, 
-      error: error.message 
+      error: errorMessage 
     }
-    health.errors.push(`Weather API error: ${error.message}`)
+    health.errors.push(`Weather API error: ${errorMessage}`)
   }
 
   // Overall health status

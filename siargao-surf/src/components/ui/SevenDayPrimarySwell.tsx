@@ -76,24 +76,24 @@ function qualityLevelFromKJ(kj: number): number {
   return 0
 }
 
-function qualityLabelFromLevel(level:number): {label:string;color:string}{
+function qualityLabelFromLevel(level:number): {label:string;shortLabel:string;color:string}{
   // 0..6 mapping from poor (red) to excellent (green)
   const map = [
-    {label:'POOR', color:'text-red-400'},
-    {label:'POOR-FAIR', color:'text-orange-400'},
-    {label:'FAIR', color:'text-yellow-300'},
-    {label:'FAIR-GOOD', color:'text-lime-300'},
-    {label:'GOOD', color:'text-green-400'},
-    {label:'VERY GOOD', color:'text-green-500'},
-    {label:'EXCELLENT', color:'text-emerald-500'},
+    {label:'POOR', shortLabel:'POOR', color:'text-red-400'},
+    {label:'POOR-FAIR', shortLabel:'P-F', color:'text-orange-400'},
+    {label:'FAIR', shortLabel:'FAIR', color:'text-yellow-300'},
+    {label:'FAIR-GOOD', shortLabel:'F-G', color:'text-lime-300'},
+    {label:'GOOD', shortLabel:'GOOD', color:'text-green-400'},
+    {label:'VERY GOOD', shortLabel:'V.GOOD', color:'text-green-500'},
+    {label:'EXCELLENT', shortLabel:'EXCEL', color:'text-emerald-500'},
   ]
   return map[Math.max(0, Math.min(level, map.length-1))]
 }
 
-function QualityCell({h,p}:{h:number;p:number}){
+function QualityCell({h,p,mobile}:{h:number;p:number;mobile?:boolean}){
   const level = qualityLevelFromKJ(energyKJ(h,p))
   const q = qualityLabelFromLevel(level)
-  return <div className={`text-xs font-medium ${q.color}`}>{q.label}</div>
+  return <div className={`font-medium ${mobile ? 'text-[8px]' : 'text-xs'} ${q.color}`}>{mobile ? q.shortLabel : q.label}</div>
 }
 
 // dot mapping removed (we reverted to segmented mini-gauge)
@@ -273,40 +273,45 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
             </div>
             {todayRows.map((r, idx)=> (
               <div key={r.t}>
-                {/* Mobile card-like row (grid) */}
-                <div className="sm:hidden py-2 border-t border-white/10">
-                  <div className="grid grid-cols-[56px_130px_minmax(0,1fr)_1px_64px_48px] items-center gap-3 min-h-[72px]">
+                {/* Mobile simplified row (3 columns only: Surf, Swell, Wind) */}
+                <div className="sm:hidden py-1.5 border-t border-white/10">
+                  <div className="grid grid-cols-[40px_1fr_1fr_1fr] items-center gap-2 min-h-[52px]">
                     {/* time column */}
                     <div className="flex flex-col items-center justify-center h-full">
-                      <div className="grid grid-rows-3 gap-1 w-1.5" aria-hidden="true">
-                        <span className="h-2 rounded-sm border border-white/20" />
-                        <span className="h-2 rounded-sm border border-white/20" />
-                        <span className="h-2 rounded-sm border border-white/20" />
+                      <div className="grid grid-rows-3 gap-[1px] w-1" aria-hidden="true">
+                        <span className="h-1.5 rounded-sm border border-white/20" />
+                        <span className="h-1.5 rounded-sm border border-white/20" />
+                        <span className="h-1.5 rounded-sm border border-white/20" />
                       </div>
-                      <div className="mt-2 text-[10px] text-theme-muted whitespace-nowrap transform -rotate-90 origin-center">{r.t}</div>
+                      <div className="mt-1 text-[8px] text-theme-muted whitespace-nowrap transform -rotate-90 origin-center">{r.t}</div>
                     </div>
                     {/* surf card */}
-                    <div className="border border-white/10 rounded-xl px-3 py-2 text-center whitespace-nowrap">
-                      <span className="text-theme-primary text-sm font-medium">{Number.isFinite((r as unknown as {surf:number}).surf) ? (r as unknown as {surf:number}).surf.toFixed(1) : '—'} m</span>
+                    <div className="border border-white/10 rounded-lg px-2 py-1.5 text-center">
+                      <span className="text-theme-primary text-xs font-medium">{Number.isFinite((r as unknown as {surf:number}).surf) ? (r as unknown as {surf:number}).surf.toFixed(1) : '—'} m</span>
                     </div>
                     {/* swell card */}
-                    <div className="border border-white/10 rounded-xl px-3 py-2 flex flex-col gap-1">
-                      <div className="flex items-center gap-3">
-                        <span className="text-theme-primary text-sm font-medium">{formatHeight(r.h)}</span>
-                        <span className="text-theme-primary text-sm font-medium">{r.p?.toFixed(0)} s</span>
-                        <span className="ml-auto" aria-hidden="true"><DirArrow deg={r.d} /></span>
+                    <div className="border border-white/10 rounded-lg px-2 py-1.5 flex flex-col gap-0.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-theme-primary text-[10px] font-medium">{formatHeight(r.h)}</span>
+                        <span className="text-theme-primary text-[10px] font-medium">{r.p?.toFixed(0)}s</span>
+                        <span aria-hidden="true">
+                          <svg width="10" height="10" className="text-theme-primary opacity-90" style={{ transform: `rotate(${(r.d + 180) % 360}deg)` }}>
+                            <path d="M5 1 L8.5 9 L5 7.5 L1.5 9 Z" fill="currentColor" />
+                          </svg>
+                        </span>
                       </div>
-                      <div className="text-[10px]"><QualityCell h={r.h} p={r.p} /></div>
+                      <div className="text-[8px]"><QualityCell h={r.h} p={r.p} /></div>
                     </div>
-                    {/* vertical divider */}
-                    <div className="h-full border-l border-white/10" aria-hidden="true" />
-                    {/* wind value */}
-                    <div className="flex items-baseline justify-center gap-1 text-theme-primary text-sm whitespace-nowrap">
-                      <span>{formatWind(Math.round(r.ws))}</span>
-                    </div>
-                    {/* wind dir tile */}
-                    <div className="w-12 aspect-square border border-white/10 rounded-xl flex items-center justify-center" aria-hidden="true">
-                      <DirArrow deg={r.wd} />
+                    {/* wind card */}
+                    <div className="border border-white/10 rounded-lg px-2 py-1.5 flex flex-col items-center gap-0.5">
+                      <div className="text-theme-primary text-[10px] font-medium whitespace-nowrap">
+                        {formatWind(Math.round(r.ws))}
+                      </div>
+                      <div className="flex items-center justify-center" aria-hidden="true">
+                        <svg width="10" height="10" className="text-theme-primary opacity-90" style={{ transform: `rotate(${(r.wd + 180) % 360}deg)` }}>
+                          <path d="M5 1 L8.5 9 L5 7.5 L1.5 9 Z" fill="currentColor" />
+                        </svg>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -416,40 +421,45 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
                         </div>
                       </div>
 
-                      {/* Mobile row (grid) */}
-                      <div className="sm:hidden py-2 border-t border-white/10">
-                        <div className="grid grid-cols-[56px_130px_minmax(0,1fr)_1px_64px_48px] items-center gap-3 min-h-[72px]">
+                      {/* Mobile simplified row (3 columns only: Surf, Swell, Wind) */}
+                      <div className="sm:hidden py-1.5 border-t border-white/10">
+                        <div className="grid grid-cols-[40px_1fr_1fr_1fr] items-center gap-2 min-h-[52px]">
                           {/* time column */}
                           <div className="flex flex-col items-center justify-center h-full">
-                            <div className="grid grid-rows-3 gap-1 w-1.5" aria-hidden="true">
-                              <span className="h-2 rounded-sm border border-white/20" />
-                              <span className="h-2 rounded-sm border border-white/20" />
-                              <span className="h-2 rounded-sm border border-white/20" />
+                            <div className="grid grid-rows-3 gap-[1px] w-1" aria-hidden="true">
+                              <span className="h-1.5 rounded-sm border border-white/20" />
+                              <span className="h-1.5 rounded-sm border border-white/20" />
+                              <span className="h-1.5 rounded-sm border border-white/20" />
                             </div>
-                            <div className="mt-2 text-[10px] text-theme-muted whitespace-nowrap transform -rotate-90 origin-center">{r.t}</div>
+                            <div className="mt-1 text-[8px] text-theme-muted whitespace-nowrap transform -rotate-90 origin-center">{r.t}</div>
                           </div>
                           {/* surf card */}
-                          <div className="border border-white/10 rounded-xl px-3 py-2 text-center whitespace-nowrap">
-                            <span className="text-theme-primary text-sm font-medium">{Number.isFinite((r as unknown as {surf:number}).surf) ? (r as unknown as {surf:number}).surf.toFixed(1) : '—'} m</span>
+                          <div className="border border-white/10 rounded-lg px-2 py-1.5 text-center">
+                            <span className="text-theme-primary text-xs font-medium">{Number.isFinite((r as unknown as {surf:number}).surf) ? (r as unknown as {surf:number}).surf.toFixed(1) : '—'} m</span>
                           </div>
                           {/* swell card */}
-                          <div className="border border-white/10 rounded-xl px-3 py-2 flex flex-col gap-1">
-                            <div className="flex items-center gap-3">
-                              <span className="text-theme-primary text-sm font-medium">{formatHeight(r.h)}</span>
-                              <span className="text-theme-primary text-sm font-medium">{r.p?.toFixed(0)} s</span>
-                              <span className="ml-auto" aria-hidden="true"><DirArrow deg={r.d} /></span>
+                          <div className="border border-white/10 rounded-lg px-2 py-1.5 flex flex-col gap-0.5">
+                            <div className="flex items-center justify-between">
+                              <span className="text-theme-primary text-[10px] font-medium">{formatHeight(r.h)}</span>
+                              <span className="text-theme-primary text-[10px] font-medium">{r.p?.toFixed(0)}s</span>
+                              <span aria-hidden="true">
+                                <svg width="10" height="10" className="text-theme-primary opacity-90" style={{ transform: `rotate(${(r.d + 180) % 360}deg)` }}>
+                                  <path d="M5 1 L8.5 9 L5 7.5 L1.5 9 Z" fill="currentColor" />
+                                </svg>
+                              </span>
                             </div>
-                            <div className="text-[10px]"><QualityCell h={r.h} p={r.p} /></div>
+                            <div className="text-[8px]"><QualityCell h={r.h} p={r.p} mobile /></div>
                           </div>
-                          {/* vertical divider */}
-                          <div className="h-full border-l border-white/10" aria-hidden="true" />
-                          {/* wind value */}
-                          <div className="flex items-baseline justify-center gap-1 text-theme-primary text-sm whitespace-nowrap">
-                            <span>{formatWind(Math.round(r.ws))}</span>
-                          </div>
-                          {/* wind dir tile */}
-                          <div className="w-12 aspect-square border border-white/10 rounded-xl flex items-center justify-center" aria-hidden="true">
-                            <DirArrow deg={r.wd} />
+                          {/* wind card */}
+                          <div className="border border-white/10 rounded-lg px-2 py-1.5 flex flex-col items-center gap-0.5">
+                            <div className="text-theme-primary text-[10px] font-medium whitespace-nowrap">
+                              {formatWind(Math.round(r.ws))}
+                            </div>
+                            <div className="flex items-center justify-center" aria-hidden="true">
+                              <svg width="10" height="10" className="text-theme-primary opacity-90" style={{ transform: `rotate(${(r.wd + 180) % 360}deg)` }}>
+                                <path d="M5 1 L8.5 9 L5 7.5 L1.5 9 Z" fill="currentColor" />
+                              </svg>
+                            </div>
                           </div>
                         </div>
                       </div>
