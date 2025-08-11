@@ -7,6 +7,8 @@ import AISpotReport from '@/components/ui/AISpotReport'
 import SpotLayoutNew from '@/components/ui/SpotLayoutNew'
 import SurfPhotoCardAqua from '@/components/ui/SurfPhotoCardAqua'
 import SpotDetailsOverlay from '@/components/ui/SpotDetailsOverlay'
+// import cloudNineImage from '@/assets/images/CloudNine.webp'
+import { CDN_IMAGES } from '@/lib/cdn-images'
 import { supabase } from '@/lib/supabase'
 import { getMarineWeatherData, getWaveQuality } from '@/lib/marine-weather'
 import { spotConfigs, defaultSpotConfig, siargaoSpotsComplete } from '@/lib/spot-configs'
@@ -100,7 +102,7 @@ export default async function Home() {
       <main className="max-w-7xl mx-auto px-6 lg:px-10 py-16 lg:py-20 space-y-20">
         {/* Hero Image avec effets aquatiques et spot details */}
         <SurfPhotoCardAqua 
-          src="/images/CloudNine.webp"
+          src={CDN_IMAGES.cloudNine}
           causticsOpacity={0.28}
         >
           <SpotDetailsOverlay spotName="Cloud 9" />

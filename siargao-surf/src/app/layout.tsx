@@ -10,6 +10,15 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+      <head>
+        {/* Preload critical hero image - starts loading immediately */}
+        <link 
+          rel="preload" 
+          as="image" 
+          href="https://raw.githubusercontent.com/maximeprn/siargao-surf-kamaya/main/siargao-surf/public/images/CloudNine.webp"
+          fetchPriority="high"
+        />
+      </head>
       <body className="antialiased">
         <ThemeProviderWrapper>
           {children}

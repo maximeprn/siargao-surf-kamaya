@@ -2,9 +2,10 @@
 
 import React, { useState } from 'react'
 import Image from 'next/image'
+import { StaticImageData } from 'next/image'
 
 interface SurfPhotoCardAquaProps {
-  src: string
+  src: string | StaticImageData
   label?: string
   causticsOpacity?: number // intensité des caustiques
   children?: React.ReactNode // Pour les spot details
@@ -53,7 +54,6 @@ export default function SurfPhotoCardAqua({
             fill
             onLoad={() => setLoaded(true)}
             onError={() => setImageError(true)}
-            loading="eager"
             className={[
               "h-full w-full object-cover object-[50%_42%]",
               "transition-transform duration-300 ease-out",
@@ -63,9 +63,9 @@ export default function SurfPhotoCardAqua({
                 : "scale-105 blur-md",
               "group-hover:scale-[1.01] motion-reduce:group-hover:scale-100",
             ].join(" ")}
-            priority
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
-            quality={85}
+            priority={true}
+            sizes="100vw"
+            quality={75}
           />
         </div>
 

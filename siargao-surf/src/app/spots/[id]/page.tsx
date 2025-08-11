@@ -6,6 +6,7 @@ import Footer from '@/components/ui/Footer'
 import SurfPhotoCardAqua from '@/components/ui/SurfPhotoCardAqua'
 import SpotDetailsOverlay from '@/components/ui/SpotDetailsOverlay'
 import SpotLayoutNew from '@/components/ui/SpotLayoutNew'
+import { CDN_IMAGES } from '@/lib/cdn-images'
 import { spotConfigs, defaultSpotConfig, siargaoSpotsComplete } from '@/lib/spot-configs'
 import type { SpotMeta } from '@/lib/spot-configs'
 import { effectiveWaveHeight } from '@/lib/wave-height-correction'
@@ -107,7 +108,7 @@ export default async function SpotPage({ params }: { params: Promise<{ id: strin
       <main className="max-w-7xl mx-auto px-6 lg:px-10 py-16 lg:py-20 space-y-20">
         {/* Hero Image avec effets aquatiques et spot details */}
         <SurfPhotoCardAqua 
-          src="/images/CloudNine.webp"
+          src={CDN_IMAGES.cloudNine}
           causticsOpacity={0.28}
         >
           <SpotDetailsOverlay spotName={spot.name} />
