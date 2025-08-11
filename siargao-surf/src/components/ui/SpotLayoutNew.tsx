@@ -1,8 +1,21 @@
 import SurfQualityGauge from '@/components/ui/SurfQualityGauge'
 import SwellCompassWithLegend from '@/components/ui/SwellCompassWithLegend'
 import TideCurve from '@/components/ui/TideCurve'
-import SevenDayPrimarySwell from '@/components/ui/SevenDayPrimarySwell'
+import dynamic from 'next/dynamic'
+
+const SevenDayPrimarySwell = dynamic(() => import('@/components/ui/SevenDayPrimarySwell'), {
+  loading: () => (
+    <div className="bg-feature-bg border border-feature-ring rounded-lg p-6">
+      <div className="eyebrow mb-4">7-Day Forecast</div>
+      <div className="flex items-center justify-center h-32">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-theme-primary"></div>
+      </div>
+    </div>
+  ),
+  ssr: false
+})
 import AISpotReport from '@/components/ui/AISpotReport'
+import ConditionsSlider from '@/components/ui/ConditionsSlider'
 import { siargaoSpotsComplete } from '@/lib/spot-configs'
 import type { SpotMeta } from '@/lib/spot-configs'
 import type { MarineWeatherData } from '@/lib/marine-weather'
@@ -105,52 +118,14 @@ export default function SpotLayoutNew({
             </div>
           </div>
 
-          {/* Weather Stats - grille 2x3 comme dans l'image demandée */}
+          {/* Conditions Slider - 2 slides avec conditions actuelles et optimales */}
           <div>
-            <div className="eyebrow">Conditions</div>
-            <div className="rule mt-4" />
-            <div className="mt-5 grid grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <div>
-                  <div className="text-xs text-theme-muted uppercase tracking-wider">WIND</div>
-                  <div className="text-lg font-medium text-theme-primary">
-                    {weather ? `${Math.round(weather.weather.current.windspeed)} km/h` : '—'}
-                  </div>
-                </div>
-                <div>
-                  <div className="text-xs text-theme-muted uppercase tracking-wider">SWELL</div>
-                  <div className="text-lg font-medium text-theme-primary">
-                    {weather ? `${weather.current.swell_wave_height?.toFixed(1)} m` : '—'}
-                  </div>
-                </div>
-                <div>
-                  <div className="text-xs text-theme-muted uppercase tracking-wider">PERIOD</div>
-                  <div className="text-lg font-medium text-theme-primary">
-                    {weather ? `${weather.current.wave_period?.toFixed(1)} s` : '—'}
-                  </div>
-                </div>
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <div className="text-xs text-theme-muted uppercase tracking-wider">WIND DIR</div>
-                  <div className="text-lg font-medium text-theme-primary">
-                    {weather ? `${Math.round(weather.weather.current.winddirection)}° (${degreesToCardinal(weather.weather.current.winddirection)})` : '—'}
-                  </div>
-                </div>
-                <div>
-                  <div className="text-xs text-theme-muted uppercase tracking-wider">SWELL DIR</div>
-                  <div className="text-lg font-medium text-theme-primary">
-                    {weather ? `${Math.round(weather.current.swell_wave_direction)}° (${degreesToCardinal(weather.current.swell_wave_direction)})` : '—'}
-                  </div>
-                </div>
-                <div>
-                  <div className="text-xs text-theme-muted uppercase tracking-wider">ENERGY</div>
-                  <div className="text-lg font-medium text-theme-primary">
-                    {weather ? `${calculateWaveEnergy(weather.current.swell_wave_height, weather.current.wave_period)} kJ` : '—'}
-                  </div>
-                </div>
-              </div>
-            </div>
+            <ConditionsSlider 
+              weather={weather}
+              spotMeta={siargaoSpotsComplete[spotName] as SpotMeta | undefined}
+              calculateWaveEnergy={calculateWaveEnergy}
+              degreesToCardinal={degreesToCardinal}
+            />
           </div>
 
           {/* Spot Details simplifiés - Features et Hazards seulement */}

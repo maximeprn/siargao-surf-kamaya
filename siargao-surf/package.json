@@ -5,22 +5,24 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
+    "build:analyze": "ANALYZE=true npm run build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "analyze:performance": "node scripts/run-performance-analysis.js",
+    "analyze:lighthouse": "node scripts/performance-analysis.js",
+    "analyze:bundle": "node scripts/bundle-analysis.js"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.54.0",
-    "@types/leaflet": "^1.9.20",
     "framer-motion": "^12.23.12",
     "langsmith": "^0.3.55",
-    "leaflet": "^1.9.4",
     "lucide-react": "^0.539.0",
     "next": "15.4.6",
     "openai": "^5.12.2",
     "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "react-leaflet": "^5.0.0"
+    "react-dom": "19.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -28,9 +30,12 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "chrome-launcher": "^1.2.0",
     "eslint": "^9",
     "eslint-config-next": "15.4.6",
+    "lighthouse": "^12.8.1",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "webpack-bundle-analyzer": "^4.10.2"
   }
 }

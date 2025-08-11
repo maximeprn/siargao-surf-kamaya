@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   // Performance optimizations
   compress: true,
   poweredByHeader: false,
+  output: 'standalone',
   
   // Image optimization
   images: {
@@ -15,7 +16,55 @@ const nextConfig: NextConfig = {
     unoptimized: false,
   },
 
-  // Headers for security and performance
+  // Bundle analyzer and webpack optimization
+  webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
+    // Add bundle analyzer when ANALYZE=true
+    if (process.env.ANALYZE === 'true') {
+      const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+      config.plugins.push(
+        new BundleAnalyzerPlugin({
+          analyzerMode: 'static',
+          openAnalyzer: false,
+          reportFilename: isServer 
+            ? '../analyze/server.html' 
+            : '../analyze/client.html',
+          generateStatsFile: true,
+          statsFilename: isServer 
+            ? '../.next/webpack-stats.json' 
+            : '../.next/webpack-stats.json',
+        })
+      );
+    }
+
+    // Optimize chunks for production
+    if (!dev && !isServer) {
+      config.optimization = {
+        ...config.optimization,
+        splitChunks: {
+          chunks: 'all',
+          cacheGroups: {
+            vendor: {
+              test: /[\\/]node_modules[\\/]/,
+              name: 'vendors',
+              priority: 10,
+              chunks: 'all',
+            },
+            common: {
+              minChunks: 2,
+              name: 'common',
+              priority: 5,
+              chunks: 'all',
+              reuseExistingChunk: true,
+            },
+          },
+        },
+      };
+    }
+
+    return config;
+  },
+
+  // Enhanced headers for security and performance
   async headers() {
     return [
       {
@@ -31,7 +80,35 @@ const nextConfig: NextConfig = {
           }
         ],
       },
+      {
+        source: '/_next/static/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/_next/image(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
     ]
+  },
+
+  // Compiler optimizations
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+
+  // Experimental optimizations
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'framer-motion'],
   },
 
   // Environment variables validation

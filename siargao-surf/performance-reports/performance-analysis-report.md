@@ -1,0 +1,1 @@
+❌ No valid results to generate report

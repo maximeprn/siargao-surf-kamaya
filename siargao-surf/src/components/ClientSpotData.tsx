@@ -1,7 +1,18 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import SpotLayoutNew from '@/components/ui/SpotLayoutNew'
+import dynamic from 'next/dynamic'
+
+const SpotLayoutNew = dynamic(() => import('@/components/ui/SpotLayoutNew'), {
+  loading: () => (
+    <div className="min-h-[400px] flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-theme-primary mx-auto"></div>
+        <p className="mt-4 text-theme-muted">Loading spot layout...</p>
+      </div>
+    </div>
+  )
+})
 import { spotConfigs, defaultSpotConfig, siargaoSpotsComplete } from '@/lib/spot-configs'
 import { effectiveWaveHeight } from '@/lib/wave-height-correction'
 import type { SpotMeta } from '@/lib/spot-configs'
