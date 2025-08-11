@@ -17,6 +17,7 @@ export default function SurfPhotoCardAqua({
   children,
 }: SurfPhotoCardAquaProps) {
   const [loaded, setLoaded] = useState(false)
+  const [imageError, setImageError] = useState(false)
 
   return (
     <>
@@ -39,6 +40,11 @@ export default function SurfPhotoCardAqua({
         className="group relative overflow-hidden rounded-2xl aspect-[21/9] ring-1 ring-white/10 bg-[#091c23] mb-20"
         aria-label={label || "Surf photo"}
       >
+        {/* Placeholder de chargement */}
+        {!loaded && !imageError && (
+          <div className="absolute inset-0 bg-gradient-to-br from-[#0a1f28] to-[#122b35] animate-pulse" />
+        )}
+        
         {/* Image avec Next.js Image */}
         <div className={`absolute inset-0 ${loaded ? 'opacity-100' : 'opacity-0'}`}>
           <Image
@@ -46,9 +52,11 @@ export default function SurfPhotoCardAqua({
             alt={label || "Surf photo"}
             fill
             onLoad={() => setLoaded(true)}
+            onError={() => setImageError(true)}
+            loading="eager"
             className={[
               "h-full w-full object-cover object-[50%_42%]",
-              "transition-all duration-700 ease-out will-change-transform",
+              "transition-transform duration-300 ease-out",
               "motion-reduce:transition-none",
               loaded
                 ? "scale-100 blur-0 [filter:saturate(.9)_contrast(1.05)_brightness(.96)]"
@@ -56,6 +64,8 @@ export default function SurfPhotoCardAqua({
               "group-hover:scale-[1.01] motion-reduce:group-hover:scale-100",
             ].join(" ")}
             priority
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+            quality={85}
           />
         </div>
 
@@ -81,7 +91,7 @@ export default function SurfPhotoCardAqua({
               "radial-gradient(110px 70px at 65% 35%, rgba(255,255,255,.7) 0, rgba(255,255,255,0) 60%)," +
               "radial-gradient(90px 60px at 30% 75%, rgba(255,255,255,.65) 0, rgba(255,255,255,0) 60%)",
             backgroundRepeat: "no-repeat",
-            animation: "causticsShift 14s ease-in-out infinite",
+            animation: loaded ? "causticsShift 14s ease-in-out infinite" : "none",
           }}
         />
 
@@ -95,14 +105,14 @@ export default function SurfPhotoCardAqua({
             WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 45%)",
             background:
               "conic-gradient(from 0deg at 75% -10%, rgba(255,255,255,.75) 0 10deg, transparent 12deg 360deg)",
-            animation: "raysRotate 28s linear infinite",
+            animation: loaded ? "raysRotate 28s linear infinite" : "none",
           }}
         />
 
 
         {/* Reflet subtil au hover (balayage léger) */}
         <div
-          className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/2 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-130%] transition-transform duration-700 ease-out group-hover:translate-x-[230%] motion-reduce:hidden"
+          className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/2 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-130%] transition-transform duration-500 ease-out group-hover:translate-x-[230%] motion-reduce:hidden"
         />
 
         {/* Masque sombre pour les spot details */}

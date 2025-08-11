@@ -100,7 +100,7 @@ export default async function Home() {
       <main className="max-w-7xl mx-auto px-6 lg:px-10 py-16 lg:py-20 space-y-20">
         {/* Hero Image avec effets aquatiques et spot details */}
         <SurfPhotoCardAqua 
-          src="/images/CloudNine.png"
+          src="/images/CloudNine.webp"
           causticsOpacity={0.28}
         >
           <SpotDetailsOverlay spotName="Cloud 9" />
