@@ -1,6 +1,8 @@
 "use client"
 
 import { useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
+import { useTheme } from '@/contexts/ThemeContext'
 import type { MarineWeatherData } from '@/lib/marine-weather'
 // no directional labels needed here; we render arrows only
 
@@ -101,6 +103,8 @@ function QualityCell({h,p,mobile}:{h:number;p:number;mobile?:boolean}){
 // legacy helper removed (replaced by kJ segment mapping)
 
 export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeatherData | null }) {
+  const { isDark } = useTheme()
+  
   // Use safe fallbacks so hooks are not called conditionally
   const time: string[] = weather?.hourly.time ?? []
   const swell_wave_height: number[] = weather?.hourly.swell_wave_height ?? []
@@ -223,33 +227,48 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button ref={unitsBtnRef} onClick={()=>setUnitsOpen(v=>!v)} aria-haspopup="true" aria-expanded={unitsOpen} className="p-1.5 rounded hover:bg-white/10 transition-colors" title="Units">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="text-theme-primary">
-              <path d="M12 8a4 4 0 100 8 4 4 0 000-8zm9 4l-2.1-.7a7.9 7.9 0 00-.7-1.7l1.2-1.9-1.4-1.4-1.9 1.2c-.5-.3-1.1-.6-1.7-.7L12 2l-1.4.3-.6 2.2c-.6.1-1.2.4-1.7.7L6.4 4.8 5 6.2l1.2 1.9c-.3.5-.6 1.1-.7 1.7L3 12l.5 1.4 2.2.6c.1.6.4 1.2.7 1.7L5 17.6l1.4 1.4 1.9-1.2c.5.3 1.1.6 1.7.7l.6 2.2L12 22l1.4-.3.6-2.2c.6-.1 1.2-.4 1.7-.7l1.9 1.2 1.4-1.4-1.2-1.9c.3-.5.6-1.1.7-1.7l2.2-.6L21 12z"/>
-            </svg>
+          <button onClick={()=>setHeightUnit(heightUnit==='m'?'ft':'m')} className={`p-1.5 rounded transition-colors ${isDark ? 'hover:bg-white/10' : 'hover:bg-black/10'}`} title={`Switch to ${heightUnit==='m'?'feet':'meters'}`}>
+            <Image
+              src={isDark ? '/branding/ruler-icon-dark.svg' : '/branding/ruler-icon-light.svg'}
+              alt="Height units"
+              width={20}
+              height={20}
+              className="w-4 h-4 md:w-5 md:h-5"
+            />
           </button>
+          <button onClick={()=>setWindUnit(windUnit==='kmh'?'ms':windUnit==='ms'?'kn':'kmh')} className={`p-1.5 rounded transition-colors ${isDark ? 'hover:bg-white/10' : 'hover:bg-black/10'}`} title={`Wind: ${windUnit}`}>
+            <Image
+              src={isDark ? '/branding/wind-logo-dark.svg' : '/branding/wind-logo-light.svg'}
+              alt="Wind units"
+              width={20}
+              height={20}
+              className="w-4 h-4 md:w-5 md:h-5"
+            />
+          </button>
+          {/* Popup commented out
           {unitsOpen && (
-            <div ref={unitsPanelRef} className="absolute right-0 top-full mt-2 z-40 bg-white/5 ring-1 ring-white/10 rounded-md px-3 py-2 backdrop-blur-sm">
+            <div ref={unitsPanelRef} className="absolute left-0 bottom-0 translate-x-[-100%] -translate-x-2 z-40 bg-white/5 ring-1 ring-black/10 rounded-md px-3 py-2 backdrop-blur-sm">
               <div className="text-[11px] uppercase text-theme-muted mb-2">Units</div>
               <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-theme-muted">Height</span>
-                  <div className="flex overflow-hidden rounded ring-1 ring-white/10">
-                    <button onClick={()=>setHeightUnit('m')} className={`px-2 py-1 text-xs ${heightUnit==='m'?'bg-white/10 text-theme-primary':'hover:bg-white/10'}`}>m</button>
-                    <button onClick={()=>setHeightUnit('ft')} className={`px-2 py-1 text-xs ${heightUnit==='ft'?'bg-white/10 text-theme-primary':'hover:bg-white/10'}`}>ft</button>
+                  <div className="flex overflow-hidden rounded ring-1 ring-black/10">
+                    <button onClick={()=>setHeightUnit('m')} className={`px-2 py-1 text-xs ${heightUnit==='m'?'bg-black/10 text-theme-primary':'hover:bg-black/10'}`}>m</button>
+                    <button onClick={()=>setHeightUnit('ft')} className={`px-2 py-1 text-xs ${heightUnit==='ft'?'bg-black/10 text-theme-primary':'hover:bg-black/10'}`}>ft</button>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-theme-muted">Wind</span>
-                  <div className="flex overflow-hidden rounded ring-1 ring-white/10">
-                    <button onClick={()=>setWindUnit('kmh')} className={`px-2 py-1 text-xs ${windUnit==='kmh'?'bg-white/10 text-theme-primary':'hover:bg-white/10'}`}>km/h</button>
-                    <button onClick={()=>setWindUnit('ms')} className={`px-2 py-1 text-xs ${windUnit==='ms'?'bg-white/10 text-theme-primary':'hover:bg-white/10'}`}>m/s</button>
-                    <button onClick={()=>setWindUnit('kn')} className={`px-2 py-1 text-xs ${windUnit==='kn'?'bg-white/10 text-theme-primary':'hover:bg-white/10'}`}>kn</button>
+                  <div className="flex overflow-hidden rounded ring-1 ring-black/10">
+                    <button onClick={()=>setWindUnit('kmh')} className={`px-2 py-1 text-xs ${windUnit==='kmh'?'bg-black/10 text-theme-primary':'hover:bg-black/10'}`}>km/h</button>
+                    <button onClick={()=>setWindUnit('ms')} className={`px-2 py-1 text-xs ${windUnit==='ms'?'bg-black/10 text-theme-primary':'hover:bg-black/10'}`}>m/s</button>
+                    <button onClick={()=>setWindUnit('kn')} className={`px-2 py-1 text-xs ${windUnit==='kn'?'bg-black/10 text-theme-primary':'hover:bg-black/10'}`}>kn</button>
                   </div>
                 </div>
               </div>
             </div>
           )}
+          */}
         </div>
       </div>
       <div className="rule mt-4" />

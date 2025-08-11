@@ -28,9 +28,18 @@ export default function ThemeToggle() {
   }, [])
   
   if (!mounted || !themeContext) {
-    // Return a placeholder during SSR or if context isn't available
+    // Return a clickable placeholder during SSR or if context isn't available
     return (
-      <div className="p-2 w-9 h-9 flex items-center justify-center">
+      <button 
+        className="p-2 w-9 h-9 flex items-center justify-center"
+        onClick={() => {
+          // Try to toggle theme even during hydration
+          if (themeContext?.toggleTheme) {
+            themeContext.toggleTheme()
+          }
+        }}
+        aria-label="Toggle theme"
+      >
         <Image 
           src="/branding/moon-icon-round.svg" 
           alt="Dark mode" 
@@ -39,23 +48,26 @@ export default function ThemeToggle() {
           className="w-5 h-5" 
           style={{ filter: 'brightness(0) invert(1)' }} 
         />
-      </div>
+      </button>
     )
   }
 
   const { toggleTheme, isDark } = themeContext
   
-  // Show opposite icon on hover or during animation
-  const showOpposite = isHovering || showAnimation
+  // Only show preview on hover (desktop only), not during animation on mobile
+  const showPreview = isHovering
   
-  // Handle proximity detection
+  // Handle proximity detection (desktop only)
   const handleMouseProximity = () => {
-    if (!showAnimation && !animationTimeoutRef.current) {
-      setShowAnimation(true)
-      animationTimeoutRef.current = setTimeout(() => {
-        setShowAnimation(false)
-        animationTimeoutRef.current = undefined
-      }, 1500)
+    // Only trigger on devices that support hover (desktop)
+    if (window.matchMedia('(hover: hover)').matches) {
+      if (!showAnimation && !animationTimeoutRef.current) {
+        setShowAnimation(true)
+        animationTimeoutRef.current = setTimeout(() => {
+          setShowAnimation(false)
+          animationTimeoutRef.current = undefined
+        }, 1500)
+      }
     }
   }
 
@@ -64,18 +76,25 @@ export default function ThemeToggle() {
       className="relative"
       onMouseEnter={handleMouseProximity}
     >
-      {/* Invisible expanded hover area for proximity detection */}
-      <div className="absolute -inset-4 z-0" />
+      {/* Invisible expanded hover area for proximity detection - desktop only */}
+      <div className="absolute -inset-4 z-0 hidden md:block" />
       
       <button
         onClick={toggleTheme}
-        className="relative p-2 transition-all duration-300 ease-out group z-10"
-        onMouseEnter={() => setIsHovering(true)}
+        className={`relative p-2 transition-all duration-300 ease-out group z-10 ${
+          showAnimation ? 'animate-pulse' : ''
+        }`}
+        onMouseEnter={() => {
+          // Only set hovering on devices that support hover
+          if (window.matchMedia('(hover: hover)').matches) {
+            setIsHovering(true)
+          }
+        }}
         onMouseLeave={() => setIsHovering(false)}
         aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
       >
       <div className="relative w-5 h-5">
-        {/* Sun icon */}
+        {/* Sun icon - show in light mode, OR when hovering/animating in dark mode */}
         <Image 
           src="/branding/sun-icon.svg"
           alt="Light mode"
@@ -83,9 +102,9 @@ export default function ThemeToggle() {
           height={20}
           className={`
             absolute inset-0 w-5 h-5 transition-all duration-300 ease-out
-            ${isDark 
-              ? showOpposite ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 rotate-90 scale-0'
-              : showOpposite ? 'opacity-0 rotate-90 scale-0' : 'opacity-100 rotate-0 scale-100'
+            ${(!isDark && !showPreview) || (isDark && showPreview)
+              ? 'opacity-100 rotate-0 scale-100' 
+              : 'opacity-0 rotate-90 scale-0'
             }
           `}
           style={{ 
@@ -96,7 +115,7 @@ export default function ThemeToggle() {
           }}
         />
         
-        {/* Moon icon */}
+        {/* Moon icon - show in dark mode, OR when hovering/animating in light mode */}
         <Image 
           src="/branding/moon-icon-round.svg"
           alt="Dark mode"
@@ -104,9 +123,9 @@ export default function ThemeToggle() {
           height={20}
           className={`
             absolute inset-0 w-5 h-5 transition-all duration-300 ease-out
-            ${isDark 
-              ? showOpposite ? 'opacity-0 -rotate-90 scale-0' : 'opacity-100 rotate-0 scale-100'
-              : showOpposite ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-0'
+            ${(isDark && !showPreview) || (!isDark && showPreview)
+              ? 'opacity-100 rotate-0 scale-100' 
+              : 'opacity-0 -rotate-90 scale-0'
             }
           `}
           style={{ 

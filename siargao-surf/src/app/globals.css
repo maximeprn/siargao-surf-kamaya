@@ -17,7 +17,7 @@
   --text-muted: rgba(255, 255, 255, 0.6);
   --accent: #F8CB9E;
   --border: rgba(255, 255, 255, 0.14);
-  --glass-bg: rgba(27, 51, 64, 0.6);
+  --glass-bg: rgba(27, 51, 64, 0.2);
   --glass-border: rgba(255, 255, 255, 0.14);
   --swell-color: rgba(255, 255, 255, 0.6);
   --wind-color: #F8CB9E;
@@ -44,7 +44,7 @@
   --text-muted: rgba(28, 51, 64, 0.6);
   --accent: #AEBDAF;
   --border: rgba(28, 51, 64, 0.2);
-  --glass-bg: rgba(253, 252, 245, 0.8);
+  --glass-bg: rgba(253, 252, 245, 0.3);
   --glass-border: rgba(28, 51, 64, 0.2);
   --swell-color: #1C3340;
   --wind-color: #F8CB9E;

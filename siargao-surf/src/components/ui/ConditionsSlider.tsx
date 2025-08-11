@@ -59,22 +59,27 @@ export default function ConditionsSlider({
           <div className="eyebrow">Conditions</div>
           
           {/* Mobile slide indicators - visible on mobile only */}
-          <div className="flex gap-1.5 md:hidden items-center">
-            {[0, 1].map((slide) => (
-              <div
-                key={slide}
-                className={`h-1.5 w-1.5 rounded-full transition-all duration-300 ${
-                  currentSlide === slide 
-                    ? isDark ? 'bg-white' : 'bg-gray-900'
-                    : isDark ? 'bg-white/30' : 'bg-gray-900/30'
-                }`}
-              />
-            ))}
+          <div className="flex gap-3 md:hidden items-center">
+            <div className="flex gap-1.5 items-center">
+              {[0, 1].map((slide) => (
+                <div
+                  key={slide}
+                  className={`h-1.5 w-1.5 rounded-full transition-all duration-300 ${
+                    currentSlide === slide 
+                      ? isDark ? 'bg-white' : 'bg-gray-900'
+                      : isDark ? 'bg-white/30' : 'bg-gray-900/30'
+                  }`}
+                />
+              ))}
+            </div>
+            <span className="text-[10px] font-medium text-theme-primary">
+              {currentSlide === 0 ? 'Current' : 'Optimal'}
+            </span>
           </div>
         </div>
         
         {/* Desktop navigation - SVG toggle switch */}
-        <div className="hidden md:flex flex-col items-center gap-2">
+        <div className="hidden md:flex items-center gap-3">
           {/* SVG Toggle switch */}
           <button
             onClick={() => setCurrentSlide(currentSlide === 0 ? 1 : 0)}
@@ -87,13 +92,13 @@ export default function ConditionsSlider({
                   : (isDark ? '/branding/switch-off.svg?v=2' : '/branding/switch-off-light.svg?v=2')
               }
               alt={currentSlide === 1 ? 'Switch On' : 'Switch Off'}
-              width={44}
-              height={24}
+              width={32}
+              height={18}
               className="transition-all duration-200"
             />
           </button>
           
-          {/* Label below switch */}
+          {/* Label next to switch */}
           <span className="text-[10px] font-medium text-theme-muted">
             {currentSlide === 0 ? 'Current' : 'Optimal'}
           </span>
