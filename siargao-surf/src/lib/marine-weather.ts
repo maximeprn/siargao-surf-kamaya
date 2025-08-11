@@ -52,9 +52,14 @@ export interface MarineWeatherData {
 
 export async function getMarineWeatherData(lat: number, lon: number): Promise<MarineWeatherData | null> {
   try {
-    // Get marine data
-    const marineResponse = await fetch(
-      `https://marine-api.open-meteo.com/v1/marine?latitude=${lat}&longitude=${lon}&current=wave_height,wave_direction,wave_period,wind_wave_height,wind_wave_direction,wind_wave_period,swell_wave_height,swell_wave_direction,swell_wave_period,sea_level_height_msl&hourly=wave_height,wave_direction,wave_period,wind_wave_height,swell_wave_height,swell_wave_direction,swell_wave_period,sea_level_height_msl&daily=wave_height_max,wave_period_max,wind_wave_height_max,swell_wave_height_max&timezone=Asia%2FManila`
+    // Get wave data using ncep_gfswave016 model (better wave predictions)
+    const waveResponse = await fetch(
+      `https://marine-api.open-meteo.com/v1/marine?latitude=${lat}&longitude=${lon}&current=wave_height,wave_direction,wave_period,wind_wave_height,wind_wave_direction,wind_wave_period,swell_wave_height,swell_wave_direction,swell_wave_period&hourly=wave_height,wave_direction,wave_period,wind_wave_height,swell_wave_height,swell_wave_direction,swell_wave_period&daily=wave_height_max,wave_period_max,wind_wave_height_max,swell_wave_height_max&timezone=Asia%2FManila&models=ncep_gfswave016`
+    )
+    
+    // Get tide data using default model (includes sea level data)
+    const tideResponse = await fetch(
+      `https://marine-api.open-meteo.com/v1/marine?latitude=${lat}&longitude=${lon}&current=sea_level_height_msl&hourly=sea_level_height_msl&timezone=Asia%2FManila`
     )
     
     // Get weather data
@@ -62,24 +67,32 @@ export async function getMarineWeatherData(lat: number, lon: number): Promise<Ma
       `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,windspeed_10m,winddirection_10m,weathercode&hourly=windspeed_10m,winddirection_10m&daily=temperature_2m_max,temperature_2m_min,windspeed_10m_max,weathercode&timezone=Asia%2FManila`
     )
     
-    if (!marineResponse.ok || !weatherResponse.ok) {
+    if (!waveResponse.ok || !tideResponse.ok || !weatherResponse.ok) {
       throw new Error('Failed to fetch weather data')
     }
     
-    const marineData = await marineResponse.json()
+    const waveData = await waveResponse.json()
+    const tideData = await tideResponse.json()
     const weatherData = await weatherResponse.json()
     
     console.log('Weather API Response at', new Date().toISOString(), ':', {
       time: weatherData.current.time,
       windspeed: weatherData.current.windspeed_10m,
       temperature: weatherData.current.temperature_2m,
-      tide: marineData.current.sea_level_height_msl
+      tide: tideData.current.sea_level_height_msl
     })
     
+    // Combine wave data with tide data
     return {
-      current: marineData.current,
-      hourly: marineData.hourly,
-      daily: marineData.daily,
+      current: {
+        ...waveData.current,
+        sea_level_height_msl: tideData.current.sea_level_height_msl
+      },
+      hourly: {
+        ...waveData.hourly,
+        sea_level_height_msl: tideData.hourly.sea_level_height_msl
+      },
+      daily: waveData.daily,
       weather: {
         current: {
           temperature: weatherData.current.temperature_2m,

@@ -33,19 +33,28 @@ export default function TideCurve({ tideData }: TideCurveProps){
     
     // Take 24 data points (every hour for next 24h)
     // API data is already in Asia/Manila timezone, so no need for timezone conversion
-    tidePoints = tideData.hourly.time.slice(0, 24).map((timeStr, i) => ({
-      time: new Date(timeStr).toLocaleTimeString('en-US', { 
-        hour: '2-digit', 
-        minute: '2-digit', 
-        hour12: false
-      }),
-      height: tideData.hourly.sea_level_height_msl[i]
-    }))
+    // Filter out null/undefined values from the new API model
+    tidePoints = tideData.hourly.time.slice(0, 24)
+      .map((timeStr, i) => ({
+        time: new Date(timeStr).toLocaleTimeString('en-US', { 
+          hour: '2-digit', 
+          minute: '2-digit', 
+          hour12: false
+        }),
+        height: tideData.hourly.sea_level_height_msl[i]
+      }))
+      .filter(point => point.height !== null && point.height !== undefined && !isNaN(point.height))
     
     // Calculate dynamic range based on real data
-    const heights = tidePoints.map(p => p.height)
-    H_MIN = Math.min(...heights) - 0.1
-    H_MAX = Math.max(...heights) + 0.1
+    const heights = tidePoints.map(p => p.height).filter(h => h !== null && h !== undefined && !isNaN(h))
+    if (heights.length > 0) {
+      H_MIN = Math.min(...heights) - 0.1
+      H_MAX = Math.max(...heights) + 0.1
+    } else {
+      // Fallback if no valid heights
+      H_MIN = -0.1
+      H_MAX = 1.8
+    }
     console.log('Tide range:', H_MIN, 'to', H_MAX)
   } else {
     console.log('Using fallback tide data - no real data available')
@@ -81,10 +90,16 @@ export default function TideCurve({ tideData }: TideCurveProps){
   const findExtremes = (pts: typeof points) => {
     const extremes: Array<{x: number, y: number, height: number, time: string, type: 'high' | 'low'}> = []
     
+    // Ensure we have enough points and all heights are valid numbers
+    if (pts.length < 3) return extremes
+    
     for (let i = 1; i < pts.length - 1; i++) {
       const prev = pts[i - 1]
       const curr = pts[i]
       const next = pts[i + 1]
+      
+      // Skip if any height is null/undefined
+      if (prev.height == null || curr.height == null || next.height == null) continue
       
       // High tide: current point is higher than both neighbors
       if (curr.height > prev.height && curr.height > next.height) {
@@ -217,7 +232,7 @@ export default function TideCurve({ tideData }: TideCurveProps){
           return (
             <g key={i} stroke="var(--tide-labels)" strokeWidth="0.3">
               <line x1={X0-4} y1={y} x2={X0+4} y2={y} />
-              <text className="svg-label" x={X0-8} y={y+4} textAnchor="end" fill="var(--tide-labels)">{t.toFixed(1)}m</text>
+              <text className="svg-label" x={X0-8} y={y+4} textAnchor="end" fill="var(--tide-labels)">{(t !== null && t !== undefined) ? t.toFixed(1) : '0.0'}m</text>
             </g>
           )
         })
@@ -258,7 +273,7 @@ export default function TideCurve({ tideData }: TideCurveProps){
               fill={labelColor}
               fontSize="11"
             >
-              <tspan x={point.x} dy="0">{point.height.toFixed(1)}m</tspan>
+              <tspan x={point.x} dy="0">{(point.height !== null && point.height !== undefined) ? point.height.toFixed(1) : '0.0'}m</tspan>
               <tspan x={point.x} dy="12" fontSize="9" fill="var(--tide-labels)">{point.time}</tspan>
             </text>
           </g>
@@ -266,93 +281,136 @@ export default function TideCurve({ tideData }: TideCurveProps){
       })}
       
       {/* Current tide level indicator */}
-      {currentPointOnCurve && (
-        <g>
-          <circle 
-            cx={currentPointOnCurve.x} 
-            cy={currentPointOnCurve.y} 
-            r="6" 
-            fill="var(--tide-curve)" 
-            stroke="var(--tide-labels)" 
-            strokeOpacity="0.8"
-            strokeWidth="2"
-          />
-          {/* Current height label - larger font */}
-          <text 
-            x={currentPointOnCurve.x} 
-            y={currentPointOnCurve.y - 18} 
-            textAnchor="middle" 
-            className="svg-label" 
-            fill="var(--tide-curve)"
-            fontSize="13"
-            fontWeight="600"
-          >
-            {currentPointOnCurve.height.toFixed(1)}m
-          </text>
-        </g>
-      )}
+      {currentPointOnCurve && (() => {
+        // Check if current point is too close to any extreme point (high/low tide)
+        // Use larger threshold on mobile (smaller screens need more spacing)
+        const DISTANCE_THRESHOLD = typeof window !== 'undefined' && window.innerWidth < 768 ? 70 : 50 // pixels
+        const isTooCloseToExtreme = extremePoints.some(extreme => {
+          const distance = Math.sqrt(
+            Math.pow(currentPointOnCurve.x - extreme.x, 2) + 
+            Math.pow(currentPointOnCurve.y - extreme.y, 2)
+          )
+          return distance < DISTANCE_THRESHOLD
+        })
+        
+        // Don't show current height label if too close to existing extreme labels
+        const showCurrentLabel = !isTooCloseToExtreme
+        
+        return (
+          <g>
+            <circle 
+              cx={currentPointOnCurve.x} 
+              cy={currentPointOnCurve.y} 
+              r="6" 
+              fill="var(--tide-curve)" 
+              stroke="var(--tide-labels)" 
+              strokeOpacity="0.8"
+              strokeWidth="2"
+            />
+            {/* Current height label - only show if not too close to existing labels */}
+            {showCurrentLabel && (
+              <text 
+                x={currentPointOnCurve.x} 
+                y={currentPointOnCurve.y - 18} 
+                textAnchor="middle" 
+                className="svg-label" 
+                fill="var(--tide-curve)"
+                fontSize="13"
+                fontWeight="600"
+              >
+                {(currentPointOnCurve.height !== null && currentPointOnCurve.height !== undefined) ? currentPointOnCurve.height.toFixed(1) : '0.0'}m
+              </text>
+            )}
+          </g>
+        )
+      })()}
 
       {/* Hover point indicator */}
-      {hoverPoint && (
-        <g>
-          {/* Vertical line at hover point */}
-          <line 
-            x1={hoverPoint.x} 
-            y1={Y_TOP} 
-            x2={hoverPoint.x} 
-            y2={Y_BOT} 
-            stroke="var(--tide-labels)"
-            strokeOpacity="0.5" 
-            strokeWidth="1"
-            strokeDasharray="3 3"
-          />
-          
-          {/* Hover point circle */}
-          <circle 
-            cx={hoverPoint.x} 
-            cy={hoverPoint.y} 
-            r="5" 
-            fill="var(--tide-curve)" 
-            stroke="var(--tide-labels)" 
-            strokeOpacity="0.9"
-            strokeWidth="2"
-          />
-          
-          {/* Tooltip */}
+      {hoverPoint && (() => {
+        // Check if hover point is too close to any extreme point (high/low tide)
+        // Use larger threshold on mobile (smaller screens need more spacing)
+        const DISTANCE_THRESHOLD = typeof window !== 'undefined' && window.innerWidth < 768 ? 70 : 50 // pixels
+        const isTooCloseToExtreme = extremePoints.some(extreme => {
+          const distance = Math.sqrt(
+            Math.pow(hoverPoint.x - extreme.x, 2) + 
+            Math.pow(hoverPoint.y - extreme.y, 2)
+          )
+          return distance < DISTANCE_THRESHOLD
+        })
+        
+        // Also check if too close to current point
+        const isTooCloseToCurrent = currentPointOnCurve && 
+          Math.sqrt(
+            Math.pow(hoverPoint.x - currentPointOnCurve.x, 2) + 
+            Math.pow(hoverPoint.y - currentPointOnCurve.y, 2)
+          ) < DISTANCE_THRESHOLD
+        
+        // Don't show tooltip if too close to existing labels
+        const showTooltip = !isTooCloseToExtreme && !isTooCloseToCurrent
+        
+        return (
           <g>
-            <rect 
-              x={hoverPoint.x - 35} 
-              y={hoverPoint.y - 45} 
-              width="70" 
-              height="30" 
-              rx="4" 
-              fill="rgba(0,0,0,0.8)" 
-              stroke="var(--text-primary)" 
-              strokeOpacity="0.3"
+            {/* Vertical line at hover point */}
+            <line 
+              x1={hoverPoint.x} 
+              y1={Y_TOP} 
+              x2={hoverPoint.x} 
+              y2={Y_BOT} 
+              stroke="var(--tide-labels)"
+              strokeOpacity="0.5" 
               strokeWidth="1"
+              strokeDasharray="3 3"
             />
-            <text 
-              x={hoverPoint.x} 
-              y={hoverPoint.y - 33} 
-              textAnchor="middle" 
-              className="tooltip-text" 
-              fontSize="11"
-              fontWeight="600"
-            >
-              {hoverPoint.height.toFixed(1)}m
-            </text>
-            <text 
-              x={hoverPoint.x} 
-              y={hoverPoint.y - 21} 
-              textAnchor="middle" 
-              className="tooltip-text" 
-              fontSize="9"
-            >
-              {hoverPoint.time}
-            </text>
+            
+            {/* Hover point circle */}
+            <circle 
+              cx={hoverPoint.x} 
+              cy={hoverPoint.y} 
+              r="5" 
+              fill="var(--tide-curve)" 
+              stroke="var(--tide-labels)" 
+              strokeOpacity="0.9"
+              strokeWidth="2"
+            />
+            
+            {/* Tooltip - only show if not too close to existing labels */}
+            {showTooltip && (
+              <g>
+                <rect 
+                  x={hoverPoint.x - 35} 
+                  y={hoverPoint.y - 45} 
+                  width="70" 
+                  height="30" 
+                  rx="4" 
+                  fill="rgba(0,0,0,0.8)" 
+                  stroke="var(--text-primary)" 
+                  strokeOpacity="0.3"
+                  strokeWidth="1"
+                />
+                <text 
+                  x={hoverPoint.x} 
+                  y={hoverPoint.y - 33} 
+                  textAnchor="middle" 
+                  className="tooltip-text" 
+                  fontSize="11"
+                  fontWeight="600"
+                >
+                  {(hoverPoint.height !== null && hoverPoint.height !== undefined) ? hoverPoint.height.toFixed(1) : '0.0'}m
+                </text>
+                <text 
+                  x={hoverPoint.x} 
+                  y={hoverPoint.y - 21} 
+                  textAnchor="middle" 
+                  className="tooltip-text" 
+                  fontSize="9"
+                >
+                  {hoverPoint.time}
+                </text>
+              </g>
+            )}
           </g>
-        </g>
-      )}
+        )
+      })()}
 
       <line x1={xNow} y1={Y_TOP} x2={xNow} y2={Y_BOT} stroke="var(--tide-labels)" strokeOpacity="0.47" strokeDasharray="2 4" />
     </svg>

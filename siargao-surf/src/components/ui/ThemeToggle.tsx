@@ -2,6 +2,7 @@
 
 import { useThemeOptional } from '@/contexts/ThemeContext'
 import { useEffect, useState, useRef } from 'react'
+import Image from 'next/image'
 
 export default function ThemeToggle() {
   const [mounted, setMounted] = useState(false)
@@ -30,7 +31,14 @@ export default function ThemeToggle() {
     // Return a placeholder during SSR or if context isn't available
     return (
       <div className="p-2 w-9 h-9 flex items-center justify-center">
-        <img src="/branding/moon-icon-round.svg" alt="Dark mode" className="w-5 h-5" style={{ filter: 'brightness(0) invert(1)' }} />
+        <Image 
+          src="/branding/moon-icon-round.svg" 
+          alt="Dark mode" 
+          width={20} 
+          height={20} 
+          className="w-5 h-5" 
+          style={{ filter: 'brightness(0) invert(1)' }} 
+        />
       </div>
     )
   }
@@ -68,9 +76,11 @@ export default function ThemeToggle() {
       >
       <div className="relative w-5 h-5">
         {/* Sun icon */}
-        <img 
+        <Image 
           src="/branding/sun-icon.svg"
           alt="Light mode"
+          width={20}
+          height={20}
           className={`
             absolute inset-0 w-5 h-5 transition-all duration-300 ease-out
             ${isDark 
@@ -87,9 +97,11 @@ export default function ThemeToggle() {
         />
         
         {/* Moon icon */}
-        <img 
+        <Image 
           src="/branding/moon-icon-round.svg"
           alt="Dark mode"
+          width={20}
+          height={20}
           className={`
             absolute inset-0 w-5 h-5 transition-all duration-300 ease-out
             ${isDark 

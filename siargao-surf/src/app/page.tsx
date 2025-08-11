@@ -113,7 +113,6 @@ export default async function Home() {
             gaugeLabel={gaugeLabel}
             weather={weather}
             tideHeight={tideHeight}
-            quality={quality}
             calculateWaveEnergy={calculateWaveEnergy}
             degreesToCardinal={degreesToCardinal}
             fallbackText={weather ? (

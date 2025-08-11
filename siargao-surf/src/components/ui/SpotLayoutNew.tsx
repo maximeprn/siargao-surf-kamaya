@@ -1,6 +1,7 @@
 import SurfQualityGauge from '@/components/ui/SurfQualityGauge'
 import SwellCompassWithLegend from '@/components/ui/SwellCompassWithLegend'
 import TideCurve from '@/components/ui/TideCurve'
+import SevenDayPrimarySwell from '@/components/ui/SevenDayPrimarySwell'
 import AISpotReport from '@/components/ui/AISpotReport'
 import { siargaoSpotsComplete } from '@/lib/spot-configs'
 import type { SpotMeta } from '@/lib/spot-configs'
@@ -14,20 +15,11 @@ interface SpotLayoutNewProps {
   gaugeLabel: string
   weather: MarineWeatherData | null
   tideHeight: number
-  quality: Record<string, unknown> | null
   calculateWaveEnergy: (height: number, period: number) => number
   degreesToCardinal: (degrees: number) => string
   fallbackText: string
 }
 
-function KeyValue({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex justify-between py-2 border-b border-glass last:border-b-0">
-      <span className="text-theme-muted text-sm">{label}</span>
-      <span className="text-theme-primary font-medium text-sm">{value}</span>
-    </div>
-  )
-}
 
 export default function SpotLayoutNew({ 
   spotId, 
@@ -36,8 +28,7 @@ export default function SpotLayoutNew({
   effectiveHeight, 
   gaugeLabel, 
   weather, 
-  tideHeight, 
-  quality,
+  tideHeight,
   calculateWaveEnergy,
   degreesToCardinal,
   fallbackText
@@ -86,7 +77,7 @@ export default function SpotLayoutNew({
 
           {/* Tide Chart - centré verticalement sur mobile, ancré en bas sur desktop */}
           <div className="mt-8 lg:mt-auto text-left">
-            <div className="eyebrow">Tide chart</div>
+            <div className="eyebrow mt-4">Tide chart</div>
             <div className="rule mt-4" />
             <div className="mt-4 w-[80vw] max-w-[500px] lg:w-full lg:max-w-none lg:scale-80 lg:origin-bottom-left">
               <TideCurve 
@@ -210,6 +201,11 @@ export default function SpotLayoutNew({
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Full-width 7-day Primary Swell section after existing blocks */}
+          <div className="mt-16">
+            <SevenDayPrimarySwell weather={weather} />
       </div>
     </section>
   )

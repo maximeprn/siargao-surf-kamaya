@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { Menu } from 'lucide-react'
 import SideMenu from './SideMenu'
 import ThemeToggle from './ThemeToggle'
@@ -17,9 +18,11 @@ function ByKamaya() {
       rel="noopener noreferrer"
       className="select-none cursor-pointer hover:opacity-80 transition-opacity duration-200"
     >
-      <img 
+      <Image 
         src={isDark ? "/branding/by-kamaya.svg?v=4" : "/branding/by-kamaya-light.svg"} 
         alt="by Kamaya" 
+        width={120}
+        height={40}
         className="w-auto transition-all duration-300"
         style={{ height: 'var(--logo-svg)' }}
       />
@@ -33,9 +36,11 @@ function KamayaSurfLogo() {
   
   return (
     <div className="select-none absolute left-1/2 transform -translate-x-1/2">
-      <img 
+      <Image 
         src={isDark ? "/branding/surf-report-logo.svg" : "/branding/surf-report-logo-light.svg"} 
         alt="Surf Report" 
+        width={150}
+        height={50}
         className="w-auto transition-all duration-300"
         style={{ height: 'var(--logo-center-svg)' }}
       />
@@ -67,7 +72,7 @@ export default function Header() {
             <nav className="hidden md:flex items-center gap-6">
               <button
                 onClick={() => setIsSideMenuOpen(true)}
-                className="text-theme-primary hover:font-semibold cursor-pointer transition-all duration-200 text-base px-3 py-2"
+                className="text-theme-primary hover:font-medium cursor-pointer transition-all duration-200 text-base px-3 py-2 font-normal"
               >
                 Surf Spots
               </button>

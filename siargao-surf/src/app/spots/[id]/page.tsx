@@ -121,7 +121,6 @@ export default async function SpotPage({ params }: { params: Promise<{ id: strin
           gaugeLabel={gaugeLabel}
           weather={weather}
           tideHeight={tideHeight}
-          quality={quality}
           calculateWaveEnergy={calculateWaveEnergy}
           degreesToCardinal={degreesToCardinal}
           fallbackText={weather ? (
