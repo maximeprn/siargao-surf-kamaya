@@ -6,14 +6,9 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   output: 'standalone',
   
-  // Image optimization
+  // Image optimization - disabled for development
   images: {
-    domains: ['images.unsplash.com', 'res.cloudinary.com', 'cdn.jsdelivr.net', 'kamaya.twic.pics', 'raw.githubusercontent.com'],
-    formats: ['image/avif', 'image/webp'],
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    minimumCacheTTL: 60 * 60 * 24 * 365, // 1 year
-    unoptimized: false,
+    unoptimized: true,
   },
 
   // Bundle analyzer and webpack optimization

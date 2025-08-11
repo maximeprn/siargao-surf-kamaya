@@ -2,8 +2,8 @@
 // Ces URLs pointent vers des CDN edge locations pour un chargement ultra-rapide
 
 export const CDN_IMAGES = {
-  // GitHub direct (fonctionne immédiatement)
-  cloudNine: 'https://raw.githubusercontent.com/maximeprn/siargao-surf-kamaya/main/siargao-surf/public/images/CloudNine.webp',
+  // Using local images from public folder
+  cloudNine: '/images/CloudNine.webp',
   
   // TwicPics à utiliser une fois configuré :
   // cloudNine: 'https://kamaya.twic.pics/github/CloudNine.webp?twic=v1/resize=1920/quality=85',

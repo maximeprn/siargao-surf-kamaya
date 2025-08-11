@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
+import { useTheme } from '@/contexts/ThemeContext'
 import type { MarineWeatherData } from '@/lib/marine-weather'
 import type { SpotMeta } from '@/lib/spot-configs'
 
@@ -18,6 +20,7 @@ export default function ConditionsSlider({
   degreesToCardinal
 }: ConditionsSliderProps) {
   const [currentSlide, setCurrentSlide] = useState(0)
+  const { isDark } = useTheme()
 
   const nextSlide = () => setCurrentSlide(prev => (prev + 1) % 2)
   const prevSlide = () => setCurrentSlide(prev => (prev - 1 + 2) % 2)
@@ -52,21 +55,48 @@ export default function ConditionsSlider({
   return (
     <div className="relative">
       <div className="flex items-center justify-between mb-4">
-        <div className="eyebrow">Conditions</div>
+        <div className="flex items-center gap-3">
+          <div className="eyebrow">Conditions</div>
+          
+          {/* Mobile slide indicators - visible on mobile only */}
+          <div className="flex gap-1.5 md:hidden items-center">
+            {[0, 1].map((slide) => (
+              <div
+                key={slide}
+                className={`h-1.5 w-1.5 rounded-full transition-all duration-300 ${
+                  currentSlide === slide 
+                    ? isDark ? 'bg-white' : 'bg-gray-900'
+                    : isDark ? 'bg-white/30' : 'bg-gray-900/30'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
         
-        {/* Desktop navigation - toggle button */}
-        <div className="hidden md:flex items-center gap-3">
-          {/* Toggle button labeled "Optimal" */}
+        {/* Desktop navigation - SVG toggle switch */}
+        <div className="hidden md:flex flex-col items-center gap-2">
+          {/* SVG Toggle switch */}
           <button
             onClick={() => setCurrentSlide(currentSlide === 0 ? 1 : 0)}
-            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${
-              currentSlide === 1
-                ? 'bg-theme-primary text-white'
-                : 'bg-glass text-theme-muted hover:bg-theme-primary/20 hover:text-theme-primary'
-            }`}
+            className="focus:outline-none transition-transform duration-200 hover:scale-105"
           >
-            Optimal
+            <Image
+              src={
+                currentSlide === 1 
+                  ? (isDark ? '/branding/switch-on.svg?v=2' : '/branding/switch-on-light.svg?v=2')
+                  : (isDark ? '/branding/switch-off.svg?v=2' : '/branding/switch-off-light.svg?v=2')
+              }
+              alt={currentSlide === 1 ? 'Switch On' : 'Switch Off'}
+              width={44}
+              height={24}
+              className="transition-all duration-200"
+            />
           </button>
+          
+          {/* Label below switch */}
+          <span className="text-[10px] font-medium text-theme-muted">
+            {currentSlide === 0 ? 'Current' : 'Optimal'}
+          </span>
         </div>
       </div>
 
@@ -200,20 +230,6 @@ export default function ConditionsSlider({
         </div>
       </div>
 
-      {/* Mobile slide indicator */}
-      <div className="flex justify-center gap-2 mt-4 md:hidden">
-        {[0, 1].map((slide) => (
-          <button
-            key={slide}
-            onClick={() => setCurrentSlide(slide)}
-            className={`w-2 h-2 rounded-full transition-colors ${
-              currentSlide === slide 
-                ? 'bg-theme-primary' 
-                : 'bg-theme-muted opacity-40'
-            }`}
-          />
-        ))}
-      </div>
     </div>
   )
 }
