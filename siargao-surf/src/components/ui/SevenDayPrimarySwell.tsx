@@ -265,28 +265,50 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
               <div className="text-theme-muted text-[11px] uppercase tracking-wider">Energy</div>
             </div>
             <div className="rule" />
+            {/* Mobile column labels */}
+            <div className="sm:hidden flex items-center justify-between px-0 py-1 text-[10px] uppercase tracking-wider text-theme-muted">
+              <div>Surf</div>
+              <div>Swell</div>
+              <div>Wind</div>
+            </div>
             {todayRows.map((r, idx)=> (
               <div key={r.t}>
-                {/* Mobile card-like row */}
-                <div className="sm:hidden py-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex flex-col items-start">
-                      <div className="text-theme-muted text-[10px] uppercase tracking-wider">{r.t}</div>
-                      <div className="text-theme-primary text-base font-semibold">{Number.isFinite((r as unknown as {surf:number}).surf) ? (r as unknown as {surf:number}).surf.toFixed(1) : '—'} m</div>
+                {/* Mobile card-like row (grid) */}
+                <div className="sm:hidden py-2 border-t border-white/10">
+                  <div className="grid grid-cols-[56px_130px_minmax(0,1fr)_1px_64px_48px] items-center gap-3 min-h-[72px]">
+                    {/* time column */}
+                    <div className="flex flex-col items-center justify-center h-full">
+                      <div className="grid grid-rows-3 gap-1 w-1.5" aria-hidden="true">
+                        <span className="h-2 rounded-sm border border-white/20" />
+                        <span className="h-2 rounded-sm border border-white/20" />
+                        <span className="h-2 rounded-sm border border-white/20" />
+                      </div>
+                      <div className="mt-2 text-[10px] text-theme-muted whitespace-nowrap transform -rotate-90 origin-center">{r.t}</div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-2 text-sm">
-                        <span className="text-theme-primary font-medium">{formatHeight(r.h)}</span>
-                        <span className="text-theme-primary font-medium">{r.p?.toFixed(0)} s</span>
-                        <DirArrow deg={r.d} />
+                    {/* surf card */}
+                    <div className="border border-white/10 rounded-xl px-3 py-2 text-center whitespace-nowrap">
+                      <span className="text-theme-primary text-sm font-medium">{Number.isFinite((r as unknown as {surf:number}).surf) ? (r as unknown as {surf:number}).surf.toFixed(1) : '—'} m</span>
+                    </div>
+                    {/* swell card */}
+                    <div className="border border-white/10 rounded-xl px-3 py-2 flex flex-col gap-1">
+                      <div className="flex items-center gap-3">
+                        <span className="text-theme-primary text-sm font-medium">{formatHeight(r.h)}</span>
+                        <span className="text-theme-primary text-sm font-medium">{r.p?.toFixed(0)} s</span>
+                        <span className="ml-auto" aria-hidden="true"><DirArrow deg={r.d} /></span>
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-theme-primary">
-                        <span>{formatWind(Math.round(r.ws))}</span>
-                        <DirArrow deg={r.wd} />
-                      </div>
+                      <div className="text-[10px]"><QualityCell h={r.h} p={r.p} /></div>
+                    </div>
+                    {/* vertical divider */}
+                    <div className="h-full border-l border-white/10" aria-hidden="true" />
+                    {/* wind value */}
+                    <div className="flex items-baseline justify-center gap-1 text-theme-primary text-sm whitespace-nowrap">
+                      <span>{formatWind(Math.round(r.ws))}</span>
+                    </div>
+                    {/* wind dir tile */}
+                    <div className="w-12 aspect-square border border-white/10 rounded-xl flex items-center justify-center" aria-hidden="true">
+                      <DirArrow deg={r.wd} />
                     </div>
                   </div>
-                  <div className="mt-1 text-[10px]"><QualityCell h={r.h} p={r.p} /></div>
                 </div>
 
                 {/* Desktop grid row */}
@@ -394,26 +416,42 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
                         </div>
                       </div>
 
-                      {/* Mobile row */}
-                      <div className="sm:hidden py-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex flex-col items-start">
-                            <div className="text-theme-muted text-[10px] uppercase tracking-wider">{r.t}</div>
-                            <div className="text-theme-primary text-base font-semibold">{Number.isFinite((r as unknown as {surf:number}).surf) ? (r as unknown as {surf:number}).surf.toFixed(1) : '—'} m</div>
+                      {/* Mobile row (grid) */}
+                      <div className="sm:hidden py-2 border-t border-white/10">
+                        <div className="grid grid-cols-[56px_130px_minmax(0,1fr)_1px_64px_48px] items-center gap-3 min-h-[72px]">
+                          {/* time column */}
+                          <div className="flex flex-col items-center justify-center h-full">
+                            <div className="grid grid-rows-3 gap-1 w-1.5" aria-hidden="true">
+                              <span className="h-2 rounded-sm border border-white/20" />
+                              <span className="h-2 rounded-sm border border-white/20" />
+                              <span className="h-2 rounded-sm border border-white/20" />
+                            </div>
+                            <div className="mt-2 text-[10px] text-theme-muted whitespace-nowrap transform -rotate-90 origin-center">{r.t}</div>
                           </div>
-                          <div className="flex items-center gap-3">
-                            <div className="flex items-center gap-2 text-sm">
-                              <span className="text-theme-primary font-medium">{formatHeight(r.h)}</span>
-                              <span className="text-theme-primary font-medium">{r.p?.toFixed(0)} s</span>
-                              <DirArrow deg={r.d} />
+                          {/* surf card */}
+                          <div className="border border-white/10 rounded-xl px-3 py-2 text-center whitespace-nowrap">
+                            <span className="text-theme-primary text-sm font-medium">{Number.isFinite((r as unknown as {surf:number}).surf) ? (r as unknown as {surf:number}).surf.toFixed(1) : '—'} m</span>
+                          </div>
+                          {/* swell card */}
+                          <div className="border border-white/10 rounded-xl px-3 py-2 flex flex-col gap-1">
+                            <div className="flex items-center gap-3">
+                              <span className="text-theme-primary text-sm font-medium">{formatHeight(r.h)}</span>
+                              <span className="text-theme-primary text-sm font-medium">{r.p?.toFixed(0)} s</span>
+                              <span className="ml-auto" aria-hidden="true"><DirArrow deg={r.d} /></span>
                             </div>
-                            <div className="flex items-center gap-2 text-sm text-theme-primary">
-                              <span>{formatWind(Math.round(r.ws))}</span>
-                              <DirArrow deg={r.wd} />
-                            </div>
+                            <div className="text-[10px]"><QualityCell h={r.h} p={r.p} /></div>
+                          </div>
+                          {/* vertical divider */}
+                          <div className="h-full border-l border-white/10" aria-hidden="true" />
+                          {/* wind value */}
+                          <div className="flex items-baseline justify-center gap-1 text-theme-primary text-sm whitespace-nowrap">
+                            <span>{formatWind(Math.round(r.ws))}</span>
+                          </div>
+                          {/* wind dir tile */}
+                          <div className="w-12 aspect-square border border-white/10 rounded-xl flex items-center justify-center" aria-hidden="true">
+                            <DirArrow deg={r.wd} />
                           </div>
                         </div>
-                        <div className="mt-1 text-[10px]"><QualityCell h={r.h} p={r.p} /></div>
                       </div>
 
                       <div className="rule sm:hidden" />
