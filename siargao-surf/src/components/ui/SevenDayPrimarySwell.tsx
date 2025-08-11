@@ -95,7 +95,7 @@ function qualityLabelFromLevel(level:number): {label:string;shortLabel:string;co
 function QualityCell({h,p,mobile}:{h:number;p:number;mobile?:boolean}){
   const level = qualityLevelFromKJ(energyKJ(h,p))
   const q = qualityLabelFromLevel(level)
-  return <div className={`font-medium ${mobile ? 'text-[8px]' : 'text-xs'} ${q.color}`}>{q.label}</div>
+  return <div className={`font-medium ${mobile ? 'text-[10px]' : 'text-xs'} ${q.color}`}>{q.label}</div>
 }
 
 // dot mapping removed (we reverted to segmented mini-gauge)
@@ -208,8 +208,8 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
 
   if (days.length === 0) return null
 
-  const colsDays = 'grid grid-cols-[180px_1fr_1fr_1fr_1fr_1fr] items-center gap-6 text-center'
-  const colsToday = 'grid grid-cols-[72px_1fr_1fr_1fr_1fr_1fr] items-center gap-6 text-center'
+  const colsDays = 'grid grid-cols-[120px_1fr_1fr_1fr_1fr_1fr] items-center gap-4 text-center'
+  const colsToday = 'grid grid-cols-[60px_1fr_1fr_1fr_1fr_1fr] items-center gap-4 text-center'
 
   const formatHeight = (meters:number)=> heightUnit === 'm' 
     ? `${meters.toFixed(1)} m` 
@@ -343,7 +343,7 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
         {mode === 'today' ? (
           <div className="space-y-2">
             <div className={`${colsToday} py-1 hidden sm:grid`}>
-              <div className="text-theme-muted text-[11px] uppercase tracking-wider">Time</div>
+              <div className="text-theme-muted text-[11px] uppercase tracking-wider"></div>
               <div className="text-theme-muted text-[11px] uppercase tracking-wider">Surf</div>
               <div className="text-theme-muted text-[11px] uppercase tracking-wider">Swell</div>
               <div className="text-theme-muted text-[11px] uppercase tracking-wider">Wind</div>
@@ -367,7 +367,7 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
             ) : todayRows.map((r, idx)=> (
               <div key={r.t}>
                 {/* Mobile simplified row (3 columns only: Surf, Swell, Wind) */}
-                <div className="sm:hidden py-1 border-t border-white/10">
+                <div className="block sm:hidden py-1 border-t border-white/10">
                   <div className="grid grid-cols-[40px_1fr_1fr_1fr] items-center gap-1 min-h-[48px]">
                     {/* time column */}
                     <div className="flex items-center justify-center h-full">
@@ -390,7 +390,7 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
                           </span>
                         </div>
                       </div>
-                      <div className="text-center text-[8px] mt-1"><QualityCell h={r.h} p={r.p} mobile /></div>
+                      <div className="text-center text-[10px] mt-0.5"><QualityCell h={r.h} p={r.p} mobile /></div>
                     </div>
                     {/* wind data */}
                     <div className="flex items-center justify-center h-full">
@@ -410,7 +410,7 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
 
                 {/* Desktop grid row */}
                 <div className={`${colsToday} py-2 items-center hidden sm:grid`}>
-                  <div className="text-theme-muted text-xs">{r.t}</div>
+                  <div className="text-theme-muted text-xs text-left">{r.t}</div>
                   <div className="flex items-center justify-center"><div className="text-theme-primary text-sm font-medium">{Number.isFinite((r as unknown as {surf:number}).surf) ? (r as unknown as {surf:number}).surf.toFixed(1) : '—'} m</div></div>
                   <div className="flex items-center justify-center space-x-4">
                     <div className="text-theme-primary text-sm font-medium">{formatHeight(r.h)}</div>
@@ -439,7 +439,6 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
                     })()}
                   </div>
                 </div>
-                <div className="rule sm:hidden" />
                 {idx < todayRows.length - 1 && <div className="rule hidden sm:block" />}
               </div>
             ))}
@@ -465,7 +464,7 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
               <div className={`mt-2`}>
                   {/* Column labels (desktop) */}
                   <div className={`${colsDays} py-1 hidden sm:grid`}>
-                    <div className="text-theme-muted text-[11px] uppercase tracking-wider">Time</div>
+                    <div className="text-theme-muted text-[11px] uppercase tracking-wider"></div>
                     <div className="text-theme-muted text-[11px] uppercase tracking-wider">Surf</div>
                     <div className="text-theme-muted text-[11px] uppercase tracking-wider">Swell</div>
                     <div className="text-theme-muted text-[11px] uppercase tracking-wider">Wind</div>
@@ -484,7 +483,7 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
                     <div key={r.t}>
                       {/* Desktop row */}
                       <div className={`${colsDays} py-2 items-center hidden sm:grid`}>
-                        <div className="text-theme-muted text-xs">{r.t}</div>
+                        <div className="text-theme-muted text-xs text-left">{r.t}</div>
                         <div className="flex items-center justify-center"><div className="text-theme-primary text-sm font-medium">{Number.isFinite((r as unknown as {surf:number}).surf) ? (r as unknown as {surf:number}).surf.toFixed(1) : '—'} m</div></div>
                         <div className="flex items-center justify-center space-x-4">
                           <div className="text-theme-primary text-sm font-medium">{formatHeight(r.h)}</div>
@@ -513,9 +512,10 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
                           })()}
                         </div>
                       </div>
+                      {idx < rows.length - 1 && <div className="rule hidden sm:block" />}
 
                       {/* Mobile simplified row (3 columns only: Surf, Swell, Wind) */}
-                      <div className="sm:hidden py-1 border-t border-white/10">
+                      <div className="block sm:hidden py-1 border-t border-white/10">
                         <div className="grid grid-cols-[40px_1fr_1fr_1fr] items-center gap-1 min-h-[48px]">
                           {/* time column */}
                           <div className="flex items-center justify-center h-full">
@@ -538,7 +538,7 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
                                 </span>
                               </div>
                             </div>
-                            <div className="text-center text-[8px] mt-1"><QualityCell h={r.h} p={r.p} mobile /></div>
+                            <div className="text-center text-[10px] mt-0.5"><QualityCell h={r.h} p={r.p} mobile /></div>
                           </div>
                           {/* wind data */}
                           <div className="flex items-center justify-center h-full">
@@ -555,9 +555,6 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
                           </div>
                         </div>
                       </div>
-
-                      <div className="rule sm:hidden" />
-                      {idx < rows.length - 1 && <div className="rule hidden sm:block" />}
                     </div>
                   ))}
               </div>
