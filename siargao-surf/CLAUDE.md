@@ -98,10 +98,16 @@ Application web de surf forecasting pour Siargao (Philippines) avec données mé
 ## Development Workflow
 
 ### Commands
-- `npm run dev` - Development server (http://localhost:3002)
+- `npm run dev` - Development server (http://localhost:3000)
 - `npm run build` - Production build
 - `npm run lint` - ESLint checking
 - `npm run typecheck` - TypeScript validation
+
+### Server Management
+- **Always terminate existing dev servers** before starting a new one
+- **Kill all Next.js processes**: Use `pkill -f "next dev"` before launching
+- **Claim port 3000**: Always try to use port 3000 for consistency
+- **Clean startup**: Ensures no zombie processes or port conflicts
 
 ### Git Workflow
 - Always commit with descriptive messages
@@ -164,3 +170,4 @@ Application web de surf forecasting pour Siargao (Philippines) avec données mé
 - Add surf session tracking and user accounts
 - Improve mobile UX for dropdown interactions
 - Add PWA capabilities for offline access
+- Ask the user to commit to GH every 10 modifications

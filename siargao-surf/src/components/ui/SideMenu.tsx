@@ -90,29 +90,33 @@ export default function SideMenu({ isOpen, onClose }: SideMenuProps) {
 
   return (
     <>
-      {/* Backdrop */}
+      {/* Invisible backdrop to capture clicks outside */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 z-40 transition-opacity duration-300"
+          className="fixed inset-0 z-40"
           onClick={onClose}
         />
       )}
 
       {/* Side menu */}
       <div 
-        className={`fixed top-0 right-0 h-full w-80 max-w-[90vw] z-50 transform transition-transform duration-300 ease-in-out ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
+        className={`fixed w-80 max-w-[90vw] z-50 transform transition-all duration-300 ease-in-out rounded-2xl overflow-hidden ${
+          isOpen ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
         }`}
         style={{ 
+          top: '72px', // 56px navbar height + 16px spacing
+          right: '24px', // 24px from right edge, aligned with navbar buttons
+          height: 'calc(100vh - 88px)', // Full height minus navbar and spacing
           background: 'var(--glass-bg)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
-          borderLeft: '1px solid var(--glass-border)'
+          border: '1px solid var(--glass-border)',
+          boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15), 0 2px 10px rgba(0, 0, 0, 0.1)'
         }}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-glass">
-          <h2 className="text-lg font-medium text-theme-primary">Surf Spots</h2>
+          <h2 className="text-xl font-medium text-theme-primary font-analogue">Surf Spots</h2>
           <button 
             onClick={onClose}
             className="p-2 rounded-lg hover:bg-white/10 transition-colors"

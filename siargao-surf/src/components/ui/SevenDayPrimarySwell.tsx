@@ -12,7 +12,7 @@ function dayLabel(dateStr: string, index: number, mobile: boolean = false): stri
   const dayDiff = Math.floor(
     (+new Date(d.toDateString()) - +new Date(today.toDateString())) / 86400000
   )
-  if (index === 0 && dayDiff === 0) return mobile ? 'TOD' : 'Today'
+  if (index === 0 && dayDiff === 0) return 'Today'
   if (index === 0 && dayDiff === 1) return 'Tomorrow'
   
   if (mobile) {
@@ -238,6 +238,28 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
   // Get today's date in Philippine timezone (same as API) to ensure consistency
   const todayPhilippines = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' }) // YYYY-MM-DD format
   
+  // Get current hour in Philippine timezone for highlighting
+  const currentHourPhilippines = new Date().getHours() // Will use local timezone, need to adjust
+  const nowPhilippines = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Manila' }))
+  const currentHour = nowPhilippines.getHours()
+  
+  // Determine which time slot should be highlighted (round down to nearest 3-hour slot)
+  let highlightTime = ''
+  if (currentHour < 3) highlightTime = '12am'
+  else if (currentHour < 6) highlightTime = '3am'
+  else if (currentHour < 9) highlightTime = '6am'
+  else if (currentHour < 12) highlightTime = '9am'
+  else if (currentHour < 15) highlightTime = 'Noon'
+  else if (currentHour < 18) highlightTime = '3pm'
+  else if (currentHour < 21) highlightTime = '6pm'
+  else highlightTime = '9pm'
+  
+  // For 7-day mode, determine which time slot to highlight (6am, Noon, or 6pm)
+  let highlight7DayTime = ''
+  if (currentHour < 12) highlight7DayTime = '6am'
+  else if (currentHour < 18) highlight7DayTime = 'Noon'
+  else highlight7DayTime = '6pm'
+  
   for (let i = 0; i < time.length; i++) {
     const dt = new Date(time[i])
     const dtDateISO = dt.toISOString().slice(0, 10) // YYYY-MM-DD format
@@ -380,7 +402,7 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
                   <div className="grid grid-cols-[40px_1fr_1fr_1fr] items-center gap-1 min-h-[48px]">
                     {/* time column */}
                     <div className="flex items-center justify-center h-full">
-                      <div className="text-[10px] text-theme-muted whitespace-nowrap transform -rotate-90 origin-center">{r.t}</div>
+                      <div className={`text-[10px] whitespace-nowrap transform -rotate-90 origin-center ${r.t === highlightTime ? 'text-theme-primary font-bold' : 'text-theme-muted'}`}>{r.t}</div>
                     </div>
                     {/* surf data */}
                     <div className="flex items-center justify-center h-full">
@@ -419,7 +441,7 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
 
                 {/* Desktop grid row */}
                 <div className={`${colsToday} py-2 items-center hidden sm:grid`}>
-                  <div className="text-theme-muted text-xs text-left">{r.t}</div>
+                  <div className={`text-xs text-left ${r.t === highlightTime ? 'text-theme-primary font-bold' : 'text-theme-muted'}`}>{r.t}</div>
                   <div className="flex items-center justify-center"><div className="text-theme-primary text-sm font-medium">{Number.isFinite((r as unknown as {surf:number}).surf) ? (r as unknown as {surf:number}).surf.toFixed(1) : '—'} m</div></div>
                   <div className="flex items-center justify-center space-x-4">
                     <div className="text-theme-primary text-sm font-medium">{formatHeight(r.h)}</div>
@@ -493,7 +515,7 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
                     <div key={r.t}>
                       {/* Desktop row */}
                       <div className={`${colsDays} py-2 items-center hidden sm:grid`}>
-                        <div className="text-theme-muted text-xs text-left">{r.t}</div>
+                        <div className={`text-xs text-left ${(dayIdx === 0 && day === todayPhilippines && r.t === highlight7DayTime) ? 'text-theme-primary font-bold' : 'text-theme-muted'}`}>{r.t}</div>
                         <div className="flex items-center justify-center"><div className="text-theme-primary text-sm font-medium">{Number.isFinite((r as unknown as {surf:number}).surf) ? (r as unknown as {surf:number}).surf.toFixed(1) : '—'} m</div></div>
                         <div className="flex items-center justify-center space-x-4">
                           <div className="text-theme-primary text-sm font-medium">{formatHeight(r.h)}</div>
@@ -529,7 +551,7 @@ export default function SevenDayPrimarySwell({ weather }: { weather: MarineWeath
                         <div className="grid grid-cols-[40px_1fr_1fr_1fr] items-center gap-1 min-h-[48px]">
                           {/* time column */}
                           <div className="flex items-center justify-center h-full">
-                            <div className="text-[10px] text-theme-muted whitespace-nowrap transform -rotate-90 origin-center">{r.t}</div>
+                            <div className={`text-[10px] whitespace-nowrap transform -rotate-90 origin-center ${(dayIdx === 0 && day === todayPhilippines && r.t === highlight7DayTime) ? 'text-theme-primary font-bold' : 'text-theme-muted'}`}>{r.t}</div>
                           </div>
                           {/* surf data */}
                           <div className="flex items-center justify-center h-full">
