@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { X } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { useTheme } from '@/contexts/ThemeContext'
 
 interface SideMenuProps {
   isOpen: boolean
@@ -19,7 +19,17 @@ interface Spot {
 }
 
 export default function SideMenu({ isOpen, onClose }: SideMenuProps) {
+  const { isDark } = useTheme()
   const [groupedSpots, setGroupedSpots] = useState<Record<string, Spot[]>>({})
+  const [isMobile, setIsMobile] = useState(false)
+
+  // Check if mobile screen
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   // Fetch spots from Supabase when menu opens
   useEffect(() => {
@@ -108,21 +118,15 @@ export default function SideMenu({ isOpen, onClose }: SideMenuProps) {
           right: '24px', // 24px from right edge, aligned with navbar buttons
           height: 'calc(100vh - 88px)', // Full height minus navbar and spacing
           background: 'var(--glass-bg)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
+          backdropFilter: 'blur(25px)',
+          WebkitBackdropFilter: 'blur(25px)',
           border: '1px solid var(--glass-border)',
           boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15), 0 2px 10px rgba(0, 0, 0, 0.1)'
         }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-glass">
+        <div className="p-6 border-b border-glass text-center">
           <h2 className="text-xl font-medium text-theme-primary font-analogue">Surf Spots</h2>
-          <button 
-            onClick={onClose}
-            className="p-2 rounded-lg hover:bg-white/10 transition-colors"
-          >
-            <X size={20} className="text-theme-primary" />
-          </button>
         </div>
 
         {/* Content */}
@@ -146,7 +150,7 @@ export default function SideMenu({ isOpen, onClose }: SideMenuProps) {
                       >
                         <div className="flex items-center justify-between">
                           <div>
-                            <div className="text-theme-primary font-normal text-lg">{spot.name}</div>
+                            <div className={`text-theme-primary text-lg ${isMobile && !isDark ? 'font-medium' : 'font-normal'}`}>{spot.name}</div>
                             <div className="text-theme-muted text-sm mt-1">
                               {spot.wave_type || 'Reef break'}
                             </div>
