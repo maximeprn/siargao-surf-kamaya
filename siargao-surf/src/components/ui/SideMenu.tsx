@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
-import { useTheme } from '@/contexts/ThemeContext'
+import { useThemeOptional } from '@/contexts/ThemeContext'
 
 interface SideMenuProps {
   isOpen: boolean
@@ -19,7 +19,8 @@ interface Spot {
 }
 
 export default function SideMenu({ isOpen, onClose }: SideMenuProps) {
-  const { isDark } = useTheme()
+  const themeContext = useThemeOptional()
+  const isDark = themeContext?.isDark ?? true // Default to dark if no context
   const [groupedSpots, setGroupedSpots] = useState<Record<string, Spot[]>>({})
   const [isMobile, setIsMobile] = useState(false)
 
@@ -101,37 +102,55 @@ export default function SideMenu({ isOpen, onClose }: SideMenuProps) {
   return (
     <>
       {/* Invisible backdrop to capture clicks outside */}
-      {isOpen && (
-        <div 
-          className="fixed inset-0 z-40"
-          onClick={onClose}
-        />
-      )}
+      <div 
+        className={`fixed inset-0 z-40 transition-opacity duration-300 ${
+          isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={onClose}
+      />
 
       {/* Side menu */}
       <div 
-        className={`fixed w-80 max-w-[90vw] z-50 transform transition-all duration-300 ease-in-out rounded-2xl overflow-hidden ${
-          isOpen ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
+        className={`fixed w-80 max-w-[90vw] z-50 rounded-2xl overflow-hidden ${
+          isOpen ? 'translate-x-0 opacity-100 scale-100' : 'translate-x-full opacity-0 scale-95'
         }`}
         style={{ 
           top: '72px', // 56px navbar height + 16px spacing
-          right: '24px', // 24px from right edge, aligned with navbar buttons
+          right: '24px', // Fixed position - translate handles the movement
           height: 'calc(100vh - 88px)', // Full height minus navbar and spacing
           background: 'var(--glass-bg)',
           backdropFilter: 'blur(25px)',
           WebkitBackdropFilter: 'blur(25px)',
           border: '1px solid var(--glass-border)',
-          boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15), 0 2px 10px rgba(0, 0, 0, 0.1)'
+          boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15), 0 2px 10px rgba(0, 0, 0, 0.1)',
+          transformOrigin: 'top right',
+          transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
         }}
       >
         {/* Header */}
-        <div className="p-6 border-b border-glass text-center">
+        <div 
+          className={`p-6 border-b border-glass text-center ${
+            isOpen ? 'translate-y-0 opacity-100' : '-translate-y-4 opacity-0'
+          }`}
+          style={{
+            transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+            transitionDelay: isOpen ? '0.2s' : '0s'
+          }}
+        >
           <h2 className="text-xl font-medium text-theme-primary font-analogue">Surf Spots</h2>
         </div>
 
         {/* Content */}
         <div className="overflow-y-auto h-full pb-20">
-          <div className="p-6 space-y-8">
+          <div 
+            className={`p-6 space-y-8 ${
+              isOpen ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+            }`}
+            style={{
+              transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+              transitionDelay: isOpen ? '0.3s' : '0s'
+            }}
+          >
             {Object.entries(groupedSpots).length === 0 ? (
               <div className="text-theme-muted text-center">Loading spots...</div>
             ) : (

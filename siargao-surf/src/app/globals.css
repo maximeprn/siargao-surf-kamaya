@@ -88,6 +88,11 @@ body{
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Text color transitions for theme changes - more specific selectors */
+p, h1, h2, h3, h4, h5, h6, span, div, a, button, label, small {
+  transition: color 0.15s ease-out;
+}
+
 .bg-teal{ background:var(--teal); }
 .text-ink-on-teal{ color:var(--ink); }
 .header{ 
@@ -157,3 +162,22 @@ body{
 .rotate-360 {
   transform: rotate(360deg);
 }
+
+/* Quality Score Colors - Theme Aware */
+/* Dark Theme Quality Colors */
+.dark .quality-poor { color: #f87171; } /* red-400 */
+.dark .quality-poor-fair { color: #fb923c; } /* orange-400 */
+.dark .quality-fair { color: #fde047; } /* yellow-300 */
+.dark .quality-fair-good { color: #bef264; } /* lime-300 */
+.dark .quality-good { color: #4ade80; } /* green-400 */
+.dark .quality-very-good { color: #22c55e; } /* green-500 */
+.dark .quality-excellent { color: #10b981; } /* emerald-500 */
+
+/* Light Theme Quality Colors - Slightly darker for better contrast */
+.light .quality-poor { color: #dc2626; } /* red-600 */
+.light .quality-poor-fair { color: #ea580c; } /* orange-600 */
+.light .quality-fair { color: #ca8a04; } /* yellow-600 */
+.light .quality-fair-good { color: #65a30d; } /* lime-600 */
+.light .quality-good { color: #16a34a; } /* green-600 */
+.light .quality-very-good { color: #15803d; } /* green-700 */
+.light .quality-excellent { color: #059669; } /* emerald-600 */

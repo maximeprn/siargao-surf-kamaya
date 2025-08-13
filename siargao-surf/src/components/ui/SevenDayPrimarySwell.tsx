@@ -88,15 +88,15 @@ function qualityLevelFromKJ(kj: number): number {
 }
 
 function qualityLabelFromLevel(level:number): {label:string;shortLabel:string;color:string}{
-  // 0..6 mapping from poor (red) to excellent (green)
+  // 0..6 mapping from poor (red) to excellent (green) with theme-aware colors
   const map = [
-    {label:'POOR', shortLabel:'POOR', color:'text-red-400'},
-    {label:'POOR-FAIR', shortLabel:'P-F', color:'text-orange-400'},
-    {label:'FAIR', shortLabel:'FAIR', color:'text-yellow-300'},
-    {label:'FAIR-GOOD', shortLabel:'F-G', color:'text-lime-300'},
-    {label:'GOOD', shortLabel:'GOOD', color:'text-green-400'},
-    {label:'VERY GOOD', shortLabel:'V.GOOD', color:'text-green-500'},
-    {label:'EXCELLENT', shortLabel:'EXCEL', color:'text-emerald-500'},
+    {label:'POOR', shortLabel:'POOR', color:'quality-poor'},
+    {label:'POOR-FAIR', shortLabel:'P-F', color:'quality-poor-fair'},
+    {label:'FAIR', shortLabel:'FAIR', color:'quality-fair'},
+    {label:'FAIR-GOOD', shortLabel:'F-G', color:'quality-fair-good'},
+    {label:'GOOD', shortLabel:'GOOD', color:'quality-good'},
+    {label:'VERY GOOD', shortLabel:'V.GOOD', color:'quality-very-good'},
+    {label:'EXCELLENT', shortLabel:'EXCEL', color:'quality-excellent'},
   ]
   return map[Math.max(0, Math.min(level, map.length-1))]
 }

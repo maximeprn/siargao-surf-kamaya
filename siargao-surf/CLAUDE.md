@@ -150,6 +150,25 @@ Application web de surf forecasting pour Siargao (Philippines) avec données mé
 - Follow mobile-first responsive design
 - Use TypeScript strictly with proper type definitions
 
+### 🚫 Debugging Protocol - Avoid Loops
+**When a modification doesn't work as expected:**
+1. **STOP** - Don't repeat the same approach
+2. **ANALYZE** - Check for conflicts:
+   - Next.js Image component has default styles that can interfere
+   - CSS specificity issues (parent vs child targeting)
+   - Tailwind class conflicts or overrides
+3. **THINK DIFFERENTLY** - Try alternative approaches:
+   - group/group-hover instead of direct hover
+   - transition-transform instead of transition-all
+   - Target child elements instead of parent containers
+4. **TEST INCREMENTALLY** - Make one small change at a time
+5. **REVERT** - If stuck, go back to working state and approach differently
+
+**Next.js Image Components:**
+- Use `group`/`group-hover` pattern for hover effects on images
+- Apply transitions directly to the Image component, not the parent
+- Use `transition-transform` instead of `transition-all` for better performance
+
 ## Troubleshooting
 
 ### Common Issues
