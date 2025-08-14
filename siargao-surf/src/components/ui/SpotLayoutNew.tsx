@@ -19,6 +19,7 @@ import ConditionsSlider from '@/components/ui/ConditionsSlider'
 import { siargaoSpotsComplete } from '@/lib/spot-configs'
 import type { SpotMeta } from '@/lib/spot-configs'
 import type { MarineWeatherData } from '@/lib/marine-weather'
+import type { TideData } from '@/lib/worldtides'
 
 interface SpotLayoutNewProps {
   spotId?: string
@@ -27,6 +28,7 @@ interface SpotLayoutNewProps {
   effectiveHeight: number | null
   gaugeLabel: string
   weather: MarineWeatherData | null
+  tideData: TideData | null
   tideHeight: number
   calculateWaveEnergy: (height: number, period: number) => number
   degreesToCardinal: (degrees: number) => string
@@ -41,6 +43,7 @@ export default function SpotLayoutNew({
   effectiveHeight, 
   gaugeLabel, 
   weather, 
+  tideData,
   tideHeight,
   calculateWaveEnergy,
   degreesToCardinal,
@@ -94,10 +97,11 @@ export default function SpotLayoutNew({
             <div className="rule mt-4" />
             <div className="mt-4 w-[80vw] max-w-[500px] lg:w-full lg:max-w-none lg:scale-80 lg:origin-bottom-left">
               <TideCurve 
-                tideData={{
-                  current: tideHeight,
-                  hourly: weather?.hourly || { time: [], sea_level_height_msl: [] }
-                }}
+                tideData={tideData ? {
+                  current: tideData.current,
+                  hourly: tideData.hourly,
+                  extremes: tideData.extremes
+                } : undefined}
               />
             </div>
           </div>

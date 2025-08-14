@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { getMarineWeatherData, getWaveQuality } from '@/lib/marine-weather'
+import { getSimpleTideData } from '@/lib/tide-direct'
 import { effectiveWaveHeight } from '@/lib/wave-height-correction'
 import { siargaoSpotsComplete, spotConfigs, defaultSpotConfig } from '@/lib/spot-configs'
 import { buildSpotReportPrompt } from '@/lib/ai'
@@ -71,7 +72,11 @@ export async function POST(req: Request){
     const weatherDuration = Date.now() - weatherStartTime
     console.log(`[SPOT-REPORT] Weather data fetched in ${weatherDuration}ms`)
     const meta = siargaoSpotsComplete[spot.name]
-    const tideHeight = weather?.current.sea_level_height_msl ?? null
+    // Get tide data from Supabase cache (unified system)
+    console.log('[SPOT-REPORT] Getting tide data from Supabase cache')
+    const tideData = await getSimpleTideData()
+    const tideHeight = tideData?.current ?? 1.0
+    console.log('[SPOT-REPORT] Current tide height from cache:', tideHeight)
     const effective = weather && meta ? effectiveWaveHeight({
       waveHeight: weather.current.wave_height,
       swellHeight: weather.current.swell_wave_height,
@@ -128,16 +133,15 @@ export async function POST(req: Request){
       })
     }
 
-    // Calculer la range de marée du jour
+    // Calculer la range de marée du jour (depuis Supabase cache)
     let tideRange = null
-    if (weather?.hourly?.sea_level_height_msl) {
-      const tideLevels = weather.hourly.sea_level_height_msl.slice(0, 24) // Prochaines 24h
-      if (tideLevels.length > 0) {
-        tideRange = {
-          min: Math.min(...tideLevels),
-          max: Math.max(...tideLevels)
-        }
+    if (tideData?.extremes && tideData.extremes.length > 0) {
+      const heights = tideData.extremes.map(e => e.height)
+      tideRange = {
+        min: Math.min(...heights),
+        max: Math.max(...heights)
       }
+      console.log('[SPOT-REPORT] Tide range from cache:', tideRange)
     }
 
     // Générer un nouveau rapport avec l'IA
@@ -147,6 +151,7 @@ export async function POST(req: Request){
       effectiveHeight: effective,
       tideHeight,
       tideRange,
+      tideExtremes: tideData?.extremes ?? null,
       wavePeriod: weather?.current.wave_period ?? null,
       swellHeight: weather?.current.swell_wave_height ?? null,
       swellDir: weather?.current.swell_wave_direction ?? null,

@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { getSimpleTideData, type SimpleTideData } from '@/lib/tide-direct'
 
 interface TideCurveProps {
   tideData?: {
@@ -9,11 +10,35 @@ interface TideCurveProps {
       time: string[]
       sea_level_height_msl: number[]
     }
+    extremes?: {
+      time: string
+      height: number
+      type: 'High' | 'Low'
+      timestamp: number
+    }[]
   }
 }
 
 export default function TideCurve({ tideData }: TideCurveProps){
   const [hoverPoint, setHoverPoint] = useState<{x: number, y: number, height: number, time: string} | null>(null)
+  const [simpleTideData, setSimpleTideData] = useState<SimpleTideData | null>(null)
+  
+  // Load tide data from Supabase cache
+  useEffect(() => {
+    console.log('[TideCurve] Loading tide data from Supabase...')
+    getSimpleTideData().then(data => {
+      console.log('[TideCurve] ⭐ LOADED SIMPLE TIDE DATA ⭐')
+      console.log('Current:', data?.current)
+      console.log('Hourly length:', data?.hourly?.time?.length)
+      console.log('Heights length:', data?.hourly?.height?.length)
+      console.log('Extremes length:', data?.extremes?.length)
+      console.log('First 3 hourly:', data?.hourly?.height?.slice(0, 3))
+      console.log('Last 3 hourly:', data?.hourly?.height?.slice(-3))
+      setSimpleTideData(data)
+    }).catch(err => {
+      console.error('[TideCurve] ERROR loading data:', err)
+    })
+  }, [])
   
   const VIEW_W = 462
   const X0 = 40
@@ -21,44 +46,43 @@ export default function TideCurve({ tideData }: TideCurveProps){
   const XW = VIEW_W - X0 - RIGHT
   const Y_TOP = 40, Y_BOT = 180
   
-  // Use real tide data or fallback to mock data
-  let tidePoints: { time: string, height: number }[] = []
+  // Use Supabase cached data or fallback to mock data
   let H_MIN = -0.1, H_MAX = 1.8
+  let tidePoints: { time: string, height: number }[] = []
   
-  if (tideData?.hourly && tideData.hourly.time.length > 0) {
-    console.log('Using real tide data', tideData.hourly.time.length, 'points')
-    // Get next 24 hours of tide data
-    const now = new Date()
-    const currentHour = now.getHours()
+  if (simpleTideData) {
+    console.log('=== USING SUPABASE CACHED DATA ===')
+    console.log('Hourly points:', simpleTideData.hourly.time.length)
+    console.log('Extreme points:', simpleTideData.extremes.length)
     
-    // Take 24 data points (every hour for next 24h)
-    // API data is already in Asia/Manila timezone, so no need for timezone conversion
-    // Filter out null/undefined values from the new API model
-    tidePoints = tideData.hourly.time.slice(0, 24)
-      .map((timeStr, i) => ({
-        time: new Date(timeStr).toLocaleTimeString('en-US', { 
-          hour: '2-digit', 
-          minute: '2-digit', 
-          hour12: false
-        }),
-        height: tideData.hourly.sea_level_height_msl[i]
-      }))
-      .filter(point => point.height !== null && point.height !== undefined && !isNaN(point.height))
+    // Use ONLY hourly data for the smooth curve (24 points)
+    tidePoints = simpleTideData.hourly.time.map((time, i) => ({
+      time,
+      height: simpleTideData.hourly.height[i]
+    }))
     
-    // Calculate dynamic range based on real data
-    const heights = tidePoints.map(p => p.height).filter(h => h !== null && h !== undefined && !isNaN(h))
-    if (heights.length > 0) {
-      H_MIN = Math.min(...heights) - 0.1
-      H_MAX = Math.max(...heights) + 0.1
-    } else {
-      // Fallback if no valid heights
-      H_MIN = -0.1
-      H_MAX = 1.8
-    }
-    console.log('Tide range:', H_MIN, 'to', H_MAX)
+    // Extremes are displayed separately as markers, not part of the curve
+    
+    console.log('[TideCurve] === DONNÉES SUPABASE POUR LA COURBE ===')
+    console.log('24 points horaires:')
+    tidePoints.forEach((point, i) => {
+      console.log(`  ${i}: ${point.time} → ${point.height}m`)
+    })
+    
+    console.log('Points d\'extrêmes (marqueurs séparés):')
+    simpleTideData.extremes.forEach((extreme, i) => {
+      console.log(`  ${i}: ${extreme.time} → ${extreme.height}m (${extreme.type})`)
+    })
+    
+    // Calculate range
+    const heights = tidePoints.map(p => p.height)
+    H_MIN = Math.min(...heights) - 0.1
+    H_MAX = Math.max(...heights) + 0.1
+    
+    console.log('Range de marée:', H_MIN, 'to', H_MAX)
   } else {
-    console.log('Using fallback tide data - no real data available')
-    // Fallback mock data with more realistic values
+    console.log('Using fallback tide data - no Supabase data available')
+    // Fallback mock data
     tidePoints = [
       { time: '00:00', height: 0.8 },
       { time: '03:12', height: -0.05 },
@@ -86,36 +110,6 @@ export default function TideCurve({ tideData }: TideCurveProps){
     index: i
   })).sort((a,b)=>a.x-b.x)
   
-  // Find high and low tide points
-  const findExtremes = (pts: typeof points) => {
-    const extremes: Array<{x: number, y: number, height: number, time: string, type: 'high' | 'low'}> = []
-    
-    // Ensure we have enough points and all heights are valid numbers
-    if (pts.length < 3) return extremes
-    
-    for (let i = 1; i < pts.length - 1; i++) {
-      const prev = pts[i - 1]
-      const curr = pts[i]
-      const next = pts[i + 1]
-      
-      // Skip if any height is null/undefined
-      if (prev.height == null || curr.height == null || next.height == null) continue
-      
-      // High tide: current point is higher than both neighbors
-      if (curr.height > prev.height && curr.height > next.height) {
-        extremes.push({...curr, type: 'high'})
-      }
-      // Low tide: current point is lower than both neighbors
-      else if (curr.height < prev.height && curr.height < next.height) {
-        extremes.push({...curr, type: 'low'})
-      }
-    }
-    
-    return extremes
-  }
-  
-  const extremePoints = findExtremes(points)
-  
   const pathThrough = (pts:{x:number;y:number}[])=>{
     if(pts.length<2) return ''
     let d = `M ${pts[0].x} ${pts[0].y}`
@@ -134,11 +128,22 @@ export default function TideCurve({ tideData }: TideCurveProps){
   }
   const d = pathThrough(points)
   
-  // Get current time in Philippines timezone (GMT+8)
-  const nowPhilippines = new Date().toLocaleString('en-US', { timeZone: 'Asia/Manila' })
-  const nowDate = new Date(nowPhilippines)
-  const nowMin = nowDate.getHours() * 60 + nowDate.getMinutes()
-  const xNow = X0 + XW * (nowMin/1440)
+  // Get current time in Philippines timezone (GMT+8) using more robust method
+  const now = new Date()
+  const philippinesTimeString = now.toLocaleString('en-US', { 
+    timeZone: 'Asia/Manila',
+    hour12: false,
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+  
+  // Extract hour and minute from HH:MM format
+  const [hourStr, minuteStr] = philippinesTimeString.split(':')
+  const currentHour = parseInt(hourStr, 10)
+  const currentMinutes = parseInt(minuteStr, 10)
+  const currentTimeInMinutes = currentHour * 60 + currentMinutes
+  const xNow = X0 + XW * (currentTimeInMinutes / 1440)
+  
   
   // Find the exact point on the curve at current time
   const findCurrentPointOnCurve = () => {
@@ -245,56 +250,77 @@ export default function TideCurve({ tideData }: TideCurveProps){
       </defs>
       <path d={d} fill="none" stroke="url(#g)" strokeWidth="3" />
       
-      {/* High and low tide labels */}
-      {extremePoints.map((point, i) => {
-        const isHigh = point.type === 'high'
-        const labelColor = "#AEBDAF"
-        // Always position labels above the curve with 25px padding
-        const labelY = point.y - 25
+      {/* Extreme points markers - from Supabase cache */}
+      {simpleTideData?.extremes.map((extreme, i) => {
+        const x = xFromTime(extreme.time)
+        const y = yFromHeight(extreme.height)
+        const isHigh = extreme.type === 'High'
         
         return (
-          <g key={i}>
-            {/* Dot at the extreme point */}
+          <g key={`extreme-${i}`}>
+            {/* Extreme point circle */}
             <circle 
-              cx={point.x} 
-              cy={point.y} 
+              cx={x} 
+              cy={y} 
               r="4" 
-              fill={labelColor} 
+              fill={isHigh ? '#10b981' : '#ef4444'} 
               stroke="var(--text-primary)" 
+              strokeWidth="1.5"
               strokeOpacity="0.8"
-              strokeWidth="1"
             />
-            {/* Label with height and time */}
+            
+            {/* Extreme height label */}
             <text 
-              x={point.x} 
-              y={labelY} 
+              x={x} 
+              y={y - 12} 
               textAnchor="middle" 
               className="svg-label" 
-              fill={labelColor}
+              fill={isHigh ? '#10b981' : '#ef4444'}
               fontSize="11"
+              fontWeight="600"
             >
-              <tspan x={point.x} dy="0">{(point.height !== null && point.height !== undefined) ? point.height.toFixed(1) : '0.0'}m</tspan>
-              <tspan x={point.x} dy="12" fontSize="9" fill="var(--tide-labels)">{point.time}</tspan>
+              {extreme.height.toFixed(1)}m
+            </text>
+            
+            {/* Time label */}
+            <text 
+              x={x} 
+              y={y + 18} 
+              textAnchor="middle" 
+              className="svg-label" 
+              fill="var(--text-muted)"
+              fontSize="9"
+            >
+              {extreme.time}
             </text>
           </g>
         )
-      })}
+      }) || []}
       
       {/* Current tide level indicator */}
       {currentPointOnCurve && (() => {
-        // Check if current point is too close to any extreme point (high/low tide)
-        // Use larger threshold on mobile (smaller screens need more spacing)
-        const DISTANCE_THRESHOLD = typeof window !== 'undefined' && window.innerWidth < 768 ? 70 : 50 // pixels
-        const isTooCloseToExtreme = extremePoints.some(extreme => {
-          const distance = Math.sqrt(
-            Math.pow(currentPointOnCurve.x - extreme.x, 2) + 
-            Math.pow(currentPointOnCurve.y - extreme.y, 2)
-          )
-          return distance < DISTANCE_THRESHOLD
-        })
+        // Check for nearby extreme points to avoid label overlap
+        const DISTANCE_THRESHOLD = 60 // pixels
+        let labelYOffset = -18 // default offset above the point
         
-        // Don't show current height label if too close to existing extreme labels
-        const showCurrentLabel = !isTooCloseToExtreme
+        if (simpleTideData?.extremes) {
+          for (const extreme of simpleTideData.extremes) {
+            const extremeX = xFromTime(extreme.time)
+            const extremeY = yFromHeight(extreme.height)
+            
+            // Calculate distance between current point and extreme point
+            const distance = Math.sqrt(
+              Math.pow(currentPointOnCurve.x - extremeX, 2) + 
+              Math.pow(currentPointOnCurve.y - extremeY, 2)
+            )
+            
+            // If too close to an extreme point, move current label further up
+            if (distance < DISTANCE_THRESHOLD) {
+              labelYOffset = -35 // Move label further up to avoid overlap
+              break
+            }
+          }
+        }
         
         return (
           <g>
@@ -307,46 +333,34 @@ export default function TideCurve({ tideData }: TideCurveProps){
               strokeOpacity="0.8"
               strokeWidth="2"
             />
-            {/* Current height label - only show if not too close to existing labels */}
-            {showCurrentLabel && (
-              <text 
-                x={currentPointOnCurve.x} 
-                y={currentPointOnCurve.y - 18} 
-                textAnchor="middle" 
-                className="svg-label" 
-                fill="var(--tide-curve)"
-                fontSize="13"
-                fontWeight="600"
-              >
-                {(currentPointOnCurve.height !== null && currentPointOnCurve.height !== undefined) ? currentPointOnCurve.height.toFixed(1) : '0.0'}m
-              </text>
-            )}
+            {/* Current height label - positioned to avoid extreme point overlap */}
+            <text 
+              x={currentPointOnCurve.x} 
+              y={currentPointOnCurve.y + labelYOffset} 
+              textAnchor="middle" 
+              className="svg-label" 
+              fill="var(--tide-curve)"
+              fontSize="13"
+              fontWeight="600"
+            >
+              {(currentPointOnCurve.height !== null && currentPointOnCurve.height !== undefined) ? currentPointOnCurve.height.toFixed(1) : '0.0'}m
+            </text>
           </g>
         )
       })()}
 
       {/* Hover point indicator */}
       {hoverPoint && (() => {
-        // Check if hover point is too close to any extreme point (high/low tide)
-        // Use larger threshold on mobile (smaller screens need more spacing)
+        // Check if too close to current point
         const DISTANCE_THRESHOLD = typeof window !== 'undefined' && window.innerWidth < 768 ? 70 : 50 // pixels
-        const isTooCloseToExtreme = extremePoints.some(extreme => {
-          const distance = Math.sqrt(
-            Math.pow(hoverPoint.x - extreme.x, 2) + 
-            Math.pow(hoverPoint.y - extreme.y, 2)
-          )
-          return distance < DISTANCE_THRESHOLD
-        })
-        
-        // Also check if too close to current point
         const isTooCloseToCurrent = currentPointOnCurve && 
           Math.sqrt(
             Math.pow(hoverPoint.x - currentPointOnCurve.x, 2) + 
             Math.pow(hoverPoint.y - currentPointOnCurve.y, 2)
           ) < DISTANCE_THRESHOLD
         
-        // Don't show tooltip if too close to existing labels
-        const showTooltip = !isTooCloseToExtreme && !isTooCloseToCurrent
+        // Don't show tooltip if too close to current point
+        const showTooltip = !isTooCloseToCurrent
         
         return (
           <g>

@@ -81,7 +81,7 @@ export default function ClientWeatherData({
 
   // Calculate surf data
   const meta = siargaoSpotsComplete[spotName] as SpotMeta | undefined
-  const tideHeight = weather?.current.sea_level_height_msl ?? 1.0
+  const tideHeight = 1.0 // TODO: Replace with WorldTides API
   const effective = weather && meta ? effectiveWaveHeight({
     waveHeight: weather.current.wave_height,
     swellHeight: weather.current.swell_wave_height,
@@ -133,6 +133,7 @@ export default function ClientWeatherData({
       effectiveHeight={effective}
       gaugeLabel={gaugeLabel}
       weather={weather}
+      tideData={null}
       tideHeight={tideHeight}
       calculateWaveEnergy={calculateWaveEnergy}
       degreesToCardinal={degreesToCardinal}

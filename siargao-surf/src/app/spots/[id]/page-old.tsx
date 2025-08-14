@@ -55,7 +55,7 @@ export default async function SpotPage({ params }: { params: Promise<{ id: strin
 
   // Compute effective wave height and surf quality for this spot
   const meta = siargaoSpotsComplete[spot.name] as SpotMeta | undefined
-  const tideHeight = weather?.current.sea_level_height_msl ?? 1.0
+  const tideHeight = 1.0 // TODO: Replace with WorldTides API
   const effective = weather && meta ? effectiveWaveHeight({
     waveHeight: weather.current.wave_height,
     swellHeight: weather.current.swell_wave_height,
@@ -121,7 +121,8 @@ export default async function SpotPage({ params }: { params: Promise<{ id: strin
           effectiveHeight={effective}
           gaugeLabel={gaugeLabel}
           weather={weather}
-          tideHeight={tideHeight}
+          tideData={null}
+      tideHeight={tideHeight}
           calculateWaveEnergy={calculateWaveEnergy}
           degreesToCardinal={degreesToCardinal}
           fallbackText={weather ? (

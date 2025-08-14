@@ -38,6 +38,8 @@ export function generateConditionsHash(conditions: ReportConditions): string {
     windKmh: conditions.windKmh ? Math.round(conditions.windKmh / 5) * 5 : null, // Grouper par 5 km/h
     windDir: conditions.windDir ? Math.round(conditions.windDir / 10) * 10 : null, // Grouper par 10°
     qualityScore: conditions.qualityScore ? Math.round(conditions.qualityScore / 5) * 5 : null, // Grouper par 5 points
+    // Version key to invalidate cache when AI logic changes
+    aiVersion: 'v2.0_workable_angle'
   }
   
   return crypto.createHash('md5').update(JSON.stringify(rounded)).digest('hex')
@@ -105,10 +107,9 @@ export function shouldRegenerateReport(
     return true
   }
   
-  // Régénérer si les conditions ont significativement changé ET que ça fait plus de 2h
-  const twoHoursAgo = new Date(now.getTime() - (2 * 60 * 60 * 1000))
-  if (cachedReport.conditions_hash !== currentConditionsHash && updatedAt < twoHoursAgo) {
-    console.log('[AI-CACHE] Conditions changed and 2h+ elapsed - regeneration needed')
+  // Régénérer si les conditions ont significativement changé (immediate for testing AI changes)
+  if (cachedReport.conditions_hash !== currentConditionsHash) {
+    console.log('[AI-CACHE] Conditions hash changed - regeneration needed')
     return true
   }
   

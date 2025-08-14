@@ -17,6 +17,7 @@ import { spotConfigs, defaultSpotConfig, siargaoSpotsComplete } from '@/lib/spot
 import { effectiveWaveHeight } from '@/lib/wave-height-correction'
 import type { SpotMeta } from '@/lib/spot-configs'
 import type { MarineWeatherData } from '@/lib/marine-weather'
+import type { TideData } from '@/lib/worldtides'
 
 interface ClientSpotDataProps {
   spotId: string
@@ -42,17 +43,28 @@ export default function ClientSpotData({
   coords
 }: ClientSpotDataProps) {
   const [weather, setWeather] = useState<MarineWeatherData | null>(null)
+  const [tideData, setTideData] = useState<TideData | null>(null)
   const [loading, setLoading] = useState(true)
   const [getWaveQuality, setGetWaveQuality] = useState<typeof import('@/lib/marine-weather').getWaveQuality | null>(null)
+  const [getTideStage, setGetTideStage] = useState<typeof import('@/lib/worldtides').getTideStage | null>(null)
 
   useEffect(() => {
     async function fetchWeatherData() {
       try {
         // Dynamic import to avoid including server code in client bundle
         const { getMarineWeatherData, getWaveQuality } = await import('@/lib/marine-weather')
-        const weatherData = await getMarineWeatherData(coords.lat, coords.lon)
+        const { getWorldTidesData, getTideStage } = await import('@/lib/worldtides')
+        
+        // Fetch both weather and tide data in parallel
+        const [weatherData, tideResponse] = await Promise.all([
+          getMarineWeatherData(coords.lat, coords.lon),
+          getWorldTidesData(coords.lat, coords.lon)
+        ])
+        
         setWeather(weatherData)
+        setTideData(tideResponse)
         setGetWaveQuality(() => getWaveQuality)
+        setGetTideStage(() => getTideStage)
       } catch (error) {
         console.error('Failed to fetch weather data:', error)
       } finally {
@@ -76,7 +88,7 @@ export default function ClientSpotData({
 
   // Calculate surf data
   const meta = siargaoSpotsComplete[spotName] as SpotMeta | undefined
-  const tideHeight = weather?.current.sea_level_height_msl ?? 1.0
+  const tideHeight = tideData?.current ?? 1.0
   const effective = weather && meta ? effectiveWaveHeight({
     waveHeight: weather.current.wave_height,
     swellHeight: weather.current.swell_wave_height,
@@ -94,7 +106,7 @@ export default function ClientSpotData({
     waveDirection: weather.current.wave_direction,
     windSpeed: weather.weather.current.windspeed ? weather.weather.current.windspeed / 3.6 : undefined,
     windDirection: weather.weather.current.winddirection,
-    tideStage: undefined
+    tideStage: tideData && getTideStage ? getTideStage(tideData.current, tideData.extremes) : undefined
   }, spotConfigs[spotName] || defaultSpotConfig) : null
 
   // Apply size-based score limits
@@ -129,6 +141,7 @@ export default function ClientSpotData({
       effectiveHeight={effective}
       gaugeLabel={gaugeLabel}
       weather={weather}
+      tideData={tideData}
       tideHeight={tideHeight}
       calculateWaveEnergy={calculateWaveEnergy}
       degreesToCardinal={degreesToCardinal}

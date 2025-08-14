@@ -6,6 +6,7 @@ type PromptInputs = {
   effectiveHeight: number | null
   tideHeight: number | null
   tideRange?: { min: number; max: number } | null // Pour calculer le stage
+  tideExtremes?: { time: string; height: number; type: 'High' | 'Low' }[] | null // Pour calculer le stage précis
   wavePeriod: number | null
   swellHeight: number | null
   swellDir: number | null
@@ -17,25 +18,126 @@ type PromptInputs = {
 
 const degToCard = (deg:number)=>['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'][Math.round(deg/22.5)%16]
 
-// Déterminer le stage de marée basé sur la hauteur actuelle et la range du jour
-function getTideStage(currentHeight: number | null, range?: { min: number; max: number } | null): string {
-  if (!currentHeight || !range) return 'n/a'
+// Direction analysis helpers
+const angDiff = (a:number,b:number)=>{ const d=Math.abs(a-b)%360; return d>180?360-d:d; };
+const inRangeWrap = (x:number,[a,b]:[number,number])=>{
+  const n = (v:number)=> (v+360)%360;
+  const A=n(a), B=n(b), X=n(x);
+  return A<=B ? (X>=A && X<=B) : (X>=A || X<=B);
+};
+
+/**
+ * Period-aware shoulder around the swell window.
+ * Inside window => "prime window".
+ * Within soft degrees of an edge => "workable angle".
+ * Farther => "outside window".
+ */
+export function dirLabel(
+  swellFromDeg:number,
+  window:[number,number],
+  periodSec:number
+): 'prime window' | 'workable angle' | 'outside window' {
+  if (inRangeWrap(swellFromDeg, window)) return 'prime window';
+  const toEdge = Math.min(angDiff(swellFromDeg, window[0]), angDiff(swellFromDeg, window[1]));
+  const baseSoft = 12;                            // baseline shoulder
+  const extra = Math.max(0, periodSec - 10) * 0.8;// widen for long-period wrap
+  const soft = Math.min(24, baseSoft + extra);    // cap widening
+  return toEdge <= soft ? 'workable angle' : 'outside window';
+}
+
+// Déterminer le stage de marée basé sur la hauteur actuelle, les extremes et l'heure
+function getTideStage(
+  currentHeight: number | null, 
+  extremes?: { time: string; height: number; type: 'High' | 'Low' }[] | null,
+  currentTime?: string
+): string {
+  if (!currentHeight || !extremes || extremes.length === 0) return 'n/a'
   
-  const { min, max } = range
-  const tideRange = max - min
-  const relativeHeight = (currentHeight - min) / tideRange
+  // Obtenir l'heure actuelle en format HH:MM si pas fournie
+  if (!currentTime) {
+    const philippinesTime = new Date().toLocaleString('en-US', { timeZone: 'Asia/Manila' })
+    const now = new Date(philippinesTime)
+    currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`
+  }
   
-  // Déterminer le stage basé sur la position relative
-  if (relativeHeight < 0.25) return 'low'
-  if (relativeHeight < 0.75) return 'mid'
-  return 'high'
+  // Convertir les heures en minutes pour faciliter les calculs
+  const timeToMinutes = (timeStr: string): number => {
+    const [hours, minutes] = timeStr.split(':').map(Number)
+    return hours * 60 + minutes
+  }
+  
+  const currentMinutes = timeToMinutes(currentTime)
+  
+  // Trier les extremes par heure
+  const sortedExtremes = [...extremes].sort((a, b) => timeToMinutes(a.time) - timeToMinutes(b.time))
+  
+  // Trouver les extremes avant et après l'heure actuelle
+  let previousExtreme = null
+  let nextExtreme = null
+  
+  for (let i = 0; i < sortedExtremes.length; i++) {
+    const extremeMinutes = timeToMinutes(sortedExtremes[i].time)
+    
+    if (extremeMinutes <= currentMinutes) {
+      previousExtreme = sortedExtremes[i]
+    } else if (extremeMinutes > currentMinutes && !nextExtreme) {
+      nextExtreme = sortedExtremes[i]
+      break
+    }
+  }
+  
+  // Si pas d'extreme suivant, prendre le premier du jour suivant (cyclique)
+  if (!nextExtreme && sortedExtremes.length > 0) {
+    nextExtreme = sortedExtremes[0]
+  }
+  
+  // Si pas d'extreme précédent, prendre le dernier du jour précédent (cyclique)
+  if (!previousExtreme && sortedExtremes.length > 0) {
+    previousExtreme = sortedExtremes[sortedExtremes.length - 1]
+  }
+  
+  if (!previousExtreme || !nextExtreme) return 'n/a'
+  
+  // Déterminer si la marée monte ou descend
+  const isRising = previousExtreme.type === 'Low'
+  const direction = isRising ? 'incoming' : 'outgoing'
+  
+  // Calculer la position relative entre les deux extremes
+  const rangeHeight = Math.abs(nextExtreme.height - previousExtreme.height)
+  const currentRelative = Math.abs(currentHeight - previousExtreme.height) / rangeHeight
+  
+  // Déterminer le stage basé sur la position et la direction
+  let stage: string
+  let useDirection = true
+  
+  if (currentRelative < 0.25) {
+    stage = previousExtreme.type === 'Low' ? 'low' : 'high'
+    // Si très proche de l'extreme (95%+ du chemin), ne pas utiliser de direction
+    if (currentRelative < 0.05) {
+      useDirection = false
+    }
+  } else if (currentRelative > 0.75) {
+    stage = nextExtreme.type === 'High' ? 'high' : 'low'
+    // Si très proche de l'extreme (95%+ du chemin), ne pas utiliser de direction
+    if (currentRelative > 0.95) {
+      useDirection = false
+    }
+  } else {
+    stage = 'mid'
+  }
+  
+  return useDirection ? `${stage} ${direction}` : stage
 }
 
 export function buildSpotReportPrompt(p: PromptInputs){
   const lang = p.locale || 'en'
-  const dir = (d:number|null)=> d==null ? '—' : `${Math.round(d)}° (${degToCard(d)})`
   const txt = (en:string, fr:string)=> lang==='fr' ? fr : en
-  const tideStage = getTideStage(p.tideHeight, p.tideRange)
+  const tideStage = getTideStage(p.tideHeight, p.tideExtremes)
+  
+  // Compute swell direction label
+  const swellDirLabel = (p.swellDir !== null && p.meta?.swellWindow && p.wavePeriod !== null) 
+    ? dirLabel(p.swellDir, p.meta.swellWindow, p.wavePeriod)
+    : null
 
   return [
     `System: ${txt(`
@@ -65,6 +167,7 @@ export function buildSpotReportPrompt(p: PromptInputs){
       "period_s": ${p.wavePeriod ?? null},
       "swell_m": ${p.swellHeight ?? null},
       "swell_dir_deg": ${p.swellDir ?? null},
+      "swell_dir_label": ${swellDirLabel ? `"${swellDirLabel}"` : null},
       "wind_kmh": ${p.windKmh ?? null},
       "wind_dir_deg": ${p.windDir ?? null},
       "tide_m": ${p.tideHeight ?? null},
@@ -81,9 +184,9 @@ export function buildSpotReportPrompt(p: PromptInputs){
     Style:
     - Punchy, field-report tone, not explanatory. Short sentences.
     - Use cardinals for ALL directions. For windows/ranges, convert both bounds to cardinals (e.g., 45→120° -> NE→SE). If missing, don't mention it. 
-    - Do NOT describe geometry step-by-step ("placing it within…"). Instead: "window OK" or "outside window".
+    - Use the precomputed swell_dir_label directly: "prime window", "workable angle", or "outside window".
     - Wind effect labels: offshore / cross / onshore. No Geometry.  
-    - Tide: Use the provided tide_stage (low/mid/high) directly in your report.
+    - Tide: Use the provided tide_stage (e.g., "low", "high", "low incoming", "mid outgoing", "high incoming") directly in your report.
     - End with a verdict word and reason.
     Never include emojis, code blocks, or degrees.
     `, `
@@ -91,9 +194,9 @@ export function buildSpotReportPrompt(p: PromptInputs){
     Style:
     - Punchy, field-report tone, not explanatory. Short sentences.
     - Use cardinals for ALL directions. For windows/ranges, convert both bounds to cardinals (e.g., 45→120° -> NE→SE). If missing, don't mention it. 
-    - Do NOT describe geometry step-by-step ("placing it within…"). Instead: "window OK" or "outside window".
+    - Use the precomputed swell_dir_label directly: "prime window", "workable angle", or "outside window".
     - Wind effect labels: offshore / cross / onshore. No Geometry.  
-    - Tide: Use the provided tide_stage (low/mid/high) directly in your report.
+    - Tide: Use the provided tide_stage (e.g., "low", "high", "low incoming", "mid outgoing", "high incoming") directly in your report.
     - End with a verdict word and reason.
     Never include emojis, code blocks, or degrees.
     `)}`,
@@ -106,9 +209,9 @@ export function buildSpotReportPrompt(p: PromptInputs){
     If missing data, don't mention it.  Use these labels only in text (offshore/cross/onshore).`,
     
       `Verdict Scoring (use first that applies):
-    - "GO" if: height within optimalHeight AND swell inside window AND wind offshore or light (<=12 km/h) AND tide within range.
-    - "CONDITIONAL" if: one or more items borderline/missing but potentially surfable for the spot type.
-    - "NO-GO" if: height well below optimal OR strong onshore (>25 km/h) OR tiny swell outside window.`,
+    - "GO" if: height within optimalHeight AND swell_dir_label="prime window" AND wind offshore or light (<=12 km/h) AND tide within range.
+    - "CONDITIONAL" if: swell_dir_label="workable angle" OR one or more items borderline/missing but potentially surfable.
+    - "NO-GO" if: height well below optimal OR strong onshore (>25 km/h) OR swell_dir_label="outside window".`,
     
       `TitlePolicy:
     - Goal: a compact headline that SUMS UP conditions.
