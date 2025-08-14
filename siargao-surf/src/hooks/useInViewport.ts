@@ -9,7 +9,7 @@ interface UseInViewportOptions {
 }
 
 interface UseInViewportReturn {
-  ref: RefObject<HTMLElement>
+  ref: RefObject<HTMLElement | null>
   isInView: boolean
   hasBeenInView: boolean
 }

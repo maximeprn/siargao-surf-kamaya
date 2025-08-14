@@ -48,6 +48,15 @@ export async function shouldDoBulkFetch(simulatedDate?: string): Promise<{
     }
     
     // 2. Vérifier le dernier bulk fetch
+    if (!supabase) {
+      return {
+        shouldFetch: true,
+        startDate: todayStr,
+        endDate: getDatePlusDays(todayStr, 6),
+        reason: 'No Supabase connection'
+      }
+    }
+    
     const { data: lastFetch } = await supabase
       .from('tide_fetch_log')
       .select('*')

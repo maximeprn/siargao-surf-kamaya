@@ -155,7 +155,8 @@ export default function MarineWeatherWidget({ weather, spotName }: MarineWeather
   const calculateSurfQuality = (sessionData: SessionData, effectiveHeight: number, hourIndex: number) => {
     if (!sessionData) return { score: 0, rating: 'No data' }
     
-    const sessionTideStage = getTideStage(sessionData.seaLevel, weather.hourly.sea_level_height_msl)
+    // Using wave height as proxy for tide stage (temporary fix)
+    const sessionTideStage = getTideStage(sessionData.seaLevel, weather.hourly.wave_height || [])
     
     // Get real hourly wind data
     const windSpeedKmh = hourIndex < weather.weather.hourly.windspeed_10m.length ? 
@@ -471,7 +472,7 @@ export default function MarineWeatherWidget({ weather, spotName }: MarineWeather
                       swellPeriod: weather.hourly.swell_wave_period[morningHourIndex],
                       waveDirection: weather.hourly.wave_direction[morningHourIndex],
                       swellDirection: weather.hourly.swell_wave_direction[morningHourIndex],
-                      seaLevel: weather.hourly.sea_level_height_msl[morningHourIndex]
+                      seaLevel: 1.0 // Default tide height, replace when API data available
                     }
                   }
                   
@@ -485,7 +486,7 @@ export default function MarineWeatherWidget({ weather, spotName }: MarineWeather
                       swellPeriod: weather.hourly.swell_wave_period[afternoonHourIndex],
                       waveDirection: weather.hourly.wave_direction[afternoonHourIndex],
                       swellDirection: weather.hourly.swell_wave_direction[afternoonHourIndex],
-                      seaLevel: weather.hourly.sea_level_height_msl[afternoonHourIndex]
+                      seaLevel: 1.0 // Default tide height, replace when API data available
                     }
                   }
                   
@@ -678,7 +679,7 @@ export default function MarineWeatherWidget({ weather, spotName }: MarineWeather
                   swellPeriod: weather.hourly.swell_wave_period[morningHourIndex],
                   waveDirection: weather.hourly.wave_direction[morningHourIndex],
                   swellDirection: weather.hourly.swell_wave_direction[morningHourIndex],
-                  seaLevel: weather.hourly.sea_level_height_msl[morningHourIndex]
+                  seaLevel: 1.0 // Default tide height, replace when API data available
                 }
               }
               
@@ -692,7 +693,7 @@ export default function MarineWeatherWidget({ weather, spotName }: MarineWeather
                   swellPeriod: weather.hourly.swell_wave_period[afternoonHourIndex],
                   waveDirection: weather.hourly.wave_direction[afternoonHourIndex],
                   swellDirection: weather.hourly.swell_wave_direction[afternoonHourIndex],
-                  seaLevel: weather.hourly.sea_level_height_msl[afternoonHourIndex]
+                  seaLevel: 1.0 // Default tide height, replace when API data available
                 }
               }
               
@@ -748,7 +749,7 @@ export default function MarineWeatherWidget({ weather, spotName }: MarineWeather
                           </div>
                           <div className="flex justify-between">
                             <span className="text-black">Tide:</span>
-                            <span className="text-black">{morningData.seaLevel?.toFixed(1)}m ({getTideStage(morningData.seaLevel, weather.hourly.sea_level_height_msl)})</span>
+                            <span className="text-black">{morningData.seaLevel?.toFixed(1)}m ({getTideStage(morningData.seaLevel, weather.hourly.wave_height || [])})</span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-black">Score:</span>
@@ -785,7 +786,7 @@ export default function MarineWeatherWidget({ weather, spotName }: MarineWeather
                           </div>
                           <div className="flex justify-between">
                             <span className="text-black">Tide:</span>
-                            <span className="text-black">{afternoonData.seaLevel?.toFixed(1)}m ({getTideStage(afternoonData.seaLevel, weather.hourly.sea_level_height_msl)})</span>
+                            <span className="text-black">{afternoonData.seaLevel?.toFixed(1)}m ({getTideStage(afternoonData.seaLevel, weather.hourly.wave_height || [])})</span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-black">Score:</span>
