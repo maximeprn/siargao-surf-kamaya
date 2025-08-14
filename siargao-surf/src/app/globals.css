@@ -257,3 +257,41 @@ p, h1, h2, h3, h4, h5, h6, span, div, a, button, label, small {
     -webkit-animation: none !important;
   }
 }
+
+/* Smooth scroll optimizations */
+html {
+  scroll-behavior: auto; /* Lenis va gérer le smooth scroll */
+}
+
+/* Optimisation pour le smooth scroll */
+html.lenis {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+/* Empêcher le scroll horizontal */
+body {
+  overflow-x: hidden;
+}
+
+/* Optimiser les performances lors du scroll */
+* {
+  will-change: auto;
+}
+
+/* Styles pour les sites primés */
+@media (prefers-reduced-motion: no-preference) {
+  /* Activer l'accélération matérielle pour les éléments qui bougent */
+  .smooth-scroll-element {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
+}

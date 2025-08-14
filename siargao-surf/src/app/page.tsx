@@ -3,6 +3,7 @@ import Footer from '@/components/ui/Footer'
 import SurfPhotoCardAqua from '@/components/ui/SurfPhotoCardAqua'
 import SpotDetailsOverlay from '@/components/ui/SpotDetailsOverlay'
 import ClientWeatherData from '@/components/ClientWeatherData'
+import LazyScrollContainer from '@/components/ui/LazyScrollContainer'
 import { CDN_IMAGES } from '@/lib/cdn-images'
 import { supabase } from '@/lib/supabase'
 import { siargaoSpotsComplete } from '@/lib/spot-configs'
@@ -38,11 +39,47 @@ export default async function Home() {
         </SurfPhotoCardAqua>
 
         {/* Weather data loads client-side for fast LCP */}
-        <ClientWeatherData
-          spotName="Cloud 9"
-          location="Siargao Island, Philippines"
-          coords={coords}
-        />
+        <LazyScrollContainer animation="slideUp" delay={0.2}>
+          <ClientWeatherData
+            spotName="Cloud 9"
+            location="Siargao Island, Philippines"
+            coords={coords}
+          />
+        </LazyScrollContainer>
+
+        {/* Additional sections to demonstrate lazy scroll */}
+        <LazyScrollContainer animation="slideLeft" delay={0.1}>
+          <section className="bg-glass border border-glass rounded-2xl p-8 backdrop-blur-sm">
+            <h2 className="text-2xl font-semibold text-theme-primary mb-4">Découvrez Siargao</h2>
+            <p className="text-theme-muted text-lg leading-relaxed">
+              Siargao Island est considérée comme la capitale du surf des Philippines. 
+              Avec ses vagues de classe mondiale et ses paysages tropicaux époustouflants, 
+              c'est un paradis pour les surfeurs du monde entier.
+            </p>
+          </section>
+        </LazyScrollContainer>
+
+        <LazyScrollContainer animation="slideRight" delay={0.1}>
+          <section className="bg-glass border border-glass rounded-2xl p-8 backdrop-blur-sm">
+            <h2 className="text-2xl font-semibold text-theme-primary mb-4">Conditions en Temps Réel</h2>
+            <p className="text-theme-muted text-lg leading-relaxed">
+              Notre système analyse en permanence les conditions de surf, 
+              intégrant données météorologiques, marées et caractéristiques uniques de chaque spot 
+              pour vous offrir les prévisions les plus précises.
+            </p>
+          </section>
+        </LazyScrollContainer>
+
+        <LazyScrollContainer animation="scale" delay={0.2}>
+          <section className="bg-glass border border-glass rounded-2xl p-8 backdrop-blur-sm">
+            <h2 className="text-2xl font-semibold text-theme-primary mb-4">Intelligence Artificielle</h2>
+            <p className="text-theme-muted text-lg leading-relaxed">
+              Nos rapports de surf sont générés par IA, analysant une multitude de facteurs 
+              pour vous donner des recommandations personnalisées et des insights approfondis 
+              sur les conditions de chaque session.
+            </p>
+          </section>
+        </LazyScrollContainer>
       </main>
       <Footer />
     </div>

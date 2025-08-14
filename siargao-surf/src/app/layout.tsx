@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import ThemeProviderWrapper from '@/components/providers/ThemeProviderWrapper'
+import SmoothScrollProvider from '@/components/providers/SmoothScrollProvider'
+import BackToTopButton from '@/components/ui/BackToTopButton'
 
 export const metadata: Metadata = {
   title: 'Siargao Surf',
@@ -21,7 +23,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="antialiased">
         <ThemeProviderWrapper>
-          {children}
+          <SmoothScrollProvider>
+            {children}
+            <BackToTopButton />
+          </SmoothScrollProvider>
         </ThemeProviderWrapper>
       </body>
     </html>
