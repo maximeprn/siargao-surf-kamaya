@@ -22,6 +22,18 @@ interface TideCurveProps {
 export default function TideCurve({ tideData }: TideCurveProps){
   const [hoverPoint, setHoverPoint] = useState<{x: number, y: number, height: number, time: string} | null>(null)
   const [simpleTideData, setSimpleTideData] = useState<SimpleTideData | null>(null)
+  const [isMobile, setIsMobile] = useState(false)
+  
+  // Check if mobile on mount and resize
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
   
   // Load tide data from Supabase cache
   useEffect(() => {
@@ -276,7 +288,7 @@ export default function TideCurve({ tideData }: TideCurveProps){
               textAnchor="middle" 
               className="svg-label" 
               fill={isHigh ? '#10b981' : '#ef4444'}
-              fontSize="11"
+              fontSize={isMobile ? "14" : "11"}
               fontWeight="600"
             >
               {extreme.height.toFixed(1)}m
@@ -289,7 +301,7 @@ export default function TideCurve({ tideData }: TideCurveProps){
               textAnchor="middle" 
               className="svg-label" 
               fill="var(--text-muted)"
-              fontSize="9"
+              fontSize={isMobile ? "12" : "9"}
             >
               {extreme.time}
             </text>
@@ -299,6 +311,12 @@ export default function TideCurve({ tideData }: TideCurveProps){
       
       {/* Current tide level indicator */}
       {currentPointOnCurve && (() => {
+        // Check if current height matches any extreme height to 1 decimal place
+        const currentHeightRounded = currentPointOnCurve.height.toFixed(1)
+        const shouldHideCurrentLabel = simpleTideData?.extremes?.some(extreme => 
+          extreme.height.toFixed(1) === currentHeightRounded
+        ) || false
+        
         // Check for nearby extreme points to avoid label overlap
         const DISTANCE_THRESHOLD = 60 // pixels
         let labelYOffset = -18 // default offset above the point
@@ -333,18 +351,20 @@ export default function TideCurve({ tideData }: TideCurveProps){
               strokeOpacity="0.8"
               strokeWidth="2"
             />
-            {/* Current height label - positioned to avoid extreme point overlap */}
-            <text 
-              x={currentPointOnCurve.x} 
-              y={currentPointOnCurve.y + labelYOffset} 
-              textAnchor="middle" 
-              className="svg-label" 
-              fill="var(--tide-curve)"
-              fontSize="13"
-              fontWeight="600"
-            >
-              {(currentPointOnCurve.height !== null && currentPointOnCurve.height !== undefined) ? currentPointOnCurve.height.toFixed(1) : '0.0'}m
-            </text>
+            {/* Current height label - only show if not matching extreme height */}
+            {!shouldHideCurrentLabel && (
+              <text 
+                x={currentPointOnCurve.x} 
+                y={currentPointOnCurve.y + labelYOffset} 
+                textAnchor="middle" 
+                className="svg-label" 
+                fill="var(--tide-curve)"
+                fontSize={isMobile ? "16" : "13"}
+                fontWeight="600"
+              >
+                {(currentPointOnCurve.height !== null && currentPointOnCurve.height !== undefined) ? currentPointOnCurve.height.toFixed(1) : '0.0'}m
+              </text>
+            )}
           </g>
         )
       })()}
@@ -352,7 +372,7 @@ export default function TideCurve({ tideData }: TideCurveProps){
       {/* Hover point indicator */}
       {hoverPoint && (() => {
         // Check if too close to current point
-        const DISTANCE_THRESHOLD = typeof window !== 'undefined' && window.innerWidth < 768 ? 70 : 50 // pixels
+        const DISTANCE_THRESHOLD = isMobile ? 70 : 50 // pixels
         const isTooCloseToCurrent = currentPointOnCurve && 
           Math.sqrt(
             Math.pow(hoverPoint.x - currentPointOnCurve.x, 2) + 
@@ -406,7 +426,7 @@ export default function TideCurve({ tideData }: TideCurveProps){
                   y={hoverPoint.y - 33} 
                   textAnchor="middle" 
                   className="tooltip-text" 
-                  fontSize="11"
+                  fontSize={isMobile ? "14" : "11"}
                   fontWeight="600"
                 >
                   {(hoverPoint.height !== null && hoverPoint.height !== undefined) ? hoverPoint.height.toFixed(1) : '0.0'}m
@@ -416,7 +436,7 @@ export default function TideCurve({ tideData }: TideCurveProps){
                   y={hoverPoint.y - 21} 
                   textAnchor="middle" 
                   className="tooltip-text" 
-                  fontSize="9"
+                  fontSize={isMobile ? "12" : "9"}
                 >
                   {hoverPoint.time}
                 </text>

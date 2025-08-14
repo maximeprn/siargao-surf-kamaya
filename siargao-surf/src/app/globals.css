@@ -147,6 +147,14 @@ p, h1, h2, h3, h4, h5, h6, span, div, a, button, label, small {
   .report-text{ max-width:62ch; }
 }
 
+/* Mobile font size adjustments for tide graph */
+@media (max-width: 768px) {
+  :root {
+    --svg-label: 14px; /* Increased from 11px */
+    --type-scale: 0.85; /* Increased from 0.75 */
+  }
+}
+
 /* Theme utility classes */
 .bg-theme-primary { background-color: var(--bg-primary); }
 .bg-theme-secondary { background-color: var(--bg-secondary); }
