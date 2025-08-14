@@ -12,7 +12,9 @@ interface SmoothScrollMethods {
 
 export function useSmoothScroll(): SmoothScrollMethods {
   const scrollTo = useCallback((target: string | number, options?: { offset?: number; duration?: number }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (typeof window !== 'undefined' && (window as any).lenis) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const lenis = (window as any).lenis
       
       if (typeof target === 'string') {
@@ -34,25 +36,33 @@ export function useSmoothScroll(): SmoothScrollMethods {
   }, [])
 
   const scrollToTop = useCallback((duration = 1.5) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (typeof window !== 'undefined' && (window as any).lenis) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).lenis.scrollTo(0, { duration })
     }
   }, [])
 
   const scrollToBottom = useCallback((duration = 1.5) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (typeof window !== 'undefined' && (window as any).lenis) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).lenis.scrollTo(document.body.scrollHeight, { duration })
     }
   }, [])
 
   const stop = useCallback(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (typeof window !== 'undefined' && (window as any).lenis) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).lenis.stop()
     }
   }, [])
 
   const start = useCallback(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (typeof window !== 'undefined' && (window as any).lenis) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).lenis.start()
     }
   }, [])

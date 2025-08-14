@@ -275,7 +275,7 @@ export default function TideCurve({ tideData }: TideCurveProps){
               cx={x} 
               cy={y} 
               r="4" 
-              fill={isHigh ? '#10b981' : '#ef4444'} 
+              fill={isHigh ? '#AEBDAF' : '#C8585E'}
               stroke="var(--text-primary)" 
               strokeWidth="1.5"
               strokeOpacity="0.8"
@@ -287,7 +287,7 @@ export default function TideCurve({ tideData }: TideCurveProps){
               y={y - 12} 
               textAnchor="middle" 
               className="svg-label" 
-              fill={isHigh ? '#10b981' : '#ef4444'}
+              fill={isHigh ? '#AEBDAF' : '#C8585E'}
               fontSize={isMobile ? "14" : "11"}
               fontWeight="600"
             >

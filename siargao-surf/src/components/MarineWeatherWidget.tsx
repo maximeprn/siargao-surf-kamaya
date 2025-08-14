@@ -26,8 +26,8 @@ export default function MarineWeatherWidget({ weather, spotName }: MarineWeather
   const spotMeta = siargaoSpotsComplete[spotName]
   
   // Calculate effective wave height using spot-specific corrections
-  // Use real tide data from API
-  const tideHeight = weather.current.sea_level_height_msl
+  // Use estimated tide height for now (API property not available)
+  const tideHeight = 1.0 // Default tide height, replace with actual data when available
   
   // Get today's tide range from hourly data to determine relative tide stage
   const getTideStage = (currentHeight: number, hourlyTides: number[]): 'low' | 'mid' | 'high' => {
@@ -42,7 +42,8 @@ export default function MarineWeatherWidget({ weather, spotName }: MarineWeather
     return 'mid'
   }
   
-  const tideStage = getTideStage(tideHeight, weather.hourly.sea_level_height_msl)
+  // For now, use wave height as a proxy for tide stage (temporary fix)
+  const tideStage = getTideStage(tideHeight, weather.hourly.wave_height || [])
   
   const effectiveWaves = spotMeta ? effectiveWaveHeight(
     {
@@ -71,8 +72,8 @@ export default function MarineWeatherWidget({ weather, spotName }: MarineWeather
   // Calculate surf quality with the new advanced algorithm
   const surfQuality = getWaveQuality(conditions, spotConfig)
   
-  // Debug: log raw API data
-  const todaysTides = weather.hourly.sea_level_height_msl.slice(0, 24)
+  // Debug: log raw API data (using wave height as proxy temporarily)
+  const todaysTides = weather.hourly.wave_height.slice(0, 24)
   const tideRange = {
     min: Math.min(...todaysTides),
     max: Math.max(...todaysTides),

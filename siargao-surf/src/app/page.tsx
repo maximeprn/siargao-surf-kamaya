@@ -54,7 +54,7 @@ export default async function Home() {
             <p className="text-theme-muted text-lg leading-relaxed">
               Siargao Island est considérée comme la capitale du surf des Philippines. 
               Avec ses vagues de classe mondiale et ses paysages tropicaux époustouflants, 
-              c'est un paradis pour les surfeurs du monde entier.
+              c&apos;est un paradis pour les surfeurs du monde entier.
             </p>
           </section>
         </LazyScrollContainer>

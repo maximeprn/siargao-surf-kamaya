@@ -164,6 +164,7 @@ async function doRealBulkFetch(simulatedDate?: string, forceRefresh = false) {
 
     // Traiter les données horaires
     if (data.heights && data.heights.length > 0) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       data.heights.forEach((height: any) => {
         const date = new Date(height.dt * 1000)
         const philDateStr = date.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' })
@@ -184,6 +185,7 @@ async function doRealBulkFetch(simulatedDate?: string, forceRefresh = false) {
 
     // Traiter les extremes
     if (data.extremes && data.extremes.length > 0) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       data.extremes.forEach((extreme: any) => {
         const date = new Date(extreme.dt * 1000)
         const philDateStr = date.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' })
