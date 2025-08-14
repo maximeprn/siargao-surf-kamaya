@@ -189,3 +189,71 @@ p, h1, h2, h3, h4, h5, h6, span, div, a, button, label, small {
 .light .quality-good { color: #16a34a; } /* green-600 */
 .light .quality-very-good { color: #15803d; } /* green-700 */
 .light .quality-excellent { color: #059669; } /* emerald-600 */
+
+/* SurfPhotoCardAqua Animations */
+@keyframes causticsShift {
+  0% { 
+    transform: translateX(-10%) translateY(0) rotate(0deg); 
+  }
+  50% { 
+    transform: translateX(10%) translateY(-3%) rotate(0.4deg); 
+  }
+  100% { 
+    transform: translateX(-10%) translateY(0) rotate(0deg); 
+  }
+}
+
+@keyframes raysRotate {
+  to { 
+    transform: rotate(360deg); 
+  }
+}
+
+/* Enhanced animations with browser prefixes */
+@-webkit-keyframes causticsShift {
+  0% { 
+    -webkit-transform: translateX(-10%) translateY(0) rotate(0deg);
+    transform: translateX(-10%) translateY(0) rotate(0deg); 
+  }
+  50% { 
+    -webkit-transform: translateX(10%) translateY(-3%) rotate(0.4deg);
+    transform: translateX(10%) translateY(-3%) rotate(0.4deg); 
+  }
+  100% { 
+    -webkit-transform: translateX(-10%) translateY(0) rotate(0deg);
+    transform: translateX(-10%) translateY(0) rotate(0deg); 
+  }
+}
+
+@-webkit-keyframes raysRotate {
+  to { 
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg); 
+  }
+}
+
+/* Aquatic effects utility classes */
+.caustics-animation {
+  animation: causticsShift 14s ease-in-out infinite;
+  -webkit-animation: causticsShift 14s ease-in-out infinite;
+}
+
+.rays-animation {
+  animation: raysRotate 28s linear infinite;
+  -webkit-animation: raysRotate 28s linear infinite;
+}
+
+/* Browser compatibility for mask */
+.mask-gradient {
+  mask-image: linear-gradient(to bottom, transparent 0%, black 45%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 45%);
+}
+
+/* Motion preference respecting */
+@media (prefers-reduced-motion: reduce) {
+  .caustics-animation,
+  .rays-animation {
+    animation: none !important;
+    -webkit-animation: none !important;
+  }
+}
