@@ -120,9 +120,9 @@
   --booking-padding-x: 1.5rem;      /* px-6 = 24px */
   
   /* Villa Container - Responsive */
-  --villa-container-width-mobile: 75vw;    /* Mobile: 88vw */
+  --villa-container-width-mobile: 90vw;    /* Mobile: 88vw */
   --villa-container-width-tablet: 80vw;    /* Tablet: 88vw */
-  --villa-container-width-desktop: 88vw;   /* Desktop: 88vw */
+  --villa-container-width-desktop: 85vw;   /* Desktop: 88vw */
   --villa-padding-x-mobile: 2rem;          /* Mobile padding: 32px */
   --villa-padding-x-tablet: 3rem;          /* Tablet padding: 48px */
   
@@ -268,10 +268,22 @@ body {
   justify-content: center;
 }
 
-/* Amenities Grid - Replicate: grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 */
+/* Mobile: Reduce top padding for amenities section */
+@media (max-width: 767px) {
+  .amenities-section-padding {
+    padding-top: 0; /* No top padding on mobile */
+    padding-bottom: 0; /* Remove bottom padding, use image padding instead */
+  }
+  
+  .amenities-image-section {
+    padding-top: 6rem; /* 96px spacing above image on mobile */
+  }
+}
+
+/* Amenities Grid - Replicate: grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 */
 .amenities-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: var(--amenities-gap-mobile);
 }
 

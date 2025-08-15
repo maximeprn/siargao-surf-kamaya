@@ -91,6 +91,11 @@ const Hero = () => {
           
           {/* Overlay for better text readability */}
           <div className="absolute inset-0 bg-black/15"></div>
+          
+          {/* Dark overlay when mobile menu is open */}
+          {isOpen && (
+            <div className="absolute inset-0 bg-black/60 z-20 md:hidden"></div>
+          )}
         </div>
 
         {/* Navigation - positioned inside the hero container */}
@@ -189,29 +194,30 @@ const Hero = () => {
                   className={`block w-6 h-0.5 transition-transform ${
                     isOpen ? 'rotate-45 translate-y-1.5' : ''
                   }`}
-                  style={{backgroundColor: 'var(--text-primary)'}}
+                  style={{backgroundColor: '#FFFFFF'}}
                 />
                 <span
                   className={`block w-6 h-0.5 transition-opacity ${
                     isOpen ? 'opacity-0' : ''
                   }`}
-                  style={{backgroundColor: 'var(--text-primary)'}}
+                  style={{backgroundColor: '#FFFFFF'}}
                 />
                 <span
                   className={`block w-6 h-0.5 transition-transform ${
                     isOpen ? '-rotate-45 -translate-y-1.5' : ''
                   }`}
-                  style={{backgroundColor: 'var(--text-primary)'}}
+                  style={{backgroundColor: '#FFFFFF'}}
                 />
               </button>
             </div>
 
             {/* Mobile Menu */}
-            {isOpen && (
-              <div 
-                className="md:hidden mt-4 py-4 border-t" 
-                style={{borderColor: 'var(--border)'}}
-              >
+            <div 
+              className={`md:hidden mt-4 py-4 border-t transition-all duration-300 ease-in-out ${
+                isOpen ? 'opacity-100 max-h-96 visible' : 'opacity-0 max-h-0 invisible overflow-hidden'
+              }`}
+              style={{borderColor: 'var(--border)'}}
+            >
                 {navLinks.map((link) => (
                   <Link
                     key={link.href}
@@ -238,8 +244,8 @@ const Hero = () => {
                     maxWidth: '100%',
                     gridColumnGap: '.7rem',
                     gridRowGap: '.7rem',
-                    backgroundColor: 'var(--bg-button)',
-                    color: 'var(--text-button)',
+                    backgroundColor: '#FFFFFF',
+                    color: '#000000',
                     borderRadius: '.4rem',
                     justifyContent: 'flex-start',
                     alignItems: 'center',
@@ -249,8 +255,7 @@ const Hero = () => {
                 >
                   Book Now
                 </Link>
-              </div>
-            )}
+            </div>
           </div>
         </nav>
         

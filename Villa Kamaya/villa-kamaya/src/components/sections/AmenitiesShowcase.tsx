@@ -30,78 +30,102 @@ const AmenitiesShowcase = () => {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Calculate cascade spacing to fill screen height
-      const screenHeight = window.innerHeight;
-      const boxHeight = 120; // Further reduced due to smaller icons and text
-      const topPadding = 128; // pt-32
-      const availableHeight = screenHeight - topPadding - boxHeight;
-      const cascadeSpacing = availableHeight / 8; // Reduced spacing by half for tighter cascade
+      const isMobile = window.innerWidth < 768;
+      
+      if (isMobile) {
+        // Mobile: Simple 2x2 grid layout - no cascade animation
+        boxRefs.current.forEach((box, index) => {
+          if (box) {
+            gsap.set(box, {
+              y: 0,
+              opacity: 1
+            });
+          }
+        });
 
-      // Set initial cascade positions for the 4 boxes
-      boxRefs.current.forEach((box, index) => {
-        if (box) {
-          const initialOffset = index * cascadeSpacing;
-          gsap.set(box, {
-            y: initialOffset,
+        // Mobile: Don't animate image position, let CSS handle spacing
+
+        // Simple fade-in animation for mobile
+        gsap.fromTo(boxRefs.current, 
+          { opacity: 0, y: 20 },
+          { 
+            opacity: 1, 
+            y: 0, 
+            duration: 0.8, 
+            stagger: 0.2,
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: "top 80%",
+              end: "bottom 20%",
+              toggleActions: "play none none reverse"
+            }
+          }
+        );
+      } else {
+        // Desktop: Keep the original cascade animation
+        const screenHeight = window.innerHeight;
+        const boxHeight = 120;
+        const topPadding = 128;
+        const availableHeight = screenHeight - topPadding - boxHeight;
+        const cascadeSpacing = availableHeight / 8;
+
+        // Set initial cascade positions for the 4 boxes
+        boxRefs.current.forEach((box, index) => {
+          if (box) {
+            const initialOffset = index * cascadeSpacing;
+            gsap.set(box, {
+              y: initialOffset,
+              opacity: 1
+            });
+          }
+        });
+
+        // Create timeline with pinning to control the image scroll
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top top",
+            end: "+=300vh",
+            scrub: 0.5,
+            pin: true,
+          }
+        });
+
+        // Set initial position for image section
+        if (imageRef.current) {
+          const box4Offset = 3 * cascadeSpacing;
+          const imagePadding = 48;
+          gsap.set(imageRef.current, {
+            y: box4Offset + imagePadding,
             opacity: 1
           });
         }
-      });
 
-      // Create timeline with pinning to control the image scroll
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top top", // Start when section reaches top
-          end: "+=300vh", // Extended to account for image scroll animation
-          scrub: 0.5, // Smooth linear scroll
-          pin: true, // Pin to control the image movement
-        }
-      });
+        // Original cascade animation for desktop
+        tl.to(boxRefs.current[0], { y: 0, duration: 1, ease: "none" }, 0);
+        tl.to(boxRefs.current[1], { y: 0, duration: 1, ease: "none" }, 0);
+        tl.to(boxRefs.current[2], { y: cascadeSpacing, duration: 1, ease: "none" }, 0);
+        
+        tl.to([boxRefs.current[3], imageRef.current], { 
+          y: index => index === 0 ? 2 * cascadeSpacing : 2 * cascadeSpacing + 48,
+          duration: 1, 
+          ease: "none" 
+        }, 0);
 
-      // Set initial position for image section - maintain padding with box 4
-      if (imageRef.current) {
-        const box4Offset = 3 * cascadeSpacing; // Position of box 4
-        const imagePadding = 48; // Same as pb-12 (48px) used between other sections
-        gsap.set(imageRef.current, {
-          y: box4Offset + imagePadding, // Position relative to box 4
-          opacity: 1
-        });
+        tl.to(boxRefs.current[2], { y: 0, duration: 1, ease: "none" }, 1);
+        
+        tl.to([boxRefs.current[3], imageRef.current], { 
+          y: index => index === 0 ? cascadeSpacing : cascadeSpacing + 48,
+          duration: 1, 
+          ease: "none" 
+        }, 1);
+
+        tl.to([boxRefs.current[3], imageRef.current], { 
+          y: index => index === 0 ? 0 : 48,
+          duration: 1, 
+          ease: "none" 
+        }, 2);
       }
-
-      // Clean animation: Each box stops when it reaches final position
-      // Image moves with box 4 throughout
-      
-      // Step 1: Box 1 stops, others continue
-      tl.to(boxRefs.current[0], { y: 0, duration: 1, ease: "none" }, 0);
-      tl.to(boxRefs.current[1], { y: 0, duration: 1, ease: "none" }, 0);
-      tl.to(boxRefs.current[2], { y: cascadeSpacing, duration: 1, ease: "none" }, 0);
-      
-      // Box 4 and image move together as a unit
-      tl.to([boxRefs.current[3], imageRef.current], { 
-        y: index => index === 0 ? 2 * cascadeSpacing : 2 * cascadeSpacing + 48,
-        duration: 1, 
-        ease: "none" 
-      }, 0);
-
-      // Step 2: Box 2 stops, others continue
-      tl.to(boxRefs.current[2], { y: 0, duration: 1, ease: "none" }, 1);
-      
-      // Box 4 and image continue moving together
-      tl.to([boxRefs.current[3], imageRef.current], { 
-        y: index => index === 0 ? cascadeSpacing : cascadeSpacing + 48,
-        duration: 1, 
-        ease: "none" 
-      }, 1);
-
-      // Step 3: Box 3 stops, box 4 and image move together to final position
-      tl.to([boxRefs.current[3], imageRef.current], { 
-        y: index => index === 0 ? 0 : 48,
-        duration: 1, 
-        ease: "none" 
-      }, 2);
-
-
     }, sectionRef);
 
     return () => ctx.revert();
@@ -252,7 +276,7 @@ const AmenitiesShowcase = () => {
     {/* Full-screen image section - acts like a regular next section */}
     <section 
       ref={imageRef}
-      className="relative w-full"
+      className="relative w-full amenities-image-section"
       style={{ backgroundColor: 'var(--bg-primary)', opacity: 1 }}
     >
       <div className="villa-container">
