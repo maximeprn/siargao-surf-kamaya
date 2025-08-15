@@ -133,19 +133,19 @@ const Navigation = () => {
               className={`block w-6 h-0.5 transition-transform ${
                 isOpen ? 'rotate-45 translate-y-1.5' : ''
               }`}
-              style={{backgroundColor: 'var(--text-primary)'}}
+              style={{backgroundColor: '#FFFFFF'}}
             />
             <span
               className={`block w-6 h-0.5 transition-opacity ${
                 isOpen ? 'opacity-0' : ''
               }`}
-              style={{backgroundColor: 'var(--text-primary)'}}
+              style={{backgroundColor: '#FFFFFF'}}
             />
             <span
               className={`block w-6 h-0.5 transition-transform ${
                 isOpen ? '-rotate-45 -translate-y-1.5' : ''
               }`}
-              style={{backgroundColor: 'var(--text-primary)'}}
+              style={{backgroundColor: '#FFFFFF'}}
             />
           </button>
         </div>

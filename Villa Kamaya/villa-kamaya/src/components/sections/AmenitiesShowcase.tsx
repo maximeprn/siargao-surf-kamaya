@@ -264,6 +264,8 @@ const AmenitiesShowcase = () => {
           className="object-cover"
           priority
         />
+        {/* Calque sombre */}
+        <div className="absolute inset-0 bg-black/15"></div>
         </div>
       </div>
     </section>

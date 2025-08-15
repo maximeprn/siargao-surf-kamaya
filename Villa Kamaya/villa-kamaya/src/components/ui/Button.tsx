@@ -20,7 +20,7 @@ const Button = ({
 }: ButtonProps) => {
   const baseClasses = 'inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed';
 
-  const getVariantStyles = () => {
+  const getVariantStyles = (): React.CSSProperties => {
     switch (variant) {
       case 'primary':
         return {

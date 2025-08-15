@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
-import Footer from "@/components/layout/Footer";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -22,13 +21,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link
+          rel="preload"
+          href="/fonts/analogue/Analogue-Regular.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body
         className={`${montserrat.variable} antialiased`}
       >
         <main>
           {children}
         </main>
-        <Footer />
       </body>
     </html>
   );

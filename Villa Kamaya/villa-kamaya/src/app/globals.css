@@ -38,7 +38,7 @@
   --bg-secondary: rgba(28, 51, 64, 0.1);
   --bg-button: #000000;
   --text-button: #ECE8DB;
-  --text-primary: #254254;
+  --text-primary: #1d223ae1;
   --text-secondary: #254254;
   --text-muted: rgba(28, 51, 64, 0.6);
   --accent: #AEBDAF;
@@ -88,7 +88,7 @@
 
   /* Section Spacing - Exact Current Values */
   --booking-padding-y: 6rem;        /* py-24 = 96px */
-  --section-padding-y: 3rem;        /* py-12 = 48px */
+  --section-padding-y: 6rem;        /* py-24 = 96px */
   --amenities-padding-top: 8rem;    /* pt-32 = 128px */
   --amenities-padding-bottom: 3rem; /* pb-12 = 48px */
   
@@ -100,8 +100,8 @@
   --villa-container-width-mobile: 75vw;    /* Mobile: 88vw */
   --villa-container-width-tablet: 80vw;    /* Tablet: 88vw */
   --villa-container-width-desktop: 88vw;   /* Desktop: 88vw */
-  --villa-padding-x-mobile: 0rem;          /* Mobile padding: 0 (pas de padding actuellement) */
-  --villa-padding-x-tablet: 0rem;          /* Tablet padding: 0 */
+  --villa-padding-x-mobile: 2rem;          /* Mobile padding: 32px */
+  --villa-padding-x-tablet: 3rem;          /* Tablet padding: 48px */
   
   /* Grid Gaps */
   --villa-gap-mobile: 3rem;         /* gap-12 = 48px */
@@ -359,6 +359,22 @@ body {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Loading Screen Animations */
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2s ease-in-out infinite;
 }
 
 /* Custom Scrollbar */

@@ -1,43 +1,14 @@
-'use client';
-
-import { useEffect, useRef } from 'react';
-import gsap, { scrollReveal } from '@/lib/gsap';
-
 const VillaDescription = () => {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const textRef = useRef<HTMLDivElement>(null);
-  const imageRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-
-    const ctx = gsap.context(() => {
-      // Scroll reveal animations
-      scrollReveal(textRef.current, {
-        x: -60,
-        opacity: 0,
-        duration: 1.2,
-      });
-
-      scrollReveal(imageRef.current, {
-        x: 60,
-        opacity: 0,
-        duration: 1.2,
-      });
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
 
   return (
     <section 
-      ref={sectionRef} 
       className="villa-section-padding"
       style={{ backgroundColor: 'var(--bg-primary)' }}
     >
       <div className="villa-container">
         <div className="villa-grid">
           {/* Image - Show first on mobile, second on desktop */}
-          <div ref={imageRef} className="relative order-1 lg:order-2">
+          <div className="relative order-1 lg:order-2">
             <div className="aspect-[1/1] relative rounded-lg overflow-hidden">
               <img
                 src="/assets/images/room/room-section-1.webp"
@@ -48,19 +19,19 @@ const VillaDescription = () => {
           </div>
 
           {/* Text Content - Show second on mobile, first on desktop */}
-          <div ref={textRef} className="space-y-6 order-2 lg:order-1 mt-8 lg:mt-0">
+          <div className="space-y-8 order-2 lg:order-1 mt-8 lg:mt-0 px-2 lg:px-6">
             <h2 
-              className="text-2xl md:text-4xl lg:text-5xl font-bold mb-6"
+              className="text-4xl leading-tight text-left mb-10"
               style={{
                 fontFamily: 'Analogue, serif',
-                color: 'var(--text-primary)',
-                lineHeight: 1.2
+                lineHeight: 1,
+                letterSpacing: '-0.01em'
               }}
             >
               Thoughtfully Designed for Island Living
             </h2>
             
-            <div className="space-y-4">
+            <div className="space-y-6">
               <p
                 className="leading-relaxed text-sm md:text-base"
                 style={{
