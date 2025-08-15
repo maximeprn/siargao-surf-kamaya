@@ -1,0 +1,380 @@
+@import "tailwindcss";
+
+/* Analogue Font Face Declarations */
+@font-face {
+  font-family: 'Analogue';
+  src: url('/fonts/analogue/Analogue-Regular.woff2') format('woff2'),
+       url('/fonts/analogue/Analogue-Regular.woff') format('woff'),
+       url('/fonts/analogue/Analogue.otf') format('opentype'),
+       url('/fonts/analogue/Analogue-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Analogue';
+  src: url('/fonts/analogue/Analogue-Bold.woff2') format('woff2'),
+       url('/fonts/analogue/Analogue-Bold.woff') format('woff'),
+       url('/fonts/analogue/Analogue-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Analogue';
+  src: url('/fonts/analogue/Analogue-Light.woff2') format('woff2'),
+       url('/fonts/analogue/Analogue-Light.woff') format('woff'),
+       url('/fonts/analogue/Analogue-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Kamaya Light Theme Colors */
+  --bg-primary: #EAE8DB;
+  --bg-secondary: rgba(28, 51, 64, 0.1);
+  --bg-button: #000000;
+  --text-button: #ECE8DB;
+  --text-primary: #254254;
+  --text-secondary: #254254;
+  --text-muted: rgba(28, 51, 64, 0.6);
+  --accent: #AEBDAF;
+  --border: rgba(28, 51, 64, 0.2);
+
+  /* Kamaya Dark Theme Colors */
+  --dark-bg-primary: rgb(27, 51, 64);
+  --dark-bg-secondary: rgba(27, 51, 64, 0.6);
+  --dark-text-primary: #EAF2F6;
+  --dark-text-secondary: #C6D3DB;
+  --dark-text-muted: rgba(255, 255, 255, 0.6);
+  --dark-accent: #F8CB9E;
+  --dark-border: rgba(255, 255, 255, 0.14);
+
+  /* Typography */
+  --type-scale: 0.75;
+  --font-primary: var(--font-montserrat), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: 'Analogue', ui-serif, Georgia, 'Times New Roman', serif;
+
+  /* Font Sizes */
+  --display-min: 64px;
+  --display-max: 96px;
+  --metric-min: 44px;
+  --metric-max: 76px;
+  --report-min: 16px;
+  --report-max: 18px;
+  --eyebrow: 16px;
+  --subtle: 18px;
+  --caption: 14px;
+  --meta: 12px;
+  --svg-label: 11px;
+
+  /* Spacing System */
+  --spacing-xs: 0.5rem;    /* 8px */
+  --spacing-sm: 0.75rem;   /* 12px */
+  --spacing-md: 1rem;      /* 16px */
+  --spacing-lg: 1.5rem;    /* 24px */
+  --spacing-xl: 2rem;      /* 32px */
+  --spacing-2xl: 3rem;     /* 48px */
+  --spacing-3xl: 4rem;     /* 64px */
+  --spacing-4xl: 6rem;     /* 96px */
+
+  /* Container & Layout */
+  --container-width: 88vw;
+  --container-max-width: 1200px;
+  --border-radius: 0.5rem; /* 8px */
+
+  /* Section Spacing - Exact Current Values */
+  --booking-padding-y: 6rem;        /* py-24 = 96px */
+  --section-padding-y: 3rem;        /* py-12 = 48px */
+  --amenities-padding-top: 8rem;    /* pt-32 = 128px */
+  --amenities-padding-bottom: 3rem; /* pb-12 = 48px */
+  
+  /* Container Spacing */
+  --booking-max-width: 56rem;       /* max-w-4xl = 896px */
+  --booking-padding-x: 1.5rem;      /* px-6 = 24px */
+  
+  /* Villa Container - Responsive */
+  --villa-container-width-mobile: 75vw;    /* Mobile: 88vw */
+  --villa-container-width-tablet: 80vw;    /* Tablet: 88vw */
+  --villa-container-width-desktop: 88vw;   /* Desktop: 88vw */
+  --villa-padding-x-mobile: 0rem;          /* Mobile padding: 0 (pas de padding actuellement) */
+  --villa-padding-x-tablet: 0rem;          /* Tablet padding: 0 */
+  
+  /* Grid Gaps */
+  --villa-gap-mobile: 3rem;         /* gap-12 = 48px */
+  --villa-gap-desktop: 7.5rem;      /* lg:gap-30 = 120px */
+  --amenities-gap-mobile: 2rem;     /* gap-8 = 32px */
+  --amenities-gap-desktop: 3rem;    /* lg:gap-12 = 48px */
+}
+
+@theme inline {
+  --color-background: var(--bg-primary);
+  --color-foreground: var(--text-primary);
+  --font-sans: var(--font-primary);
+  --font-serif: var(--font-display);
+}
+
+/* Mobile Typography Adjustments */
+@media (max-width: 768px) {
+  :root {
+    --svg-label: 14px;
+    --type-scale: 0.85;
+  }
+}
+
+/* Base Styles */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-primary);
+  font-size: var(--report-min);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Typography Classes */
+.text-display {
+  font-size: clamp(var(--display-min), 8vw, var(--display-max));
+  font-weight: 700;
+  line-height: 1.1;
+  font-family: var(--font-display);
+}
+
+.text-metric {
+  font-size: clamp(var(--metric-min), 6vw, var(--metric-max));
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.text-eyebrow {
+  font-size: var(--eyebrow);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1.4;
+}
+
+.text-subtle {
+  font-size: var(--subtle);
+  line-height: 1.5;
+}
+
+/* ====================================
+   CENTRALIZED DESIGN SYSTEM CLASSES
+   ==================================== */
+
+/* ===== EXACT REPLICAS OF CURRENT STYLES ===== */
+
+/* BookingCallout Classes - Replicate: py-24, max-w-4xl mx-auto px-6 */
+.booking-section-padding {
+  padding-top: var(--booking-padding-y);
+  padding-bottom: var(--booking-padding-y);
+}
+
+.booking-container {
+  max-width: var(--booking-max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--booking-padding-x);
+  padding-right: var(--booking-padding-x);
+  text-align: center;
+}
+
+/* Villa Section Classes - Replicate: py-12, width: '88vw' mx-auto */
+.villa-section-padding {
+  padding-top: var(--section-padding-y);
+  padding-bottom: var(--section-padding-y);
+}
+
+.villa-container {
+  width: var(--villa-container-width-mobile);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--villa-padding-x-mobile);
+  padding-right: var(--villa-padding-x-mobile);
+}
+
+@media (min-width: 768px) {
+  .villa-container {
+    width: var(--villa-container-width-tablet);
+    padding-left: var(--villa-padding-x-tablet);
+    padding-right: var(--villa-padding-x-tablet);
+  }
+}
+
+@media (min-width: 1024px) {
+  .villa-container {
+    width: var(--villa-container-width-desktop);
+  }
+}
+
+/* Villa Grid - Replicate: grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-30 items-center */
+.villa-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--villa-gap-mobile);
+  align-items: center;
+}
+
+@media (min-width: 1024px) {
+  .villa-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--villa-gap-desktop);
+  }
+}
+
+/* Amenities Section Classes - Replicate: pt-32 pb-12 */
+.amenities-section-padding {
+  padding-top: var(--amenities-padding-top);
+  padding-bottom: var(--amenities-padding-bottom);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+/* Amenities Grid - Replicate: grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 */
+.amenities-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--amenities-gap-mobile);
+}
+
+@media (min-width: 768px) {
+  .amenities-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1024px) {
+  .amenities-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--amenities-gap-desktop);
+  }
+}
+
+/* Text Sizing Classes */
+.text-amenity {
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-family: var(--font-primary);
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+@media (min-width: 768px) {
+  .text-amenity {
+    font-size: 14px;
+  }
+}
+
+/* Utility Classes */
+.border-radius {
+  border-radius: var(--border-radius);
+}
+
+.bg-primary {
+  background-color: var(--bg-primary);
+}
+
+.text-primary {
+  color: var(--text-primary);
+}
+
+.text-report {
+  font-size: clamp(var(--report-min), 2vw, var(--report-max));
+  line-height: 1.6;
+}
+
+/* Kamaya Heading Styles based on design specs */
+.heading-primary {
+  font-family: 'Analogue', ui-serif, Georgia, 'Times New Roman', serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 24px;
+  color: var(--text-primary);
+}
+
+.heading-large {
+  font-family: 'Analogue', ui-serif, Georgia, 'Times New Roman', serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 48px;
+  line-height: 48px;
+  color: var(--text-primary);
+}
+
+.heading-hero {
+  font-family: 'Analogue', ui-serif, Georgia, 'Times New Roman', serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: clamp(32px, 6vw, 64px);
+  line-height: 1.1;
+  color: var(--text-primary);
+}
+
+/* Dark Theme Sections */
+.theme-dark {
+  background: var(--dark-bg-primary);
+  color: var(--dark-text-primary);
+}
+
+.theme-dark .text-secondary {
+  color: var(--dark-text-secondary);
+}
+
+.theme-dark .text-muted {
+  color: var(--dark-text-muted);
+}
+
+.theme-dark .accent {
+  color: var(--dark-accent);
+}
+
+/* Smooth Animations */
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
