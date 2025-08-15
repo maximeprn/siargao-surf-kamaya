@@ -62,11 +62,11 @@ export default function LoadingScreen({ onLoadingComplete, duration = 3000 }: Lo
       >
         <div className="animate-pulse-slow">
           <Image
-            src="/assets/logos/loading-logo2.svg"
+            src="/assets/logos/loading-logo.svg"
             alt="Villa Kamaya Loading Logo"
             width={200}
             height={200}
-            className="w-48 h-48 md:w-56 md:h-56"
+            className="w-32 h-32 md:w-40 md:h-40"
           />
         </div>
       </div>
