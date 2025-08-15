@@ -1,13 +1,4 @@
 {
-  "framework": "nextjs",
-  "buildCommand": "cd villa-kamaya && npm run build",
-  "outputDirectory": "villa-kamaya/.next",
-  "installCommand": "cd villa-kamaya && npm install",
-  "devCommand": "cd villa-kamaya && npm run dev",
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/$1"
-    }
-  ]
+  "rootDirectory": "villa-kamaya",
+  "framework": "nextjs"
 }
