@@ -3,7 +3,7 @@ import Footer from '@/components/ui/Footer'
 import SurfPhotoCardAqua from '@/components/ui/SurfPhotoCardAqua'
 import SpotDetailsOverlay from '@/components/ui/SpotDetailsOverlay'
 import ClientWeatherData from '@/components/ClientWeatherData'
-import LazyScrollContainer from '@/components/ui/LazyScrollContainer'
+import ScrollReveal from '@/components/ui/ScrollReveal'
 import { CDN_IMAGES } from '@/lib/cdn-images'
 import { supabase } from '@/lib/supabase'
 import { siargaoSpotsComplete } from '@/lib/spot-configs'
@@ -39,16 +39,16 @@ export default async function Home() {
         </SurfPhotoCardAqua>
 
         {/* Weather data loads client-side for fast LCP */}
-        <LazyScrollContainer animation="slideUp" delay={0.2}>
+        <ScrollReveal direction="up" intensity="medium" delay={0.1}>
           <ClientWeatherData
             spotName="Cloud 9"
             location="Siargao Island, Philippines"
             coords={coords}
           />
-        </LazyScrollContainer>
+        </ScrollReveal>
 
-        {/* Additional sections to demonstrate lazy scroll */}
-        <LazyScrollContainer animation="slideLeft" delay={0.1}>
+        {/* Additional sections to demonstrate scroll reveal */}
+        <ScrollReveal direction="left" intensity="strong" delay={0.05}>
           <section className="bg-glass border border-glass rounded-2xl p-8 backdrop-blur-sm">
             <h2 className="text-2xl font-semibold text-theme-primary mb-4">Découvrez Siargao</h2>
             <p className="text-theme-muted text-lg leading-relaxed">
@@ -57,9 +57,9 @@ export default async function Home() {
               c&apos;est un paradis pour les surfeurs du monde entier.
             </p>
           </section>
-        </LazyScrollContainer>
+        </ScrollReveal>
 
-        <LazyScrollContainer animation="slideRight" delay={0.1}>
+        <ScrollReveal direction="right" intensity="strong" delay={0.05}>
           <section className="bg-glass border border-glass rounded-2xl p-8 backdrop-blur-sm">
             <h2 className="text-2xl font-semibold text-theme-primary mb-4">Conditions en Temps Réel</h2>
             <p className="text-theme-muted text-lg leading-relaxed">
@@ -68,9 +68,9 @@ export default async function Home() {
               pour vous offrir les prévisions les plus précises.
             </p>
           </section>
-        </LazyScrollContainer>
+        </ScrollReveal>
 
-        <LazyScrollContainer animation="scale" delay={0.2}>
+        <ScrollReveal direction="fade" intensity="medium" delay={0.1}>
           <section className="bg-glass border border-glass rounded-2xl p-8 backdrop-blur-sm">
             <h2 className="text-2xl font-semibold text-theme-primary mb-4">Intelligence Artificielle</h2>
             <p className="text-theme-muted text-lg leading-relaxed">
@@ -79,7 +79,7 @@ export default async function Home() {
               sur les conditions de chaque session.
             </p>
           </section>
-        </LazyScrollContainer>
+        </ScrollReveal>
       </main>
       <Footer />
     </div>

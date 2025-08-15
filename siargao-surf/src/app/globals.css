@@ -37,14 +37,14 @@
 }
 
 .light {
-  --bg-primary: #FDFCF5;
+  --bg-primary: #ECE8DB;
   --bg-secondary: rgba(28, 51, 64, 0.1);
   --text-primary: #1C3340;
   --text-secondary: #1C3340;
   --text-muted: rgba(28, 51, 64, 0.6);
   --accent: #AEBDAF;
   --border: rgba(28, 51, 64, 0.2);
-  --glass-bg: rgba(253, 252, 245, 0.3);
+  --glass-bg: rgba(236, 232, 219, 0.3);
   --glass-border: rgba(28, 51, 64, 0.2);
   --swell-color: #1C3340;
   --wind-color: #F8CB9E;

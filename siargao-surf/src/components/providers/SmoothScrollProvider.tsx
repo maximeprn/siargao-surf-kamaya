@@ -32,7 +32,7 @@ export default function SmoothScrollProvider({
       smooth: !isMobile, // Désactiver le smooth scroll sur mobile pour de meilleures performances
       smoothTouch: false,
       touchMultiplier: isMobile ? 1.0 : 1.5,
-      wheelMultiplier: isMobile ? 1.0 : 0.8,
+      wheelMultiplier: isMobile ? 1.0 : 1.0,
       infinite: false,
       ...options
     })
