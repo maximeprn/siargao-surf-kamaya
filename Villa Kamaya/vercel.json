@@ -1,5 +1,0 @@
-{
-  "installCommand": "cd villa-kamaya && npm install",
-  "buildCommand": "cd villa-kamaya && npm run build",
-  "outputDirectory": "villa-kamaya/.next"
-}
