@@ -12,7 +12,7 @@ function ByKamaya() {
   
   return (
     <a 
-      href="https://www.kamaya-siargao.com/exclusive-offer" 
+      href="https://www.kamaya-siargao.com/?utm_source=surf-report&utm_medium=surf-report&utm_campaign=surf-report" 
       target="_blank" 
       rel="noopener noreferrer"
       className="select-none cursor-pointer group"

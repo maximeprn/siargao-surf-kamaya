@@ -141,7 +141,14 @@ export default function SideMenu({ isOpen, onClose }: SideMenuProps) {
         </div>
 
         {/* Content */}
-        <div className="overflow-y-auto h-full pb-20">
+        <div 
+          className="overflow-y-scroll overflow-x-hidden pb-20"
+          data-lenis-prevent
+          style={{ 
+            height: 'calc(100vh - 168px)', // Total available height minus header and spacing
+            overscrollBehavior: 'contain'
+          }}
+        >
           <div 
             className={`p-6 space-y-8 ${
               isOpen ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
