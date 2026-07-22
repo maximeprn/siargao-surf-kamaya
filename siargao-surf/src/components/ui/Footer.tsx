@@ -8,7 +8,7 @@ function ByKamayaFooter() {
   
   return (
     <a 
-      href="https://www.kamaya-siargao.com/exclusive-offer" 
+      href="https://www.kamaya-siargao.com/?utm_source=surf-report&utm_medium=surf-report&utm_campaign=surf-report-footer"
       target="_blank" 
       rel="noopener noreferrer"
       className="select-none cursor-pointer hover:opacity-80 transition-opacity duration-200"
