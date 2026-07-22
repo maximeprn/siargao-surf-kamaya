@@ -37,42 +37,21 @@ export default function ScrollReveal({
 
   const config = intensityValues[intensity]
 
-  // Create transforms based on direction
-  const getTransforms = () => {
-    switch (direction) {
-      case 'up':
-        return {
-          y: useTransform(scrollYProgress, [0, 1], [config.distance, 0]),
-          opacity: useTransform(scrollYProgress, [0, 0.3], config.opacity)
-        }
-      case 'down':
-        return {
-          y: useTransform(scrollYProgress, [0, 1], [-config.distance, 0]),
-          opacity: useTransform(scrollYProgress, [0, 0.3], config.opacity)
-        }
-      case 'left':
-        return {
-          x: useTransform(scrollYProgress, [0, 1], [config.distance, 0]),
-          opacity: useTransform(scrollYProgress, [0, 0.3], config.opacity)
-        }
-      case 'right':
-        return {
-          x: useTransform(scrollYProgress, [0, 1], [-config.distance, 0]),
-          opacity: useTransform(scrollYProgress, [0, 0.3], config.opacity)
-        }
-      case 'fade':
-        return {
-          opacity: useTransform(scrollYProgress, [0, 0.5], config.opacity)
-        }
-      default:
-        return {
-          y: useTransform(scrollYProgress, [0, 1], [config.distance, 0]),
-          opacity: useTransform(scrollYProgress, [0, 0.3], config.opacity)
-        }
-    }
-  }
+  // Call hooks unconditionally and select values based on direction
+  const yUp = useTransform(scrollYProgress, [0, 1], [config.distance, 0])
+  const yDown = useTransform(scrollYProgress, [0, 1], [-config.distance, 0])
+  const xLeft = useTransform(scrollYProgress, [0, 1], [config.distance, 0])
+  const xRight = useTransform(scrollYProgress, [0, 1], [-config.distance, 0])
+  const opacityQuick = useTransform(scrollYProgress, [0, 0.3], config.opacity)
+  const opacityFade = useTransform(scrollYProgress, [0, 0.5], config.opacity)
 
-  const transforms = getTransforms()
+  const transforms = (
+    direction === 'up' ? { y: yUp, opacity: opacityQuick } :
+    direction === 'down' ? { y: yDown, opacity: opacityQuick } :
+    direction === 'left' ? { x: xLeft, opacity: opacityQuick } :
+    direction === 'right' ? { x: xRight, opacity: opacityQuick } :
+    { opacity: opacityFade }
+  )
 
   return (
     <motion.div
